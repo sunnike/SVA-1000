@@ -14,7 +14,6 @@ C_SRCS += \
 ../Src/freertos.c \
 ../Src/gpio.c \
 ../Src/i2c.c \
-../Src/iwdg.c \
 ../Src/main.c \
 ../Src/rtc.c \
 ../Src/spi.c \
@@ -33,7 +32,6 @@ OBJS += \
 ./Src/freertos.o \
 ./Src/gpio.o \
 ./Src/i2c.o \
-./Src/iwdg.o \
 ./Src/main.o \
 ./Src/rtc.o \
 ./Src/spi.o \
@@ -56,7 +54,6 @@ C_DEPS += \
 ./Src/freertos.d \
 ./Src/gpio.d \
 ./Src/i2c.d \
-./Src/iwdg.d \
 ./Src/main.d \
 ./Src/rtc.d \
 ./Src/spi.d \

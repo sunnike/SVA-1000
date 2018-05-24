@@ -25,6 +25,14 @@
 		<nature>fr.ac6.mcu.ide.core.MCUProjectNature</nature>
 	</natures>
 	<linkedResources><link>
+      <name>Application/User/iwdg.c</name>
+      <type>1</type>
+      <location>PARENT-2-PROJECT_LOC/Src/iwdg.c</location>
+    </link><link>
+      <name>Drivers/STM32F0xx_HAL_Driver/stm32f0xx_hal_iwdg.c</name>
+      <type>1</type>
+      <location>PARENT-2-PROJECT_LOC/Drivers/STM32F0xx_HAL_Driver/Src/stm32f0xx_hal_iwdg.c</location>
+    </link><link>
       <name>Drivers/STM32F0xx_HAL_Driver/stm32f0xx_hal_uart_ex.c</name>
       <type>1</type>
       <location>PARENT-2-PROJECT_LOC/Drivers/STM32F0xx_HAL_Driver/Src/stm32f0xx_hal_uart_ex.c</location>
@@ -60,10 +68,6 @@
       <name>Drivers/STM32F0xx_HAL_Driver/stm32f0xx_hal_spi.c</name>
       <type>1</type>
       <location>PARENT-2-PROJECT_LOC/Drivers/STM32F0xx_HAL_Driver/Src/stm32f0xx_hal_spi.c</location>
-    </link><link>
-      <name>Drivers/STM32F0xx_HAL_Driver/stm32f0xx_hal_iwdg.c</name>
-      <type>1</type>
-      <location>PARENT-2-PROJECT_LOC/Drivers/STM32F0xx_HAL_Driver/Src/stm32f0xx_hal_iwdg.c</location>
     </link>
     <link>
       <name>Application/SW4STM32/startup_stm32f091xc.s</name>
@@ -183,11 +187,7 @@
 			<type>1</type>
 			<location>PARENT-2-PROJECT_LOC/Drivers/STM32F0xx_HAL_Driver/Src/stm32f0xx_hal_flash_ex.c</location>
 		</link>
-    <link>
-			<name>Application/User/iwdg.c</name>
-			<type>1</type>
-			<location>PARENT-2-PROJECT_LOC/Src/iwdg.c</location>
-		</link>
+    
     <link>
 			<name>Application/User/freertos.c</name>
 			<type>1</type>

@@ -42,7 +42,6 @@
 
 /* External variables --------------------------------------------------------*/
 extern DMA_HandleTypeDef hdma_adc;
-extern ADC_HandleTypeDef hadc;
 extern CAN_HandleTypeDef hcan;
 extern SMBUS_HandleTypeDef hsmbus1;
 extern DMA_HandleTypeDef hdma_usart1_rx;
@@ -165,20 +164,6 @@ void DMA1_Ch4_7_DMA2_Ch3_5_IRQHandler(void)
   /* USER CODE BEGIN DMA1_Ch4_7_DMA2_Ch3_5_IRQn 1 */
 
   /* USER CODE END DMA1_Ch4_7_DMA2_Ch3_5_IRQn 1 */
-}
-
-/**
-* @brief This function handles ADC and COMP interrupts (COMP interrupts through EXTI lines 21 and 22).
-*/
-void ADC1_COMP_IRQHandler(void)
-{
-  /* USER CODE BEGIN ADC1_COMP_IRQn 0 */
-
-  /* USER CODE END ADC1_COMP_IRQn 0 */
-  HAL_ADC_IRQHandler(&hadc);
-  /* USER CODE BEGIN ADC1_COMP_IRQn 1 */
-
-  /* USER CODE END ADC1_COMP_IRQn 1 */
 }
 
 /**
