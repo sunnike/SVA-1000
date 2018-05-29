@@ -59,7 +59,7 @@
 #include <usart.h>
 #include <adc.h>
 #include <iwdg.h>
-
+#include <gpio.h>
 /* USER CODE END Includes */
 
 /* Variables -----------------------------------------------------------------*/
@@ -72,8 +72,10 @@ osThreadId I2C1_TaskHandle;
 osThreadId ADC_TaskHandle;
 osThreadId IWDG_TaskHandle;
 osThreadId CMD_PROC_TaskHandle;
+osThreadId GPIO_STATE_TaskHandle;
 osMessageQId GPIO_MISC_QHandle;
-osMessageQId ADC_QHandle;
+osMessageQId ADC_VOLT_QHandle;
+osMessageQId ADC_TEMP_QHandle;
 osMutexId MUTEX_DebugHandle;
 osMutexId MUTEX_ADC_QHandle;
 
@@ -85,6 +87,10 @@ osMutexId MUTEX_ADC_QHandle;
 #if (AEWIN_DBUG)
 char dbg_buff[PRINT_BUFF];
 #endif
+sSVA_GPI_STATE 	sva_gpi={0};
+sSVA_GPO_STATE 	sva_gpo={0};
+
+sIG_EVENT gIG_Event ={ IG_Recovery, 2, 2, 10, 2, 2, 10, 2, 100, 5, FALSE, 5, 20, 145, 0, 50, 100, 50, 0, 0};
 /* USER CODE END Variables */
 
 /* Function prototypes -------------------------------------------------------*/
@@ -97,6 +103,7 @@ void i2c1_entry(void const * argument);
 void adc_entry(void const * argument);
 void IWDG_entry(void const * argument);
 void cmd_proc_entry(void const * argument);
+void gpio_state_entry(void const * argument);
 
 void MX_FREERTOS_Init(void); /* (MISRA C 2004 rule 8.1) */
 
@@ -144,7 +151,7 @@ void MX_FREERTOS_Init(void) {
 
   /* Create the thread(s) */
   /* definition and creation of defaultTask */
-  osThreadDef(defaultTask, StartDefaultTask, osPriorityNormal, 0, 128);
+  osThreadDef(defaultTask, StartDefaultTask, osPriorityIdle, 0, 128);
   defaultTaskHandle = osThreadCreate(osThread(defaultTask), NULL);
 
   /* definition and creation of USART1_Task */
@@ -179,6 +186,10 @@ void MX_FREERTOS_Init(void) {
   osThreadDef(CMD_PROC_Task, cmd_proc_entry, osPriorityNormal, 0, 128);
   CMD_PROC_TaskHandle = osThreadCreate(osThread(CMD_PROC_Task), NULL);
 
+  /* definition and creation of GPIO_STATE_Task */
+  osThreadDef(GPIO_STATE_Task, gpio_state_entry, osPriorityNormal, 0, 128);
+  GPIO_STATE_TaskHandle = osThreadCreate(osThread(GPIO_STATE_Task), NULL);
+
   /* USER CODE BEGIN RTOS_THREADS */
 	/* add threads, ... */
   /* USER CODE END RTOS_THREADS */
@@ -188,9 +199,13 @@ void MX_FREERTOS_Init(void) {
   osMessageQDef(GPIO_MISC_Q, 16, uint16_t);
   GPIO_MISC_QHandle = osMessageCreate(osMessageQ(GPIO_MISC_Q), NULL);
 
-  /* definition and creation of ADC_Q */
-  osMessageQDef(ADC_Q, 4, uint32_t);
-  ADC_QHandle = osMessageCreate(osMessageQ(ADC_Q), NULL);
+  /* definition and creation of ADC_VOLT_Q */
+  osMessageQDef(ADC_VOLT_Q, 1, uint32_t);
+  ADC_VOLT_QHandle = osMessageCreate(osMessageQ(ADC_VOLT_Q), NULL);
+
+  /* definition and creation of ADC_TEMP_Q */
+  osMessageQDef(ADC_TEMP_Q, 1, uint32_t);
+  ADC_TEMP_QHandle = osMessageCreate(osMessageQ(ADC_TEMP_Q), NULL);
 
   /* USER CODE BEGIN RTOS_QUEUES */
 	/* add queues, ... */
@@ -383,7 +398,7 @@ void usart3_entry(void const * argument)
 			HAL_UART_Abort(&huart3);
 		}
 	osMutexRelease(MUTEX_DebugHandle);
-	osDelay(1);
+	osDelay(UART3_TASK_ENTRY_TIME);
 	}
 
   /* USER CODE END usart3_entry */
@@ -393,11 +408,195 @@ void usart3_entry(void const * argument)
 void ignition_entry(void const * argument)
 {
   /* USER CODE BEGIN ignition_entry */
-  /* Infinite loop */
-  for(;;)
-  {
-    osDelay(2);
-  }
+	osEvent  	evt;
+	uint32_t 	adc_24v, adc_temp;
+	sIG_EVENT 	ig_event;
+
+	ig_event = gIG_Event;
+    /* Infinite loop */
+    for(;;)
+    {
+    	/** Get ADC 24V from Q. */
+    	evt = osMessageGet(ADC_VOLT_QHandle, osWaitForever);
+		if (evt.status == osEventMessage){
+			adc_24v = evt.value.v;
+			//aewin_dbg("\n\r");
+			//aewin_dbg("\n\rGet ADC 24V = %d.%.2d V", (double)(((adc_24v & 0xfffU) * 3.3f) / 4096.0f), \
+							  	  	  	  	  	  	 (double) (((float)(((adc_24v & 0xfffU) * 3.3f) / 4096.0f) - (float)((double)(((adc_24v & 0xfffU) * 3.3f) / 4096.0f) / (double)1) ) * 100.0f));
+		}
+
+		/** Get the ADC value of MCU temperature. */
+		evt = osMessageGet(ADC_TEMP_QHandle, osWaitForever);
+		if (evt.status == osEventMessage){
+			adc_temp = evt.value.v;
+			//aewin_dbg("\n\r");
+			//aewin_dbg("\n\rGet ADC TEMP = %d.%.2d V", (double)(((adc_temp & 0xfffU) * 3.3f) / 4096.0f), \
+							  	  	  	  	  	  	 (double) (((float)(((adc_temp & 0xfffU) * 3.3f) / 4096.0f) - (float)((double)(((adc_temp & 0xfffU) * 3.3f) / 4096.0f) / (double)1) ) * 100.0f));
+		}
+
+
+		switch(ig_event.IG_States){
+			case IG_Recovery:
+				// Recovery all of IG states and paremeters.
+				ig_event = gIG_Event;
+				ig_event.IG_States = IG_CloseUp;
+				break;
+
+			//-------------------------------------------------------------------------------------
+			case IG_CloseUp:
+				// Judge the IG switch states.
+				if(sva_gpi.ig_sw == GPIO_PIN_SET){
+					/* IG On process */
+					// Ready to enter IG_PowerOn_Delay state.
+					ig_event.IG_States = IG_PowerOn_Delay;
+					// Reset the "Start up timeout"
+					ig_event.startup_timeout = gIG_Event.startup_timeout;
+					aewin_dbg("\n\rIgnition ON! IG_CloseUp --> IG_PowerOn_Delay");
+				}
+
+				// Judge the power button states.
+				if(sva_gpi.pwr_btn == GPIO_PIN_RESET){
+					ig_event.startup_timeout = gIG_Event.startup_timeout;
+					ig_event.IG_States = IG_Wait_StartUp;
+					aewin_dbg("\n\rPower button On! IG_CloseUp --> IG_Wait_StartUp");
+				}
+				break;
+
+			//-------------------------------------------------------------------------------------
+			case IG_PowerOn_Delay:
+				// Judge the IG switch states.
+				if(sva_gpi.ig_sw == GPIO_PIN_SET){
+					if (0 == (ig_event.pwron_delay--)){
+						ig_event.pwron_delay = gIG_Event.pwron_delay;
+						ig_event.IG_States = IG_Wait_StartUp;
+						aewin_dbg("\n\rPower on delay pass! IG_PowerOn_Delay --> IG_Wait_StartUp");
+					}
+				}
+				else{
+					ig_event.pwron_delay = gIG_Event.pwron_delay;
+					ig_event.IG_States = IG_CloseUp;
+					aewin_dbg("\n\rPower on delay failed! IG_PowerOn_Delay --> IG_CloseUp");
+				}
+				break;
+
+			//-------------------------------------------------------------------------------------
+			case IG_Wait_StartUp:
+				/* Power button has been (long) pressed. */
+				if(sva_gpi.pwr_btn == GPIO_PIN_RESET){
+					ig_event.pwrbtn_pressed = TRUE;
+					if(0 == (ig_event.pwroff_btn_cnt--)){
+						ig_event.IG_States = IG_Recovery;
+						HAL_GPIO_WritePin(GPIOC, D2D_EN_Pin, GPIO_PIN_RESET);
+						aewin_dbg("\n\rIG_Wait_StartUp2 failed! IG_Wait_StartUp --> IG_Recovery");
+					}
+				}
+
+				if(ig_event.pwrbtn_pressed && (sva_gpi.pwr_btn == GPIO_PIN_SET)){
+					ig_event.pwroff_btn_cnt = gIG_Event.pwroff_btn_cnt;
+					ig_event.pwrbtn_pressed = FALSE;
+				}
+
+				if(sva_gpi.ig_sw == GPIO_PIN_SET){
+					if (0 == (ig_event.wait_startup_time--)){
+						ig_event.wait_startup_time = gIG_Event.wait_startup_time;
+						HAL_GPIO_WritePin(GPIOC, D2D_EN_Pin, GPIO_PIN_SET);
+						// Confirm the the DC2DC power and system power are available.
+						while((sva_gpi.dc2dc_pwrok != GPIO_PIN_SET) || (sva_gpi.sys_pwron == GPIO_PIN_SET)){
+							if(0 == (ig_event.pwrgood_chk_time--)){
+								break;
+							}
+						}
+						if(0 != ig_event.pwrgood_chk_time){
+							ig_event.IG_States = IG_Start_Up;
+							aewin_dbg("\n\rPower on delay ok! IG_Wait_StartUp --> IG_Start_Up");
+						}
+						else{
+							HAL_GPIO_WritePin(GPIOC, D2D_EN_Pin, GPIO_PIN_RESET);
+							ig_event.IG_States = IG_CloseUp;
+							aewin_dbg("\n\rDE2DC Power on failed! IG_Wait_StartUp --> IG_CloseUp");
+						}
+						ig_event.pwrgood_chk_time = gIG_Event.pwrgood_chk_time;
+					}
+				}
+				else{
+					ig_event.wait_startup_time = gIG_Event.wait_startup_time;
+					ig_event.IG_States = IG_PowerOn_Delay;
+					aewin_dbg("\n\rIG_Wait_StartUp1 failed! IG_Wait_StartUp --> IG_PowerOn_Delay");
+				}
+				break;
+
+			//-------------------------------------------------------------------------------------
+			case IG_Start_Up:
+				if(ig_event.startup_timeout > 0){
+					/* Lock ignition off to prevent that user shutdowns the OS. */
+					ig_event.startup_timeout--;
+					aewin_dbg("\n\rLock power on!");
+				}
+				else{
+					if( sva_gpi.ig_sw ==  GPIO_PIN_RESET){
+						ig_event.IG_States = IG_Shutdown_Delay;
+						aewin_dbg("\n\rIngition switch off! IG_Start_Up --> IG_Shutdown_Delay");
+					}
+				}
+
+				if(sva_gpi.pwr_btn == GPIO_PIN_RESET){
+					ig_event.pwrbtn_pressed = TRUE;
+					if(0 == (ig_event.pwroff_btn_cnt--)){
+						HAL_GPIO_WritePin(GPIOC, D2D_EN_Pin, GPIO_PIN_RESET);
+						ig_event.IG_States = IG_Recovery;
+					}
+				}
+
+				if(ig_event.pwrbtn_pressed && (sva_gpi.pwr_btn == GPIO_PIN_SET)){
+					ig_event.pwroff_btn_cnt = gIG_Event.pwroff_btn_cnt;
+					ig_event.pwrbtn_pressed = FALSE;
+					ig_event.IG_States = IG_shutting_Down;
+					aewin_dbg("\n\rPower button off! IG_Start_Up --> IG_shutting_Down");
+				}
+
+				break;
+
+			//-------------------------------------------------------------------------------------
+			case IG_Shutdown_Delay:
+				if(sva_gpi.ig_sw == GPIO_PIN_RESET){
+					if (0 == (ig_event.pwroff_delay--)){
+						ig_event.IG_States = IG_shutting_Down;
+						ig_event.pwroff_delay = gIG_Event.pwroff_delay;
+						aewin_dbg("\n\rPower off delay pass! IG_PowerOn_Delay --> IG_Wait_StartUp");
+					}
+				}
+				else{
+					ig_event.IG_States = IG_Start_Up;
+					ig_event.pwroff_delay = gIG_Event.pwroff_delay;
+					aewin_dbg("\n\rPower off delay failed! IG_Shutdown_Delay --> IG_Start_Up");
+				}
+				break;
+
+			//-------------------------------------------------------------------------------------
+			case IG_shutting_Down:
+				if(sva_gpi.ig_sw == GPIO_PIN_RESET){
+					if (0 == (ig_event.shutdown_delay--)){
+						ig_event.IG_States = IG_CloseUp;
+						ig_event.shutdown_delay = gIG_Event.shutdown_delay;
+						HAL_GPIO_WritePin(GPIOC, D2D_EN_Pin, GPIO_PIN_RESET);
+						aewin_dbg("\n\rShutdown delay pass! IG_shutting_Down --> IG_CloseUp");
+					}
+				}
+				else{
+					ig_event.IG_States = IG_Shutdown_Delay;
+					ig_event.shutdown_delay = gIG_Event.shutdown_delay;
+					aewin_dbg("\n\rShutdown delay failed! IG_shutting_Down --> IG_Shutdown_Delay");
+				}
+				break;
+
+			//-------------------------------------------------------------------------------------
+			case IG_LowPower_Delay:
+				break;
+
+		}
+
+    	osDelay(INGITION_TASK_ENTRY_TIME);
+    }
   /* USER CODE END ignition_entry */
 }
 
@@ -419,8 +618,7 @@ void adc_entry(void const * argument)
 {
   /* USER CODE BEGIN adc_entry */
     /* Variable containing ADC conversions results */
-
-	sADC_Data adc_data;
+	sADC_DATA adc_data;
 
 	/* Infinite loop */
 	for(;;)
@@ -429,35 +627,30 @@ void adc_entry(void const * argument)
         /* Start ADC conversion on regular group with transfer by DMA */
 		if (HAL_ADC_Start_DMA(&hadc, (uint32_t *)&adc_data, ADC_DEVICE_NUM) != HAL_OK)
 		{
-			// Start Error
-		    //_Error_Handler(__FILE__, __LINE__);
+			// ADC start failed.
 			aewin_dbg("\n\rADC start up failed!");
 		}
-		osDelay(450);
-		//else
-		//{
+		// ADC initial and capture
+		osDelay(ADC_CAP_TIME);
 
-			//adc_data.pwr_24v  = 1;
-			//adc_data.mcu_temp = 2;
-			//adc_data.adc_in8  = 3;
-			//adc_data.adc_in14 = 4;
-			aewin_dbg("\n\rADC 24V = %f V", ((float)(adc_data.pwr_24v & 0xFFFU) * 3.3) / 4096);
-			aewin_dbg("\n\rADC MCU Temp = %1.2f V", ((float)(adc_data.mcu_temp & 0xFFFU) * 3.3) / 4096);
-			/*if( osMessagePut(ADC_QHandle, ( uint32_t )adc_data, 100) != osOK )
-			{
-				// Failed to post the message, even after 10 ticks.
-				//aewin_dbg("ADC queue send failed. \r\n");
-			}
-			else
-			{
-				//aewin_dbg("ADC queue send success. \r\n");
-			}*/
-		//}
+		// Get ADC value of battery voltage.
+		if( osMessagePut(ADC_VOLT_QHandle, adc_data.pwr_24v, osWaitForever) != osOK )
+		{
+			aewin_dbg("\n\rADC_24V put Q failed. \r\n");
+		}
 
+		// Get ADC value of MUC temperature
+		if( osMessagePut(ADC_TEMP_QHandle, adc_data.mcu_temp, osWaitForever) != osOK )
+		{
+			aewin_dbg("\n\rMCU-Temperature put Q failed. \r\n");
+		}
 
-    HAL_ADC_Stop_DMA(&hadc);
-    osDelay(450);
-  }
+		/* Stop ADC converting. */
+		HAL_ADC_Stop_DMA(&hadc);
+		// Let ADC converter take a break.
+		osDelay(ADC_RESET_TIME);
+
+    }
   /* USER CODE END adc_entry */
 }
 
@@ -468,8 +661,9 @@ void IWDG_entry(void const * argument)
   /* Infinite loop */
   for(;;)
   {
-	  HAL_IWDG_Refresh(&hiwdg); //refresh watch dog
-	  osDelay(2);
+	  /* Refresh IWDG */
+	  HAL_IWDG_Refresh(&hiwdg);
+	  osDelay(IWDG_TASK_ENTRY_TIME);
   }
   /* USER CODE END IWDG_entry */
 }
@@ -486,17 +680,36 @@ void cmd_proc_entry(void const * argument)
   /* USER CODE END cmd_proc_entry */
 }
 
+/* gpio_state_entry function */
+void gpio_state_entry(void const * argument)
+{
+  /* USER CODE BEGIN gpio_state_entry */
+  /* Infinite loop */
+    for(;;)
+    {
+		/* Get ignition switch states. */
+		sva_gpi.ig_sw 		= HAL_GPIO_ReadPin(GPIOC, IGNITION_SW_Pin);
+		/* Get system power states. */
+		sva_gpi.sys_pwron	= HAL_GPIO_ReadPin(GPIOC, SYS_POWER_ON_Pin);
+		/* Get DC2DC power states. */
+		sva_gpi.dc2dc_pwrok	= HAL_GPIO_ReadPin(GPIOC, DC2DC_PWROK_Pin);
+		/* Get power button states. */
+		sva_gpi.pwr_btn 	= HAL_GPIO_ReadPin(GPIOC, PWR_BTN_IGN_R_Pin);
+		osDelay(50);
+    }
+  /* USER CODE END gpio_state_entry */
+}
+
 /* USER CODE BEGIN Application */
 #if (AEWIN_DBUG)
 void aewin_dbg(char *fmt,...){
 	osMutexWait(MUTEX_DebugHandle, osWaitForever);
 	int i = 0;
-	HAL_StatusTypeDef u_state;
 	static va_list arg_ptr;
 	va_start (arg_ptr, fmt);
 	vsnprintf(dbg_buff, PRINT_BUFF, fmt, arg_ptr);
 	while(i < (PRINT_BUFF - 1) && dbg_buff[i]){
-		if ((u_state = HAL_UART_Transmit(&huart3, (uint8_t*)&dbg_buff[i], 1, 2)) == HAL_OK){
+		if (HAL_UART_Transmit(&huart3, (uint8_t*)&dbg_buff[i], 1, 2) == HAL_OK){
 			i++;
 		}
 	}

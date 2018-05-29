@@ -1,0 +1,4 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<session version="1.0">
+<refactoring comment="Delete resource &apos;STM32F091RCTx_freeRTOS/Release/STM32F091RCTx_freeRTOS.elf&apos;" deleteContents="false" description="Delete resource &apos;STM32F091RCTx_freeRTOS/Release/STM32F091RCTx_freeRTOS.elf&apos;" element1="/STM32F091RCTx_freeRTOS/Release/STM32F091RCTx_freeRTOS.elf" flags="7" id="org.eclipse.ltk.core.refactoring.delete.resources" resources="1" stamp="1527556942619"/>
+</session>

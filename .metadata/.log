@@ -3699,3 +3699,1493 @@ For more details, see the JLinkGDBServerCL.exe console.
 
 !ENTRY ilg.gnuarmeclipse.debug.gdbjtag.jlink 4 1 2018-05-24 10:11:10.949
 !MESSAGE arm-none-eabi-gdb --interpreter=mi2 --nx
+
+!ENTRY ilg.gnuarmeclipse.debug.gdbjtag.jlink 4 1 2018-05-24 11:17:59.072
+!MESSAGE C:/Program Files (x86)/SEGGER/JLink_V620f/JLinkGDBServerCL.exe -if swd -device STM32F091RC -endian little -speed auto -port 2331 -swoport 2332 -telnetport 2333 -vd -ir -localhostonly 1 -singlerun -strict -timeout 0 -nogui
+
+!ENTRY ilg.gnuarmeclipse.debug.gdbjtag.jlink 4 1 2018-05-24 11:17:59.764
+!MESSAGE arm-none-eabi-gdb --interpreter=mi2 --nx
+
+!ENTRY ilg.gnuarmeclipse.debug.gdbjtag.jlink 4 1 2018-05-24 13:07:26.874
+!MESSAGE C:/Program Files (x86)/SEGGER/JLink_V620f/JLinkGDBServerCL.exe -if swd -device STM32F091RC -endian little -speed auto -port 2331 -swoport 2332 -telnetport 2333 -vd -ir -localhostonly 1 -singlerun -strict -timeout 0 -nogui
+
+!ENTRY ilg.gnuarmeclipse.debug.gdbjtag.jlink 4 1 2018-05-24 13:07:27.584
+!MESSAGE arm-none-eabi-gdb --interpreter=mi2 --nx
+
+!ENTRY ilg.gnuarmeclipse.debug.gdbjtag.jlink 4 1 2018-05-24 13:08:12.992
+!MESSAGE C:/Program Files (x86)/SEGGER/JLink_V620f/JLinkGDBServerCL.exe -if swd -device STM32F091RC -endian little -speed auto -port 2331 -swoport 2332 -telnetport 2333 -vd -ir -localhostonly 1 -singlerun -strict -timeout 0 -nogui
+
+!ENTRY ilg.gnuarmeclipse.debug.gdbjtag.jlink 4 1 2018-05-24 13:08:13.675
+!MESSAGE arm-none-eabi-gdb --interpreter=mi2 --nx
+
+!ENTRY ilg.gnuarmeclipse.debug.gdbjtag.jlink 4 1 2018-05-24 13:12:10.240
+!MESSAGE C:/Program Files (x86)/SEGGER/JLink_V620f/JLinkGDBServerCL.exe -if swd -device STM32F091RC -endian little -speed auto -port 2331 -swoport 2332 -telnetport 2333 -vd -ir -localhostonly 1 -singlerun -strict -timeout 0 -nogui
+
+!ENTRY ilg.gnuarmeclipse.debug.gdbjtag.jlink 4 1 2018-05-24 13:12:10.938
+!MESSAGE arm-none-eabi-gdb --interpreter=mi2 --nx
+
+!ENTRY ilg.gnuarmeclipse.debug.gdbjtag.jlink 4 1 2018-05-24 13:22:09.181
+!MESSAGE C:/Program Files (x86)/SEGGER/JLink_V620f/JLinkGDBServerCL.exe -if swd -device STM32F091RC -endian little -speed auto -port 2331 -swoport 2332 -telnetport 2333 -vd -ir -localhostonly 1 -singlerun -strict -timeout 0 -nogui
+
+!ENTRY ilg.gnuarmeclipse.debug.gdbjtag.jlink 4 1 2018-05-24 13:22:09.865
+!MESSAGE arm-none-eabi-gdb --interpreter=mi2 --nx
+
+!ENTRY ilg.gnuarmeclipse.debug.gdbjtag.jlink 4 1 2018-05-24 13:29:25.994
+!MESSAGE C:/Program Files (x86)/SEGGER/JLink_V620f/JLinkGDBServerCL.exe -if swd -device STM32F091RC -endian little -speed auto -port 2331 -swoport 2332 -telnetport 2333 -vd -ir -localhostonly 1 -singlerun -strict -timeout 0 -nogui
+
+!ENTRY ilg.gnuarmeclipse.debug.gdbjtag.jlink 4 1 2018-05-24 13:29:26.693
+!MESSAGE arm-none-eabi-gdb --interpreter=mi2 --nx
+
+!ENTRY ilg.gnuarmeclipse.debug.gdbjtag.jlink 4 1 2018-05-24 13:30:35.219
+!MESSAGE C:/Program Files (x86)/SEGGER/JLink_V620f/JLinkGDBServerCL.exe -if swd -device STM32F091RC -endian little -speed auto -port 2331 -swoport 2332 -telnetport 2333 -vd -ir -localhostonly 1 -singlerun -strict -timeout 0 -nogui
+
+!ENTRY ilg.gnuarmeclipse.debug.gdbjtag.jlink 4 1 2018-05-24 13:30:35.894
+!MESSAGE arm-none-eabi-gdb --interpreter=mi2 --nx
+
+!ENTRY ilg.gnuarmeclipse.debug.gdbjtag.jlink 4 1 2018-05-24 13:38:50.207
+!MESSAGE C:/Program Files (x86)/SEGGER/JLink_V620f/JLinkGDBServerCL.exe -if swd -device STM32F091RC -endian little -speed auto -port 2331 -swoport 2332 -telnetport 2333 -vd -ir -localhostonly 1 -singlerun -strict -timeout 0 -nogui
+
+!ENTRY ilg.gnuarmeclipse.debug.gdbjtag.jlink 4 1 2018-05-24 13:38:50.883
+!MESSAGE arm-none-eabi-gdb --interpreter=mi2 --nx
+
+!ENTRY ilg.gnuarmeclipse.debug.gdbjtag.jlink 4 1 2018-05-24 13:43:00.722
+!MESSAGE C:/Program Files (x86)/SEGGER/JLink_V620f/JLinkGDBServerCL.exe -if swd -device STM32F091RC -endian little -speed auto -port 2331 -swoport 2332 -telnetport 2333 -vd -ir -localhostonly 1 -singlerun -strict -timeout 0 -nogui
+
+!ENTRY ilg.gnuarmeclipse.debug.gdbjtag.jlink 4 1 2018-05-24 13:43:01.392
+!MESSAGE arm-none-eabi-gdb --interpreter=mi2 --nx
+
+!ENTRY ilg.gnuarmeclipse.debug.gdbjtag.jlink 4 1 2018-05-24 13:48:26.219
+!MESSAGE C:/Program Files (x86)/SEGGER/JLink_V620f/JLinkGDBServerCL.exe -if swd -device STM32F091RC -endian little -speed auto -port 2331 -swoport 2332 -telnetport 2333 -vd -ir -localhostonly 1 -singlerun -strict -timeout 0 -nogui
+
+!ENTRY ilg.gnuarmeclipse.debug.gdbjtag.jlink 4 1 2018-05-24 13:48:26.896
+!MESSAGE arm-none-eabi-gdb --interpreter=mi2 --nx
+
+!ENTRY ilg.gnuarmeclipse.debug.gdbjtag.jlink 4 1 2018-05-24 13:49:50.535
+!MESSAGE C:/Program Files (x86)/SEGGER/JLink_V620f/JLinkGDBServerCL.exe -if swd -device STM32F091RC -endian little -speed auto -port 2331 -swoport 2332 -telnetport 2333 -vd -ir -localhostonly 1 -singlerun -strict -timeout 0 -nogui
+
+!ENTRY ilg.gnuarmeclipse.debug.gdbjtag.jlink 4 1 2018-05-24 13:49:51.222
+!MESSAGE arm-none-eabi-gdb --interpreter=mi2 --nx
+
+!ENTRY ilg.gnuarmeclipse.debug.gdbjtag.jlink 4 1 2018-05-24 13:57:58.542
+!MESSAGE C:/Program Files (x86)/SEGGER/JLink_V620f/JLinkGDBServerCL.exe -if swd -device STM32F091RC -endian little -speed auto -port 2331 -swoport 2332 -telnetport 2333 -vd -ir -localhostonly 1 -singlerun -strict -timeout 0 -nogui
+
+!ENTRY ilg.gnuarmeclipse.debug.gdbjtag.jlink 4 1 2018-05-24 13:57:59.213
+!MESSAGE arm-none-eabi-gdb --interpreter=mi2 --nx
+
+!ENTRY ilg.gnuarmeclipse.debug.gdbjtag.jlink 4 1 2018-05-24 14:01:26.080
+!MESSAGE C:/Program Files (x86)/SEGGER/JLink_V620f/JLinkGDBServerCL.exe -if swd -device STM32F091RC -endian little -speed auto -port 2331 -swoport 2332 -telnetport 2333 -vd -ir -localhostonly 1 -singlerun -strict -timeout 0 -nogui
+
+!ENTRY ilg.gnuarmeclipse.debug.gdbjtag.jlink 4 1 2018-05-24 14:01:26.758
+!MESSAGE arm-none-eabi-gdb --interpreter=mi2 --nx
+
+!ENTRY org.eclipse.cdt.core 1 0 2018-05-24 14:05:42.292
+!MESSAGE Indexed 'STM32F091RCTx_freeRTOS' (52 sources, 131 headers) in 2.84 sec: 12,711 declarations; 69,282 references; 0 unresolved inclusions; 145 syntax errors; 62 unresolved names (0.076%)
+
+!ENTRY ilg.gnuarmeclipse.packs.core 4 1 2018-05-24 14:06:09.071
+!MESSAGE C:/Program Files (x86)/SEGGER/JLink_V620f/JLinkGDBServerCL.exe -if swd -device STM32F091RC -endian little -speed auto -port 2331 -swoport 2332 -telnetport 2333 -vd -ir -localhostonly 1 -singlerun -strict -timeout 0 -nogui
+
+!ENTRY ilg.gnuarmeclipse.packs.core 4 1 2018-05-24 14:06:09.757
+!MESSAGE arm-none-eabi-gdb --interpreter=mi2 --nx
+
+!ENTRY ilg.gnuarmeclipse.packs.core 4 1 2018-05-24 14:07:07.669
+!MESSAGE C:/Program Files (x86)/SEGGER/JLink_V620f/JLinkGDBServerCL.exe -if swd -device STM32F091RC -endian little -speed auto -port 2331 -swoport 2332 -telnetport 2333 -vd -ir -localhostonly 1 -singlerun -strict -timeout 0 -nogui
+
+!ENTRY ilg.gnuarmeclipse.packs.core 4 1 2018-05-24 14:07:08.362
+!MESSAGE arm-none-eabi-gdb --interpreter=mi2 --nx
+
+!ENTRY ilg.gnuarmeclipse.packs.core 4 1 2018-05-24 14:40:34.205
+!MESSAGE C:/Program Files (x86)/SEGGER/JLink_V620f/JLinkGDBServerCL.exe -if swd -device STM32F091RC -endian little -speed auto -port 2331 -swoport 2332 -telnetport 2333 -vd -ir -localhostonly 1 -singlerun -strict -timeout 0 -nogui
+
+!ENTRY ilg.gnuarmeclipse.packs.core 4 1 2018-05-24 14:40:34.894
+!MESSAGE arm-none-eabi-gdb --interpreter=mi2 --nx
+
+!ENTRY ilg.gnuarmeclipse.packs.core 4 1 2018-05-24 14:44:00.104
+!MESSAGE C:/Program Files (x86)/SEGGER/JLink_V620f/JLinkGDBServerCL.exe -if swd -device STM32F091RC -endian little -speed auto -port 2331 -swoport 2332 -telnetport 2333 -vd -ir -localhostonly 1 -singlerun -strict -timeout 0 -nogui
+
+!ENTRY ilg.gnuarmeclipse.packs.core 4 1 2018-05-24 14:44:00.774
+!MESSAGE arm-none-eabi-gdb --interpreter=mi2 --nx
+
+!ENTRY ilg.gnuarmeclipse.packs.core 4 1 2018-05-24 14:46:48.816
+!MESSAGE C:/Program Files (x86)/SEGGER/JLink_V620f/JLinkGDBServerCL.exe -if swd -device STM32F091RC -endian little -speed auto -port 2331 -swoport 2332 -telnetport 2333 -vd -ir -localhostonly 1 -singlerun -strict -timeout 0 -nogui
+
+!ENTRY ilg.gnuarmeclipse.packs.core 4 1 2018-05-24 14:46:49.492
+!MESSAGE arm-none-eabi-gdb --interpreter=mi2 --nx
+
+!ENTRY ilg.gnuarmeclipse.packs.core 4 1 2018-05-24 14:47:25.198
+!MESSAGE C:/Program Files (x86)/SEGGER/JLink_V620f/JLinkGDBServerCL.exe -if swd -device STM32F091RC -endian little -speed auto -port 2331 -swoport 2332 -telnetport 2333 -vd -ir -localhostonly 1 -singlerun -strict -timeout 0 -nogui
+
+!ENTRY ilg.gnuarmeclipse.packs.core 4 1 2018-05-24 14:47:25.869
+!MESSAGE arm-none-eabi-gdb --interpreter=mi2 --nx
+
+!ENTRY ilg.gnuarmeclipse.packs.core 4 1 2018-05-24 14:48:42.920
+!MESSAGE C:/Program Files (x86)/SEGGER/JLink_V620f/JLinkGDBServerCL.exe -if swd -device STM32F091RC -endian little -speed auto -port 2331 -swoport 2332 -telnetport 2333 -vd -ir -localhostonly 1 -singlerun -strict -timeout 0 -nogui
+
+!ENTRY ilg.gnuarmeclipse.packs.core 4 1 2018-05-24 14:48:43.597
+!MESSAGE arm-none-eabi-gdb --interpreter=mi2 --nx
+
+!ENTRY ilg.gnuarmeclipse.packs.core 4 1 2018-05-24 14:51:11.206
+!MESSAGE C:/Program Files (x86)/SEGGER/JLink_V620f/JLinkGDBServerCL.exe -if swd -device STM32F091RC -endian little -speed auto -port 2331 -swoport 2332 -telnetport 2333 -vd -ir -localhostonly 1 -singlerun -strict -timeout 0 -nogui
+
+!ENTRY ilg.gnuarmeclipse.packs.core 4 1 2018-05-24 14:51:11.875
+!MESSAGE arm-none-eabi-gdb --interpreter=mi2 --nx
+
+!ENTRY ilg.gnuarmeclipse.packs.core 4 1 2018-05-24 14:57:04.509
+!MESSAGE C:/Program Files (x86)/SEGGER/JLink_V620f/JLinkGDBServerCL.exe -if swd -device STM32F091RC -endian little -speed auto -port 2331 -swoport 2332 -telnetport 2333 -vd -ir -localhostonly 1 -singlerun -strict -timeout 0 -nogui
+
+!ENTRY ilg.gnuarmeclipse.packs.core 4 1 2018-05-24 14:57:05.183
+!MESSAGE arm-none-eabi-gdb --interpreter=mi2 --nx
+
+!ENTRY ilg.gnuarmeclipse.packs.core 4 1 2018-05-24 14:59:43.189
+!MESSAGE C:/Program Files (x86)/SEGGER/JLink_V620f/JLinkGDBServerCL.exe -if swd -device STM32F091RC -endian little -speed auto -port 2331 -swoport 2332 -telnetport 2333 -vd -ir -localhostonly 1 -singlerun -strict -timeout 0 -nogui
+
+!ENTRY ilg.gnuarmeclipse.packs.core 4 1 2018-05-24 14:59:43.869
+!MESSAGE arm-none-eabi-gdb --interpreter=mi2 --nx
+
+!ENTRY ilg.gnuarmeclipse.packs.core 4 1 2018-05-24 15:00:18.290
+!MESSAGE C:/Program Files (x86)/SEGGER/JLink_V620f/JLinkGDBServerCL.exe -if swd -device STM32F091RC -endian little -speed auto -port 2331 -swoport 2332 -telnetport 2333 -vd -ir -localhostonly 1 -singlerun -strict -timeout 0 -nogui
+
+!ENTRY ilg.gnuarmeclipse.packs.core 4 1 2018-05-24 15:00:18.958
+!MESSAGE arm-none-eabi-gdb --interpreter=mi2 --nx
+
+!ENTRY ilg.gnuarmeclipse.packs.core 4 1 2018-05-24 15:04:15.457
+!MESSAGE C:/Program Files (x86)/SEGGER/JLink_V620f/JLinkGDBServerCL.exe -if swd -device STM32F091RC -endian little -speed auto -port 2331 -swoport 2332 -telnetport 2333 -vd -ir -localhostonly 1 -singlerun -strict -timeout 0 -nogui
+
+!ENTRY ilg.gnuarmeclipse.packs.core 4 1 2018-05-24 15:04:16.151
+!MESSAGE arm-none-eabi-gdb --interpreter=mi2 --nx
+
+!ENTRY ilg.gnuarmeclipse.packs.core 4 1 2018-05-24 15:34:24.659
+!MESSAGE C:/Program Files (x86)/SEGGER/JLink_V620f/JLinkGDBServerCL.exe -if swd -device STM32F091RC -endian little -speed auto -port 2331 -swoport 2332 -telnetport 2333 -vd -ir -localhostonly 1 -singlerun -strict -timeout 0 -nogui
+
+!ENTRY ilg.gnuarmeclipse.packs.core 4 1 2018-05-24 15:34:25.367
+!MESSAGE arm-none-eabi-gdb --interpreter=mi2 --nx
+
+!ENTRY ilg.gnuarmeclipse.packs.core 4 1 2018-05-24 15:36:01.399
+!MESSAGE C:/Program Files (x86)/SEGGER/JLink_V620f/JLinkGDBServerCL.exe -if swd -device STM32F091RC -endian little -speed auto -port 2331 -swoport 2332 -telnetport 2333 -vd -ir -localhostonly 1 -singlerun -strict -timeout 0 -nogui
+
+!ENTRY ilg.gnuarmeclipse.packs.core 4 1 2018-05-24 15:36:02.067
+!MESSAGE arm-none-eabi-gdb --interpreter=mi2 --nx
+
+!ENTRY org.eclipse.cdt.core 1 0 2018-05-24 15:36:41.532
+!MESSAGE Indexed 'STM32F091RCTx_freeRTOS' (51 sources, 131 headers) in 2.7 sec: 12,629 declarations; 68,999 references; 0 unresolved inclusions; 145 syntax errors; 62 unresolved names (0.076%)
+
+!ENTRY ilg.gnuarmeclipse.packs.core 4 1 2018-05-24 15:36:57.747
+!MESSAGE C:/Program Files (x86)/SEGGER/JLink_V620f/JLinkGDBServerCL.exe -if swd -device STM32F091RC -endian little -speed auto -port 2331 -swoport 2332 -telnetport 2333 -vd -ir -localhostonly 1 -singlerun -strict -timeout 0 -nogui
+
+!ENTRY ilg.gnuarmeclipse.packs.core 4 1 2018-05-24 15:36:58.438
+!MESSAGE arm-none-eabi-gdb --interpreter=mi2 --nx
+
+!ENTRY ilg.gnuarmeclipse.packs.core 4 1 2018-05-24 15:48:56.085
+!MESSAGE C:/Program Files (x86)/SEGGER/JLink_V620f/JLinkGDBServerCL.exe -if swd -device STM32F091RC -endian little -speed auto -port 2331 -swoport 2332 -telnetport 2333 -vd -ir -localhostonly 1 -singlerun -strict -timeout 0 -nogui
+
+!ENTRY ilg.gnuarmeclipse.packs.core 4 1 2018-05-24 15:48:56.792
+!MESSAGE arm-none-eabi-gdb --interpreter=mi2 --nx
+
+!ENTRY ilg.gnuarmeclipse.debug.gdbjtag 4 0 2018-05-24 15:53:08.707
+!MESSAGE Debug session 'STM32F091RCTx_freeRTOS Debug' already started. Terminate the first one before restarting.
+
+!ENTRY ilg.gnuarmeclipse.packs.core 4 1 2018-05-24 15:53:26.996
+!MESSAGE C:/Program Files (x86)/SEGGER/JLink_V620f/JLinkGDBServerCL.exe -if swd -device STM32F091RC -endian little -speed auto -port 2331 -swoport 2332 -telnetport 2333 -vd -ir -localhostonly 1 -singlerun -strict -timeout 0 -nogui
+
+!ENTRY ilg.gnuarmeclipse.packs.core 4 1 2018-05-24 15:53:27.687
+!MESSAGE arm-none-eabi-gdb --interpreter=mi2 --nx
+
+!ENTRY ilg.gnuarmeclipse.packs.core 4 1 2018-05-24 15:58:27.943
+!MESSAGE C:/Program Files (x86)/SEGGER/JLink_V620f/JLinkGDBServerCL.exe -if swd -device STM32F091RC -endian little -speed auto -port 2331 -swoport 2332 -telnetport 2333 -vd -ir -localhostonly 1 -singlerun -strict -timeout 0 -nogui
+
+!ENTRY ilg.gnuarmeclipse.packs.core 4 1 2018-05-24 15:58:28.622
+!MESSAGE arm-none-eabi-gdb --interpreter=mi2 --nx
+
+!ENTRY ilg.gnuarmeclipse.packs.core 4 1 2018-05-24 16:05:23.709
+!MESSAGE C:/Program Files (x86)/SEGGER/JLink_V620f/JLinkGDBServerCL.exe -if swd -device STM32F091RC -endian little -speed auto -port 2331 -swoport 2332 -telnetport 2333 -vd -ir -localhostonly 1 -singlerun -strict -timeout 0 -nogui
+
+!ENTRY ilg.gnuarmeclipse.packs.core 4 1 2018-05-24 16:05:24.403
+!MESSAGE arm-none-eabi-gdb --interpreter=mi2 --nx
+
+!ENTRY ilg.gnuarmeclipse.packs.core 4 1 2018-05-24 16:06:36.248
+!MESSAGE C:/Program Files (x86)/SEGGER/JLink_V620f/JLinkGDBServerCL.exe -if swd -device STM32F091RC -endian little -speed auto -port 2331 -swoport 2332 -telnetport 2333 -vd -ir -localhostonly 1 -singlerun -strict -timeout 0 -nogui
+
+!ENTRY ilg.gnuarmeclipse.packs.core 4 1 2018-05-24 16:06:36.959
+!MESSAGE arm-none-eabi-gdb --interpreter=mi2 --nx
+
+!ENTRY ilg.gnuarmeclipse.packs.core 4 1 2018-05-24 16:08:15.875
+!MESSAGE C:/Program Files (x86)/SEGGER/JLink_V620f/JLinkGDBServerCL.exe -if swd -device STM32F091RC -endian little -speed auto -port 2331 -swoport 2332 -telnetport 2333 -vd -ir -localhostonly 1 -singlerun -strict -timeout 0 -nogui
+
+!ENTRY ilg.gnuarmeclipse.packs.core 4 1 2018-05-24 16:08:16.564
+!MESSAGE arm-none-eabi-gdb --interpreter=mi2 --nx
+
+!ENTRY ilg.gnuarmeclipse.packs.core 4 1 2018-05-24 17:42:44.887
+!MESSAGE C:/Program Files (x86)/SEGGER/JLink_V620f/JLinkGDBServerCL.exe -if swd -device STM32F091RC -endian little -speed auto -port 2331 -swoport 2332 -telnetport 2333 -vd -ir -localhostonly 1 -singlerun -strict -timeout 0 -nogui
+
+!ENTRY ilg.gnuarmeclipse.packs.core 4 1 2018-05-24 17:42:45.596
+!MESSAGE arm-none-eabi-gdb --interpreter=mi2 --nx
+
+!ENTRY ilg.gnuarmeclipse.packs.core 4 1 2018-05-24 17:49:17.558
+!MESSAGE C:/Program Files (x86)/SEGGER/JLink_V620f/JLinkGDBServerCL.exe -if swd -device STM32F091RC -endian little -speed auto -port 2331 -swoport 2332 -telnetport 2333 -vd -ir -localhostonly 1 -singlerun -strict -timeout 0 -nogui
+
+!ENTRY ilg.gnuarmeclipse.packs.core 4 1 2018-05-24 17:49:18.251
+!MESSAGE arm-none-eabi-gdb --interpreter=mi2 --nx
+
+!ENTRY org.eclipse.cdt.dsf.gdb 4 5012 2018-05-24 17:49:20.953
+!MESSAGE Error in final launch sequence
+!STACK 1
+org.eclipse.core.runtime.CoreException: Failed to execute MI command:
+tbreak main
+Error message from debugger back end:
+Cannot access memory at address 0x8001e08
+	at org.eclipse.cdt.dsf.concurrent.Query.get(Query.java:111)
+	at ilg.gnuarmeclipse.debug.gdbjtag.jlink.dsf.LaunchConfigurationDelegate.launchDebugSession(LaunchConfigurationDelegate.java:451)
+	at ilg.gnuarmeclipse.debug.gdbjtag.jlink.dsf.LaunchConfigurationDelegate.launchDebugger(LaunchConfigurationDelegate.java:179)
+	at ilg.gnuarmeclipse.debug.gdbjtag.jlink.dsf.LaunchConfigurationDelegate.launch(LaunchConfigurationDelegate.java:152)
+	at org.eclipse.debug.internal.core.LaunchConfiguration.launch(LaunchConfiguration.java:885)
+	at org.eclipse.debug.internal.core.LaunchConfiguration.launch(LaunchConfiguration.java:739)
+	at org.eclipse.debug.internal.ui.DebugUIPlugin.buildAndLaunch(DebugUIPlugin.java:1039)
+	at org.eclipse.debug.internal.ui.DebugUIPlugin$8.run(DebugUIPlugin.java:1256)
+	at org.eclipse.core.internal.jobs.Worker.run(Worker.java:55)
+Contains: Failed to execute MI command:
+tbreak main
+Error message from debugger back end:
+Cannot access memory at address 0x8001e08
+java.lang.Exception: Cannot access memory at address 0x8001e08
+	at org.eclipse.cdt.dsf.mi.service.command.AbstractMIControl$RxThread.processMIOutput(AbstractMIControl.java:941)
+	at org.eclipse.cdt.dsf.mi.service.command.AbstractMIControl$RxThread.run(AbstractMIControl.java:770)
+!SUBENTRY 1 org.eclipse.cdt.dsf 4 10004 2018-05-24 17:49:20.954
+!MESSAGE Failed to execute MI command:
+tbreak main
+Error message from debugger back end:
+Cannot access memory at address 0x8001e08
+!SUBENTRY 2 org.eclipse.cdt.dsf.gdb 4 10004 2018-05-24 17:49:20.954
+!MESSAGE Failed to execute MI command:
+tbreak main
+Error message from debugger back end:
+Cannot access memory at address 0x8001e08
+!STACK 0
+java.lang.Exception: Cannot access memory at address 0x8001e08
+	at org.eclipse.cdt.dsf.mi.service.command.AbstractMIControl$RxThread.processMIOutput(AbstractMIControl.java:941)
+	at org.eclipse.cdt.dsf.mi.service.command.AbstractMIControl$RxThread.run(AbstractMIControl.java:770)
+
+!ENTRY ilg.gnuarmeclipse.packs.core 4 1 2018-05-24 17:50:04.309
+!MESSAGE C:/Program Files (x86)/SEGGER/JLink_V620f/JLinkGDBServerCL.exe -if swd -device STM32F091RC -endian little -speed auto -port 2331 -swoport 2332 -telnetport 2333 -vd -ir -localhostonly 1 -singlerun -strict -timeout 0 -nogui
+
+!ENTRY ilg.gnuarmeclipse.packs.core 4 1 2018-05-24 17:50:05.012
+!MESSAGE arm-none-eabi-gdb --interpreter=mi2 --nx
+
+!ENTRY ilg.gnuarmeclipse.packs.core 4 1 2018-05-24 17:51:25.254
+!MESSAGE C:/Program Files (x86)/SEGGER/JLink_V620f/JLinkGDBServerCL.exe -if swd -device STM32F091RC -endian little -speed auto -port 2331 -swoport 2332 -telnetport 2333 -vd -ir -localhostonly 1 -singlerun -strict -timeout 0 -nogui
+
+!ENTRY ilg.gnuarmeclipse.packs.core 4 1 2018-05-24 17:51:25.930
+!MESSAGE arm-none-eabi-gdb --interpreter=mi2 --nx
+
+!ENTRY ilg.gnuarmeclipse.packs.core 4 1 2018-05-24 17:51:41.296
+!MESSAGE C:/Program Files (x86)/SEGGER/JLink_V620f/JLinkGDBServerCL.exe -if swd -device STM32F091RC -endian little -speed auto -port 2331 -swoport 2332 -telnetport 2333 -vd -ir -localhostonly 1 -singlerun -strict -timeout 0 -nogui
+
+!ENTRY ilg.gnuarmeclipse.debug.gdbjtag 4 0 2018-05-24 17:51:42.014
+!MESSAGE J-Link GDB Server failed: 
+Could not connect to target. Please check if target is powered and if ribbon cable is plugged properly.
+
+For more details, see the JLinkGDBServerCL.exe console.
+
+!ENTRY ilg.gnuarmeclipse.packs.core 4 1 2018-05-24 17:53:30.418
+!MESSAGE C:/Program Files (x86)/SEGGER/JLink_V620f/JLinkGDBServerCL.exe -if swd -device STM32F091RC -endian little -speed auto -port 2331 -swoport 2332 -telnetport 2333 -vd -ir -localhostonly 1 -singlerun -strict -timeout 0 -nogui
+
+!ENTRY ilg.gnuarmeclipse.packs.core 4 1 2018-05-24 17:53:31.109
+!MESSAGE arm-none-eabi-gdb --interpreter=mi2 --nx
+
+!ENTRY ilg.gnuarmeclipse.packs.core 4 1 2018-05-24 18:00:22.328
+!MESSAGE C:/Program Files (x86)/SEGGER/JLink_V620f/JLinkGDBServerCL.exe -if swd -device STM32F091RC -endian little -speed auto -port 2331 -swoport 2332 -telnetport 2333 -vd -ir -localhostonly 1 -singlerun -strict -timeout 0 -nogui
+
+!ENTRY ilg.gnuarmeclipse.packs.core 4 1 2018-05-24 18:00:23.002
+!MESSAGE arm-none-eabi-gdb --interpreter=mi2 --nx
+
+!ENTRY ilg.gnuarmeclipse.packs.core 4 1 2018-05-24 18:00:54.938
+!MESSAGE C:/Program Files (x86)/SEGGER/JLink_V620f/JLinkGDBServerCL.exe -if swd -device STM32F091RC -endian little -speed auto -port 2331 -swoport 2332 -telnetport 2333 -vd -ir -localhostonly 1 -singlerun -strict -timeout 0 -nogui
+
+!ENTRY ilg.gnuarmeclipse.packs.core 4 1 2018-05-24 18:00:55.623
+!MESSAGE arm-none-eabi-gdb --interpreter=mi2 --nx
+
+!ENTRY org.eclipse.cdt.core 1 0 2018-05-24 18:01:12.936
+!MESSAGE Indexed 'STM32F091RCTx_freeRTOS' (51 sources, 131 headers) in 2.95 sec: 12,658 declarations; 69,019 references; 0 unresolved inclusions; 145 syntax errors; 62 unresolved names (0.076%)
+
+!ENTRY ilg.gnuarmeclipse.packs.core 4 1 2018-05-24 18:01:23.940
+!MESSAGE C:/Program Files (x86)/SEGGER/JLink_V620f/JLinkGDBServerCL.exe -if swd -device STM32F091RC -endian little -speed auto -port 2331 -swoport 2332 -telnetport 2333 -vd -ir -localhostonly 1 -singlerun -strict -timeout 0 -nogui
+
+!ENTRY ilg.gnuarmeclipse.packs.core 4 1 2018-05-24 18:01:24.624
+!MESSAGE arm-none-eabi-gdb --interpreter=mi2 --nx
+
+!ENTRY ilg.gnuarmeclipse.packs.core 4 1 2018-05-24 18:02:11.746
+!MESSAGE C:/Program Files (x86)/SEGGER/JLink_V620f/JLinkGDBServerCL.exe -if swd -device STM32F091RC -endian little -speed auto -port 2331 -swoport 2332 -telnetport 2333 -vd -ir -localhostonly 1 -singlerun -strict -timeout 0 -nogui
+
+!ENTRY ilg.gnuarmeclipse.packs.core 4 1 2018-05-24 18:02:12.431
+!MESSAGE arm-none-eabi-gdb --interpreter=mi2 --nx
+
+!ENTRY ilg.gnuarmeclipse.packs.core 4 1 2018-05-24 18:02:24.574
+!MESSAGE C:/Program Files (x86)/SEGGER/JLink_V620f/JLinkGDBServerCL.exe -if swd -device STM32F091RC -endian little -speed auto -port 2331 -swoport 2332 -telnetport 2333 -vd -ir -localhostonly 1 -singlerun -strict -timeout 0 -nogui
+
+!ENTRY ilg.gnuarmeclipse.packs.core 4 1 2018-05-24 18:02:25.260
+!MESSAGE arm-none-eabi-gdb --interpreter=mi2 --nx
+
+!ENTRY org.eclipse.cdt.dsf 4 10005 2018-05-24 18:02:40.305
+!MESSAGE Request for monitor: 'RequestMonitor (org.eclipse.cdt.dsf.concurrent.RequestMonitor@e3ceb9): Status ERROR: org.eclipse.cdt.dsf.gdb code=10001 Context cannot be suspended. null' resulted in an error.
+!SUBENTRY 1 org.eclipse.cdt.dsf.gdb 4 10001 2018-05-24 18:02:40.306
+!MESSAGE Context cannot be suspended.
+
+!ENTRY org.eclipse.equinox.event 4 0 2018-05-24 18:03:58.298
+!MESSAGE Exception while dispatching event org.osgi.service.event.Event [topic=org/eclipse/e4/ui/model/ui/ElementContainer/selectedElement/SET] {ChangedElement=org.eclipse.e4.ui.model.application.ui.advanced.impl.PerspectiveStackImpl@181f4a6 (elementId: org.eclipse.ui.ide.perspectivestack, tags: [], contributorURI: null) (widget: Composite {}, renderer: org.eclipse.e4.ui.workbench.renderers.swt.PerspectiveStackRenderer@1d3f6ad, toBeRendered: true, onTop: false, visible: true, containerData: 7500, accessibilityPhrase: null), org.eclipse.e4.data={ChangedElement=org.eclipse.e4.ui.model.application.ui.advanced.impl.PerspectiveStackImpl@181f4a6 (elementId: org.eclipse.ui.ide.perspectivestack, tags: [], contributorURI: null) (widget: Composite {}, renderer: org.eclipse.e4.ui.workbench.renderers.swt.PerspectiveStackRenderer@1d3f6ad, toBeRendered: true, onTop: false, visible: true, containerData: 7500, accessibilityPhrase: null), AttName=selectedElement, EventType=SET, OldValue=org.eclipse.e4.ui.model.application.ui.advanced.impl.PerspectiveImpl@a86066 (elementId: org.eclipse.debug.ui.DebugPerspective, tags: [persp.actionSet:org.eclipse.mylyn.doc.actionSet, persp.actionSet:org.eclipse.mylyn.tasks.ui.navigation, persp.actionSet:org.eclipse.ui.cheatsheets.actionSet, persp.actionSet:org.eclipse.rse.core.search.searchActionSet, persp.actionSet:org.eclipse.search.searchActionSet, persp.actionSet:org.eclipse.ui.edit.text.actionSet.annotationNavigation, persp.actionSet:org.eclipse.ui.edit.text.actionSet.navigation, persp.actionSet:org.eclipse.ui.edit.text.actionSet.convertLineDelimitersTo, persp.actionSet:org.eclipse.ui.externaltools.ExternalToolsSet, persp.actionSet:org.eclipse.ui.actionSet.keyBindings, persp.actionSet:org.eclipse.ui.actionSet.openFiles, persp.actionSet:ilg.gnuarmeclipse.debug.gdbjtag.restart.actionset, persp.actionSet:org.eclipse.debug.ui.launchActionSet, persp.actionSet:org.eclipse.debug.ui.debugActionSet, persp.viewSC:org.eclipse.debug.ui.DebugView, persp.viewSC:org.eclipse.debug.ui.VariableView, persp.viewSC:org.eclipse.debug.ui.BreakpointView, persp.viewSC:org.eclipse.debug.ui.ExpressionView, persp.viewSC:org.eclipse.ui.views.ContentOutline, persp.viewSC:org.eclipse.ui.console.ConsoleView, persp.viewSC:org.eclipse.ui.views.TaskList, persp.perspSC:ilg.gnuarmeclipse.codered.perspectives.CodeRedPerspective, persp.viewSC:ilg.gnuarmeclipse.debug.gdbjtag.ui.views.PeripheralsView, persp.viewSC:org.eclipse.cdt.debug.ui.SignalsView, persp.viewSC:org.eclipse.debug.ui.RegisterView, persp.viewSC:org.eclipse.debug.ui.ModuleView, persp.viewSC:org.eclipse.debug.ui.MemoryView, persp.viewSC:org.eclipse.ui.views.ProblemView, persp.viewSC:org.eclipse.cdt.debug.ui.executablesView, persp.actionSet:org.eclipse.cdt.debug.ui.debugActionSet, persp.viewSC:org.eclipse.cdt.debug.ui.memory.memorybrowser.MemoryBrowser, persp.viewSC:org.eclipse.cdt.dsf.gdb.ui.tracecontrol.view, persp.viewSC:org.eclipse.cdt.debug.ui.debuggerConsoleView, persp.viewSC:org.eclipse.cdt.dsf.debug.ui.disassembly.view, persp.perspSC:org.eclipse.cdt.ui.CPerspective, persp.actionSet:org.eclipse.ui.NavigateActionSet, persp.actionSet:org.eclipse.debug.ui.breakpointActionSet, persp.viewSC:org.eclipse.pde.runtime.LogView, persp.showIn:org.eclipse.egit.ui.RepositoriesView, persp.perspSC:org.eclipse.wst.xml.ui.perspective], contributorURI: null) (widget: Composite {}, renderer: org.eclipse.e4.ui.workbench.renderers.swt.PerspectiveRenderer@d40184, toBeRendered: true, onTop: false, visible: true, containerData: null, accessibilityPhrase: null) (label: Debug, iconURI: platform:/plugin/org.eclipse.debug.ui/$nl$/icons/full/eview16/debug_persp.png, tooltip: null, context: PerspectiveImpl (org.eclipse.debug.ui.DebugPerspective) Context, variables: []), Widget=Composite {}, NewValue=org.eclipse.e4.ui.model.application.ui.advanced.impl.PerspectiveImpl@1120e58 (elementId: org.eclipse.cdt.ui.CPerspective, tags: [persp.actionSet:org.eclipse.mylyn.doc.actionSet, persp.actionSet:org.eclipse.mylyn.tasks.ui.navigation, persp.actionSet:org.eclipse.ui.cheatsheets.actionSet, persp.actionSet:org.eclipse.rse.core.search.searchActionSet, persp.actionSet:org.eclipse.search.searchActionSet, persp.actionSet:org.eclipse.ui.edit.text.actionSet.annotationNavigation, persp.actionSet:org.eclipse.ui.edit.text.actionSet.navigation, persp.actionSet:org.eclipse.ui.edit.text.actionSet.convertLineDelimitersTo, persp.actionSet:org.eclipse.ui.externaltools.ExternalToolsSet, persp.actionSet:org.eclipse.ui.actionSet.keyBindings, persp.actionSet:org.eclipse.ui.actionSet.openFiles, persp.actionSet:ilg.gnumcueclipse.debug.gdbjtag.restart.actionset, persp.actionSet:org.eclipse.cdt.ui.SearchActionSet, persp.actionSet:org.eclipse.cdt.ui.CElementCreationActionSet, persp.actionSet:org.eclipse.ui.NavigateActionSet, persp.showIn:org.eclipse.cdt.codan.internal.ui.views.ProblemDetails, persp.actionSet:org.eclipse.debug.ui.breakpointActionSet, persp.actionSet:org.eclipse.cdt.make.ui.makeTargetActionSet, persp.actionSet:org.eclipse.debug.ui.launchActionSet, persp.actionSet:org.eclipse.cdt.ui.buildConfigActionSet, persp.actionSet:org.eclipse.cdt.ui.NavigationActionSet, persp.actionSet:org.eclipse.cdt.ui.OpenActionSet, persp.actionSet:org.eclipse.cdt.ui.CodingActionSet, persp.actionSet:org.eclipse.ui.edit.text.actionSet.presentation, persp.showIn:org.eclipse.cdt.ui.includeBrowser, persp.showIn:org.eclipse.cdt.ui.CView, persp.showIn:org.eclipse.ui.navigator.ProjectExplorer, persp.actionSet:org.eclipse.debug.ui.profileActionSet, persp.actionSet:org.eclipse.egit.ui.gitaction, persp.newWizSC:org.eclipse.cdt.autotools.ui.wizards.conversionWizard, persp.newWizSC:org.eclipse.cdt.ui.wizards.ConvertToMakeWizard, persp.newWizSC:org.eclipse.cdt.ui.wizards.NewMakeFromExisting, persp.newWizSC:org.eclipse.cdt.ui.wizards.NewSourceFileCreationWizard, persp.newWizSC:org.eclipse.cdt.ui.wizards.NewHeaderFileCreationWizard, persp.newWizSC:org.eclipse.cdt.ui.wizards.NewFileCreationWizard, persp.newWizSC:org.eclipse.cdt.ui.wizards.NewSourceFolderCreationWizard, persp.newWizSC:org.eclipse.cdt.ui.wizards.NewFolderCreationWizard, persp.newWizSC:org.eclipse.cdt.ui.wizards.NewClassCreationWizard, persp.newWizSC:org.eclipse.cdt.ui.wizards.NewCWizard1, persp.newWizSC:org.eclipse.cdt.ui.wizards.NewCWizard2, persp.newWizSC:org.eclipse.cdt.ui.wizard.project, persp.newWizSC:org.eclipse.egit.ui.CreateRepositoryWizard, persp.newWizSC:org.eclipse.mylyn.tasks.ui.wizards.new.repository.task, persp.perspSC:org.eclipse.debug.ui.DebugPerspective, persp.perspSC:ilg.gnumcueclipse.codered.perspectives.CodeRedPerspective, persp.perspSC:org.eclipse.team.ui.TeamSynchronizingPerspective, persp.viewSC:org.eclipse.cdt.make.ui.views.MakeView, persp.viewSC:ilg.gnumcueclipse.managedbuild.packs.ui.views.DocsView, persp.viewSC:org.eclipse.search.ui.views.SearchView, persp.viewSC:org.eclipse.ui.console.ConsoleView, persp.viewSC:org.eclipse.ui.views.ResourceNavigator, persp.viewSC:org.eclipse.ui.views.TaskList, persp.viewSC:org.eclipse.ui.views.ProblemView, persp.viewSC:org.eclipse.ui.navigator.ProjectExplorer, persp.viewSC:org.eclipse.ui.views.PropertySheet, persp.viewSC:org.eclipse.ui.views.ContentOutline, persp.viewSC:org.eclipse.cdt.codan.internal.ui.views.ProblemDetails, persp.viewSC:org.eclipse.cdt.ui.CView, persp.viewSC:org.eclipse.cdt.ui.includeBrowser, persp.viewSC:org.eclipse.mylyn.tasks.ui.views.tasks, persp.actionSet:ilg.gnuarmeclipse.debug.gdbjtag.restart.actionset], contributorURI: null) (widget: Composite {}, renderer: org.eclipse.e4.ui.workbench.renderers.swt.PerspectiveRenderer@d40184, toBeRendered: true, onTop: false, visible: true, containerData: null, accessibilityPhrase: null) (label: C/C++, iconURI: platform:/plugin/org.eclipse.cdt.ui/icons/view16/c_pers.gif, tooltip: null, context: PerspectiveImpl (org.eclipse.cdt.ui.CPerspective) Context, variables: [])}, AttName=selectedElement, EventType=SET, OldValue=org.eclipse.e4.ui.model.application.ui.advanced.impl.PerspectiveImpl@a86066 (elementId: org.eclipse.debug.ui.DebugPerspective, tags: [persp.actionSet:org.eclipse.mylyn.doc.actionSet, persp.actionSet:org.eclipse.mylyn.tasks.ui.navigation, persp.actionSet:org.eclipse.ui.cheatsheets.actionSet, persp.actionSet:org.eclipse.rse.core.search.searchActionSet, persp.actionSet:org.eclipse.search.searchActionSet, persp.actionSet:org.eclipse.ui.edit.text.actionSet.annotationNavigation, persp.actionSet:org.eclipse.ui.edit.text.actionSet.navigation, persp.actionSet:org.eclipse.ui.edit.text.actionSet.convertLineDelimitersTo, persp.actionSet:org.eclipse.ui.externaltools.ExternalToolsSet, persp.actionSet:org.eclipse.ui.actionSet.keyBindings, persp.actionSet:org.eclipse.ui.actionSet.openFiles, persp.actionSet:ilg.gnuarmeclipse.debug.gdbjtag.restart.actionset, persp.actionSet:org.eclipse.debug.ui.launchActionSet, persp.actionSet:org.eclipse.debug.ui.debugActionSet, persp.viewSC:org.eclipse.debug.ui.DebugView, persp.viewSC:org.eclipse.debug.ui.VariableView, persp.viewSC:org.eclipse.debug.ui.BreakpointView, persp.viewSC:org.eclipse.debug.ui.ExpressionView, persp.viewSC:org.eclipse.ui.views.ContentOutline, persp.viewSC:org.eclipse.ui.console.ConsoleView, persp.viewSC:org.eclipse.ui.views.TaskList, persp.perspSC:ilg.gnuarmeclipse.codered.perspectives.CodeRedPerspective, persp.viewSC:ilg.gnuarmeclipse.debug.gdbjtag.ui.views.PeripheralsView, persp.viewSC:org.eclipse.cdt.debug.ui.SignalsView, persp.viewSC:org.eclipse.debug.ui.RegisterView, persp.viewSC:org.eclipse.debug.ui.ModuleView, persp.viewSC:org.eclipse.debug.ui.MemoryView, persp.viewSC:org.eclipse.ui.views.ProblemView, persp.viewSC:org.eclipse.cdt.debug.ui.executablesView, persp.actionSet:org.eclipse.cdt.debug.ui.debugActionSet, persp.viewSC:org.eclipse.cdt.debug.ui.memory.memorybrowser.MemoryBrowser, persp.viewSC:org.eclipse.cdt.dsf.gdb.ui.tracecontrol.view, persp.viewSC:org.eclipse.cdt.debug.ui.debuggerConsoleView, persp.viewSC:org.eclipse.cdt.dsf.debug.ui.disassembly.view, persp.perspSC:org.eclipse.cdt.ui.CPerspective, persp.actionSet:org.eclipse.ui.NavigateActionSet, persp.actionSet:org.eclipse.debug.ui.breakpointActionSet, persp.viewSC:org.eclipse.pde.runtime.LogView, persp.showIn:org.eclipse.egit.ui.RepositoriesView, persp.perspSC:org.eclipse.wst.xml.ui.perspective], contributorURI: null) (widget: Composite {}, renderer: org.eclipse.e4.ui.workbench.renderers.swt.PerspectiveRenderer@d40184, toBeRendered: true, onTop: false, visible: true, containerData: null, accessibilityPhrase: null) (label: Debug, iconURI: platform:/plugin/org.eclipse.debug.ui/$nl$/icons/full/eview16/debug_persp.png, tooltip: null, context: PerspectiveImpl (org.eclipse.debug.ui.DebugPerspective) Context, variables: []), Widget=Composite {}, NewValue=org.eclipse.e4.ui.model.application.ui.advanced.impl.PerspectiveImpl@1120e58 (elementId: org.eclipse.cdt.ui.CPerspective, tags: [persp.actionSet:org.eclipse.mylyn.doc.actionSet, persp.actionSet:org.eclipse.mylyn.tasks.ui.navigation, persp.actionSet:org.eclipse.ui.cheatsheets.actionSet, persp.actionSet:org.eclipse.rse.core.search.searchActionSet, persp.actionSet:org.eclipse.search.searchActionSet, persp.actionSet:org.eclipse.ui.edit.text.actionSet.annotationNavigation, persp.actionSet:org.eclipse.ui.edit.text.actionSet.navigation, persp.actionSet:org.eclipse.ui.edit.text.actionSet.convertLineDelimitersTo, persp.actionSet:org.eclipse.ui.externaltools.ExternalToolsSet, persp.actionSet:org.eclipse.ui.actionSet.keyBindings, persp.actionSet:org.eclipse.ui.actionSet.openFiles, persp.actionSet:ilg.gnumcueclipse.debug.gdbjtag.restart.actionset, persp.actionSet:org.eclipse.cdt.ui.SearchActionSet, persp.actionSet:org.eclipse.cdt.ui.CElementCreationActionSet, persp.actionSet:org.eclipse.ui.NavigateActionSet, persp.showIn:org.eclipse.cdt.codan.internal.ui.views.ProblemDetails, persp.actionSet:org.eclipse.debug.ui.breakpointActionSet, persp.actionSet:org.eclipse.cdt.make.ui.makeTargetActionSet, persp.actionSet:org.eclipse.debug.ui.launchActionSet, persp.actionSet:org.eclipse.cdt.ui.buildConfigActionSet, persp.actionSet:org.eclipse.cdt.ui.NavigationActionSet, persp.actionSet:org.eclipse.cdt.ui.OpenActionSet, persp.actionSet:org.eclipse.cdt.ui.CodingActionSet, persp.actionSet:org.eclipse.ui.edit.text.actionSet.presentation, persp.showIn:org.eclipse.cdt.ui.includeBrowser, persp.showIn:org.eclipse.cdt.ui.CView, persp.showIn:org.eclipse.ui.navigator.ProjectExplorer, persp.actionSet:org.eclipse.debug.ui.profileActionSet, persp.actionSet:org.eclipse.egit.ui.gitaction, persp.newWizSC:org.eclipse.cdt.autotools.ui.wizards.conversionWizard, persp.newWizSC:org.eclipse.cdt.ui.wizards.ConvertToMakeWizard, persp.newWizSC:org.eclipse.cdt.ui.wizards.NewMakeFromExisting, persp.newWizSC:org.eclipse.cdt.ui.wizards.NewSourceFileCreationWizard, persp.newWizSC:org.eclipse.cdt.ui.wizards.NewHeaderFileCreationWizard, persp.newWizSC:org.eclipse.cdt.ui.wizards.NewFileCreationWizard, persp.newWizSC:org.eclipse.cdt.ui.wizards.NewSourceFolderCreationWizard, persp.newWizSC:org.eclipse.cdt.ui.wizards.NewFolderCreationWizard, persp.newWizSC:org.eclipse.cdt.ui.wizards.NewClassCreationWizard, persp.newWizSC:org.eclipse.cdt.ui.wizards.NewCWizard1, persp.newWizSC:org.eclipse.cdt.ui.wizards.NewCWizard2, persp.newWizSC:org.eclipse.cdt.ui.wizard.project, persp.newWizSC:org.eclipse.egit.ui.CreateRepositoryWizard, persp.newWizSC:org.eclipse.mylyn.tasks.ui.wizards.new.repository.task, persp.perspSC:org.eclipse.debug.ui.DebugPerspective, persp.perspSC:ilg.gnumcueclipse.codered.perspectives.CodeRedPerspective, persp.perspSC:org.eclipse.team.ui.TeamSynchronizingPerspective, persp.viewSC:org.eclipse.cdt.make.ui.views.MakeView, persp.viewSC:ilg.gnumcueclipse.managedbuild.packs.ui.views.DocsView, persp.viewSC:org.eclipse.search.ui.views.SearchView, persp.viewSC:org.eclipse.ui.console.ConsoleView, persp.viewSC:org.eclipse.ui.views.ResourceNavigator, persp.viewSC:org.eclipse.ui.views.TaskList, persp.viewSC:org.eclipse.ui.views.ProblemView, persp.viewSC:org.eclipse.ui.navigator.ProjectExplorer, persp.viewSC:org.eclipse.ui.views.PropertySheet, persp.viewSC:org.eclipse.ui.views.ContentOutline, persp.viewSC:org.eclipse.cdt.codan.internal.ui.views.ProblemDetails, persp.viewSC:org.eclipse.cdt.ui.CView, persp.viewSC:org.eclipse.cdt.ui.includeBrowser, persp.viewSC:org.eclipse.mylyn.tasks.ui.views.tasks, persp.actionSet:ilg.gnuarmeclipse.debug.gdbjtag.restart.actionset], contributorURI: null) (widget: Composite {}, renderer: org.eclipse.e4.ui.workbench.renderers.swt.PerspectiveRenderer@d40184, toBeRendered: true, onTop: false, visible: true, containerData: null, accessibilityPhrase: null) (label: C/C++, iconURI: platform:/plugin/org.eclipse.cdt.ui/icons/view16/c_pers.gif, tooltip: null, context: PerspectiveImpl (org.eclipse.cdt.ui.CPerspective) Context, variables: [])} to handler org.eclipse.e4.ui.services.internal.events.UIEventHandler@bc491a
+!STACK 0
+java.lang.NullPointerException
+	at org.eclipse.e4.ui.internal.workbench.PartServiceImpl.switchPerspective(PartServiceImpl.java:653)
+	at org.eclipse.e4.ui.workbench.renderers.swt.PerspectiveStackRenderer.showTab(PerspectiveStackRenderer.java:106)
+	at org.eclipse.e4.ui.workbench.renderers.swt.LazyStackRenderer$1.handleEvent(LazyStackRenderer.java:72)
+	at org.eclipse.e4.ui.services.internal.events.UIEventHandler$1.run(UIEventHandler.java:40)
+	at org.eclipse.swt.widgets.Synchronizer.syncExec(Synchronizer.java:233)
+	at org.eclipse.ui.internal.UISynchronizer.syncExec(UISynchronizer.java:145)
+	at org.eclipse.swt.widgets.Display.syncExec(Display.java:4821)
+	at org.eclipse.e4.ui.internal.workbench.swt.E4Application$1.syncExec(E4Application.java:211)
+	at org.eclipse.e4.ui.services.internal.events.UIEventHandler.handleEvent(UIEventHandler.java:36)
+	at org.eclipse.equinox.internal.event.EventHandlerWrapper.handleEvent(EventHandlerWrapper.java:201)
+	at org.eclipse.equinox.internal.event.EventHandlerTracker.dispatchEvent(EventHandlerTracker.java:197)
+	at org.eclipse.equinox.internal.event.EventHandlerTracker.dispatchEvent(EventHandlerTracker.java:1)
+	at org.eclipse.osgi.framework.eventmgr.EventManager.dispatchEvent(EventManager.java:230)
+	at org.eclipse.osgi.framework.eventmgr.ListenerQueue.dispatchEventSynchronous(ListenerQueue.java:148)
+	at org.eclipse.equinox.internal.event.EventAdminImpl.dispatchEvent(EventAdminImpl.java:135)
+	at org.eclipse.equinox.internal.event.EventAdminImpl.sendEvent(EventAdminImpl.java:78)
+	at org.eclipse.equinox.internal.event.EventComponent.sendEvent(EventComponent.java:39)
+	at org.eclipse.e4.ui.services.internal.events.EventBroker.send(EventBroker.java:94)
+	at org.eclipse.e4.ui.internal.workbench.UIEventPublisher.notifyChanged(UIEventPublisher.java:60)
+	at org.eclipse.emf.common.notify.impl.BasicNotifierImpl.eNotify(BasicNotifierImpl.java:374)
+	at org.eclipse.e4.ui.model.application.ui.advanced.impl.PerspectiveStackImpl.setSelectedElement(PerspectiveStackImpl.java:135)
+	at org.eclipse.e4.ui.model.application.ui.advanced.impl.PerspectiveStackImpl.setSelectedElement(PerspectiveStackImpl.java:1)
+	at org.eclipse.e4.ui.workbench.addons.perspectiveswitcher.PerspectiveSwitcher$12.widgetSelected(PerspectiveSwitcher.java:593)
+	at org.eclipse.swt.widgets.TypedListener.handleEvent(TypedListener.java:249)
+	at org.eclipse.swt.widgets.EventTable.sendEvent(EventTable.java:84)
+	at org.eclipse.swt.widgets.Display.sendEvent(Display.java:4418)
+	at org.eclipse.swt.widgets.Widget.sendEvent(Widget.java:1079)
+	at org.eclipse.swt.widgets.Display.runDeferredEvents(Display.java:4236)
+	at org.eclipse.swt.widgets.Display.readAndDispatch(Display.java:3824)
+	at org.eclipse.e4.ui.internal.workbench.swt.PartRenderingEngine$4.run(PartRenderingEngine.java:1121)
+	at org.eclipse.core.databinding.observable.Realm.runWithDefault(Realm.java:336)
+	at org.eclipse.e4.ui.internal.workbench.swt.PartRenderingEngine.run(PartRenderingEngine.java:1022)
+	at org.eclipse.e4.ui.internal.workbench.E4Workbench.createAndRunUI(E4Workbench.java:150)
+	at org.eclipse.ui.internal.Workbench$5.run(Workbench.java:693)
+	at org.eclipse.core.databinding.observable.Realm.runWithDefault(Realm.java:336)
+	at org.eclipse.ui.internal.Workbench.createAndRunWorkbench(Workbench.java:610)
+	at org.eclipse.ui.PlatformUI.createAndRunWorkbench(PlatformUI.java:148)
+	at org.eclipse.ui.internal.ide.application.IDEApplication.start(IDEApplication.java:138)
+	at org.eclipse.equinox.internal.app.EclipseAppHandle.run(EclipseAppHandle.java:196)
+	at org.eclipse.core.runtime.internal.adaptor.EclipseAppLauncher.runApplication(EclipseAppLauncher.java:134)
+	at org.eclipse.core.runtime.internal.adaptor.EclipseAppLauncher.start(EclipseAppLauncher.java:104)
+	at org.eclipse.core.runtime.adaptor.EclipseStarter.run(EclipseStarter.java:388)
+	at org.eclipse.core.runtime.adaptor.EclipseStarter.run(EclipseStarter.java:243)
+	at sun.reflect.NativeMethodAccessorImpl.invoke0(Native Method)
+	at sun.reflect.NativeMethodAccessorImpl.invoke(Unknown Source)
+	at sun.reflect.DelegatingMethodAccessorImpl.invoke(Unknown Source)
+	at java.lang.reflect.Method.invoke(Unknown Source)
+	at org.eclipse.equinox.launcher.Main.invokeFramework(Main.java:673)
+	at org.eclipse.equinox.launcher.Main.basicRun(Main.java:610)
+	at org.eclipse.equinox.launcher.Main.run(Main.java:1519)
+
+!ENTRY ilg.gnuarmeclipse.packs.core 4 1 2018-05-24 18:05:06.945
+!MESSAGE C:/Program Files (x86)/SEGGER/JLink_V620f/JLinkGDBServerCL.exe -if swd -device STM32F091RC -endian little -speed auto -port 2331 -swoport 2332 -telnetport 2333 -vd -ir -localhostonly 1 -singlerun -strict -timeout 0 -nogui
+
+!ENTRY ilg.gnuarmeclipse.packs.core 4 1 2018-05-24 18:05:07.643
+!MESSAGE arm-none-eabi-gdb --interpreter=mi2 --nx
+
+!ENTRY ilg.gnuarmeclipse.packs.core 4 1 2018-05-24 18:19:53.170
+!MESSAGE C:/Program Files (x86)/SEGGER/JLink_V620f/JLinkGDBServerCL.exe -if swd -device STM32F091RC -endian little -speed auto -port 2331 -swoport 2332 -telnetport 2333 -vd -ir -localhostonly 1 -singlerun -strict -timeout 0 -nogui
+
+!ENTRY ilg.gnuarmeclipse.packs.core 4 1 2018-05-24 18:19:53.873
+!MESSAGE arm-none-eabi-gdb --interpreter=mi2 --nx
+
+!ENTRY ilg.gnuarmeclipse.packs.core 4 1 2018-05-25 08:54:02.971
+!MESSAGE C:/Program Files (x86)/SEGGER/JLink_V620f/JLinkGDBServerCL.exe -if swd -device STM32F091RC -endian little -speed auto -port 2331 -swoport 2332 -telnetport 2333 -vd -ir -localhostonly 1 -singlerun -strict -timeout 0 -nogui
+
+!ENTRY ilg.gnuarmeclipse.packs.core 4 1 2018-05-25 08:54:03.696
+!MESSAGE arm-none-eabi-gdb --interpreter=mi2 --nx
+
+!ENTRY ilg.gnuarmeclipse.packs.core 4 1 2018-05-25 08:54:31.623
+!MESSAGE C:/Program Files (x86)/SEGGER/JLink_V620f/JLinkGDBServerCL.exe -if swd -device STM32F091RC -endian little -speed auto -port 2331 -swoport 2332 -telnetport 2333 -vd -ir -localhostonly 1 -singlerun -strict -timeout 0 -nogui
+
+!ENTRY ilg.gnuarmeclipse.packs.core 4 1 2018-05-25 08:54:32.309
+!MESSAGE arm-none-eabi-gdb --interpreter=mi2 --nx
+
+!ENTRY ilg.gnuarmeclipse.packs.core 4 1 2018-05-25 08:54:59.195
+!MESSAGE C:/Program Files (x86)/SEGGER/JLink_V620f/JLinkGDBServerCL.exe -if swd -device STM32F091RC -endian little -speed auto -port 2331 -swoport 2332 -telnetport 2333 -vd -ir -localhostonly 1 -singlerun -strict -timeout 0 -nogui
+
+!ENTRY ilg.gnuarmeclipse.packs.core 4 1 2018-05-25 08:54:59.890
+!MESSAGE arm-none-eabi-gdb --interpreter=mi2 --nx
+
+!ENTRY org.eclipse.equinox.event 4 0 2018-05-25 08:56:00.754
+!MESSAGE Exception while dispatching event org.osgi.service.event.Event [topic=org/eclipse/e4/ui/model/ui/ElementContainer/selectedElement/SET] {ChangedElement=org.eclipse.e4.ui.model.application.ui.advanced.impl.PerspectiveStackImpl@181f4a6 (elementId: org.eclipse.ui.ide.perspectivestack, tags: [], contributorURI: null) (widget: Composite {}, renderer: org.eclipse.e4.ui.workbench.renderers.swt.PerspectiveStackRenderer@1d3f6ad, toBeRendered: true, onTop: false, visible: true, containerData: 7500, accessibilityPhrase: null), org.eclipse.e4.data={ChangedElement=org.eclipse.e4.ui.model.application.ui.advanced.impl.PerspectiveStackImpl@181f4a6 (elementId: org.eclipse.ui.ide.perspectivestack, tags: [], contributorURI: null) (widget: Composite {}, renderer: org.eclipse.e4.ui.workbench.renderers.swt.PerspectiveStackRenderer@1d3f6ad, toBeRendered: true, onTop: false, visible: true, containerData: 7500, accessibilityPhrase: null), AttName=selectedElement, EventType=SET, OldValue=org.eclipse.e4.ui.model.application.ui.advanced.impl.PerspectiveImpl@a86066 (elementId: org.eclipse.debug.ui.DebugPerspective, tags: [persp.actionSet:org.eclipse.mylyn.doc.actionSet, persp.actionSet:org.eclipse.mylyn.tasks.ui.navigation, persp.actionSet:org.eclipse.ui.cheatsheets.actionSet, persp.actionSet:org.eclipse.rse.core.search.searchActionSet, persp.actionSet:org.eclipse.search.searchActionSet, persp.actionSet:org.eclipse.ui.edit.text.actionSet.annotationNavigation, persp.actionSet:org.eclipse.ui.edit.text.actionSet.navigation, persp.actionSet:org.eclipse.ui.edit.text.actionSet.convertLineDelimitersTo, persp.actionSet:org.eclipse.ui.externaltools.ExternalToolsSet, persp.actionSet:org.eclipse.ui.actionSet.keyBindings, persp.actionSet:org.eclipse.ui.actionSet.openFiles, persp.actionSet:ilg.gnuarmeclipse.debug.gdbjtag.restart.actionset, persp.actionSet:org.eclipse.debug.ui.launchActionSet, persp.actionSet:org.eclipse.debug.ui.debugActionSet, persp.viewSC:org.eclipse.debug.ui.DebugView, persp.viewSC:org.eclipse.debug.ui.VariableView, persp.viewSC:org.eclipse.debug.ui.BreakpointView, persp.viewSC:org.eclipse.debug.ui.ExpressionView, persp.viewSC:org.eclipse.ui.views.ContentOutline, persp.viewSC:org.eclipse.ui.console.ConsoleView, persp.viewSC:org.eclipse.ui.views.TaskList, persp.perspSC:ilg.gnuarmeclipse.codered.perspectives.CodeRedPerspective, persp.viewSC:ilg.gnuarmeclipse.debug.gdbjtag.ui.views.PeripheralsView, persp.viewSC:org.eclipse.cdt.debug.ui.SignalsView, persp.viewSC:org.eclipse.debug.ui.RegisterView, persp.viewSC:org.eclipse.debug.ui.ModuleView, persp.viewSC:org.eclipse.debug.ui.MemoryView, persp.viewSC:org.eclipse.ui.views.ProblemView, persp.viewSC:org.eclipse.cdt.debug.ui.executablesView, persp.actionSet:org.eclipse.cdt.debug.ui.debugActionSet, persp.viewSC:org.eclipse.cdt.debug.ui.memory.memorybrowser.MemoryBrowser, persp.viewSC:org.eclipse.cdt.dsf.gdb.ui.tracecontrol.view, persp.viewSC:org.eclipse.cdt.debug.ui.debuggerConsoleView, persp.viewSC:org.eclipse.cdt.dsf.debug.ui.disassembly.view, persp.perspSC:org.eclipse.cdt.ui.CPerspective, persp.actionSet:org.eclipse.ui.NavigateActionSet, persp.actionSet:org.eclipse.debug.ui.breakpointActionSet, persp.viewSC:org.eclipse.pde.runtime.LogView, persp.showIn:org.eclipse.egit.ui.RepositoriesView, persp.perspSC:org.eclipse.wst.xml.ui.perspective], contributorURI: null) (widget: Composite {}, renderer: org.eclipse.e4.ui.workbench.renderers.swt.PerspectiveRenderer@d40184, toBeRendered: true, onTop: false, visible: true, containerData: null, accessibilityPhrase: null) (label: Debug, iconURI: platform:/plugin/org.eclipse.debug.ui/$nl$/icons/full/eview16/debug_persp.png, tooltip: null, context: PerspectiveImpl (org.eclipse.debug.ui.DebugPerspective) Context, variables: []), Widget=Composite {}, NewValue=org.eclipse.e4.ui.model.application.ui.advanced.impl.PerspectiveImpl@1120e58 (elementId: org.eclipse.cdt.ui.CPerspective, tags: [persp.actionSet:org.eclipse.mylyn.doc.actionSet, persp.actionSet:org.eclipse.mylyn.tasks.ui.navigation, persp.actionSet:org.eclipse.ui.cheatsheets.actionSet, persp.actionSet:org.eclipse.rse.core.search.searchActionSet, persp.actionSet:org.eclipse.search.searchActionSet, persp.actionSet:org.eclipse.ui.edit.text.actionSet.annotationNavigation, persp.actionSet:org.eclipse.ui.edit.text.actionSet.navigation, persp.actionSet:org.eclipse.ui.edit.text.actionSet.convertLineDelimitersTo, persp.actionSet:org.eclipse.ui.externaltools.ExternalToolsSet, persp.actionSet:org.eclipse.ui.actionSet.keyBindings, persp.actionSet:org.eclipse.ui.actionSet.openFiles, persp.actionSet:ilg.gnumcueclipse.debug.gdbjtag.restart.actionset, persp.actionSet:org.eclipse.cdt.ui.SearchActionSet, persp.actionSet:org.eclipse.cdt.ui.CElementCreationActionSet, persp.actionSet:org.eclipse.ui.NavigateActionSet, persp.showIn:org.eclipse.cdt.codan.internal.ui.views.ProblemDetails, persp.actionSet:org.eclipse.debug.ui.breakpointActionSet, persp.actionSet:org.eclipse.cdt.make.ui.makeTargetActionSet, persp.actionSet:org.eclipse.debug.ui.launchActionSet, persp.actionSet:org.eclipse.cdt.ui.buildConfigActionSet, persp.actionSet:org.eclipse.cdt.ui.NavigationActionSet, persp.actionSet:org.eclipse.cdt.ui.OpenActionSet, persp.actionSet:org.eclipse.cdt.ui.CodingActionSet, persp.actionSet:org.eclipse.ui.edit.text.actionSet.presentation, persp.showIn:org.eclipse.cdt.ui.includeBrowser, persp.showIn:org.eclipse.cdt.ui.CView, persp.showIn:org.eclipse.ui.navigator.ProjectExplorer, persp.actionSet:org.eclipse.debug.ui.profileActionSet, persp.actionSet:org.eclipse.egit.ui.gitaction, persp.newWizSC:org.eclipse.cdt.autotools.ui.wizards.conversionWizard, persp.newWizSC:org.eclipse.cdt.ui.wizards.ConvertToMakeWizard, persp.newWizSC:org.eclipse.cdt.ui.wizards.NewMakeFromExisting, persp.newWizSC:org.eclipse.cdt.ui.wizards.NewSourceFileCreationWizard, persp.newWizSC:org.eclipse.cdt.ui.wizards.NewHeaderFileCreationWizard, persp.newWizSC:org.eclipse.cdt.ui.wizards.NewFileCreationWizard, persp.newWizSC:org.eclipse.cdt.ui.wizards.NewSourceFolderCreationWizard, persp.newWizSC:org.eclipse.cdt.ui.wizards.NewFolderCreationWizard, persp.newWizSC:org.eclipse.cdt.ui.wizards.NewClassCreationWizard, persp.newWizSC:org.eclipse.cdt.ui.wizards.NewCWizard1, persp.newWizSC:org.eclipse.cdt.ui.wizards.NewCWizard2, persp.newWizSC:org.eclipse.cdt.ui.wizard.project, persp.newWizSC:org.eclipse.egit.ui.CreateRepositoryWizard, persp.newWizSC:org.eclipse.mylyn.tasks.ui.wizards.new.repository.task, persp.perspSC:org.eclipse.debug.ui.DebugPerspective, persp.perspSC:ilg.gnumcueclipse.codered.perspectives.CodeRedPerspective, persp.perspSC:org.eclipse.team.ui.TeamSynchronizingPerspective, persp.viewSC:org.eclipse.cdt.make.ui.views.MakeView, persp.viewSC:ilg.gnumcueclipse.managedbuild.packs.ui.views.DocsView, persp.viewSC:org.eclipse.search.ui.views.SearchView, persp.viewSC:org.eclipse.ui.console.ConsoleView, persp.viewSC:org.eclipse.ui.views.ResourceNavigator, persp.viewSC:org.eclipse.ui.views.TaskList, persp.viewSC:org.eclipse.ui.views.ProblemView, persp.viewSC:org.eclipse.ui.navigator.ProjectExplorer, persp.viewSC:org.eclipse.ui.views.PropertySheet, persp.viewSC:org.eclipse.ui.views.ContentOutline, persp.viewSC:org.eclipse.cdt.codan.internal.ui.views.ProblemDetails, persp.viewSC:org.eclipse.cdt.ui.CView, persp.viewSC:org.eclipse.cdt.ui.includeBrowser, persp.viewSC:org.eclipse.mylyn.tasks.ui.views.tasks, persp.actionSet:ilg.gnuarmeclipse.debug.gdbjtag.restart.actionset], contributorURI: null) (widget: Composite {}, renderer: org.eclipse.e4.ui.workbench.renderers.swt.PerspectiveRenderer@d40184, toBeRendered: true, onTop: false, visible: true, containerData: null, accessibilityPhrase: null) (label: C/C++, iconURI: platform:/plugin/org.eclipse.cdt.ui/icons/view16/c_pers.gif, tooltip: null, context: PerspectiveImpl (org.eclipse.cdt.ui.CPerspective) Context, variables: [])}, AttName=selectedElement, EventType=SET, OldValue=org.eclipse.e4.ui.model.application.ui.advanced.impl.PerspectiveImpl@a86066 (elementId: org.eclipse.debug.ui.DebugPerspective, tags: [persp.actionSet:org.eclipse.mylyn.doc.actionSet, persp.actionSet:org.eclipse.mylyn.tasks.ui.navigation, persp.actionSet:org.eclipse.ui.cheatsheets.actionSet, persp.actionSet:org.eclipse.rse.core.search.searchActionSet, persp.actionSet:org.eclipse.search.searchActionSet, persp.actionSet:org.eclipse.ui.edit.text.actionSet.annotationNavigation, persp.actionSet:org.eclipse.ui.edit.text.actionSet.navigation, persp.actionSet:org.eclipse.ui.edit.text.actionSet.convertLineDelimitersTo, persp.actionSet:org.eclipse.ui.externaltools.ExternalToolsSet, persp.actionSet:org.eclipse.ui.actionSet.keyBindings, persp.actionSet:org.eclipse.ui.actionSet.openFiles, persp.actionSet:ilg.gnuarmeclipse.debug.gdbjtag.restart.actionset, persp.actionSet:org.eclipse.debug.ui.launchActionSet, persp.actionSet:org.eclipse.debug.ui.debugActionSet, persp.viewSC:org.eclipse.debug.ui.DebugView, persp.viewSC:org.eclipse.debug.ui.VariableView, persp.viewSC:org.eclipse.debug.ui.BreakpointView, persp.viewSC:org.eclipse.debug.ui.ExpressionView, persp.viewSC:org.eclipse.ui.views.ContentOutline, persp.viewSC:org.eclipse.ui.console.ConsoleView, persp.viewSC:org.eclipse.ui.views.TaskList, persp.perspSC:ilg.gnuarmeclipse.codered.perspectives.CodeRedPerspective, persp.viewSC:ilg.gnuarmeclipse.debug.gdbjtag.ui.views.PeripheralsView, persp.viewSC:org.eclipse.cdt.debug.ui.SignalsView, persp.viewSC:org.eclipse.debug.ui.RegisterView, persp.viewSC:org.eclipse.debug.ui.ModuleView, persp.viewSC:org.eclipse.debug.ui.MemoryView, persp.viewSC:org.eclipse.ui.views.ProblemView, persp.viewSC:org.eclipse.cdt.debug.ui.executablesView, persp.actionSet:org.eclipse.cdt.debug.ui.debugActionSet, persp.viewSC:org.eclipse.cdt.debug.ui.memory.memorybrowser.MemoryBrowser, persp.viewSC:org.eclipse.cdt.dsf.gdb.ui.tracecontrol.view, persp.viewSC:org.eclipse.cdt.debug.ui.debuggerConsoleView, persp.viewSC:org.eclipse.cdt.dsf.debug.ui.disassembly.view, persp.perspSC:org.eclipse.cdt.ui.CPerspective, persp.actionSet:org.eclipse.ui.NavigateActionSet, persp.actionSet:org.eclipse.debug.ui.breakpointActionSet, persp.viewSC:org.eclipse.pde.runtime.LogView, persp.showIn:org.eclipse.egit.ui.RepositoriesView, persp.perspSC:org.eclipse.wst.xml.ui.perspective], contributorURI: null) (widget: Composite {}, renderer: org.eclipse.e4.ui.workbench.renderers.swt.PerspectiveRenderer@d40184, toBeRendered: true, onTop: false, visible: true, containerData: null, accessibilityPhrase: null) (label: Debug, iconURI: platform:/plugin/org.eclipse.debug.ui/$nl$/icons/full/eview16/debug_persp.png, tooltip: null, context: PerspectiveImpl (org.eclipse.debug.ui.DebugPerspective) Context, variables: []), Widget=Composite {}, NewValue=org.eclipse.e4.ui.model.application.ui.advanced.impl.PerspectiveImpl@1120e58 (elementId: org.eclipse.cdt.ui.CPerspective, tags: [persp.actionSet:org.eclipse.mylyn.doc.actionSet, persp.actionSet:org.eclipse.mylyn.tasks.ui.navigation, persp.actionSet:org.eclipse.ui.cheatsheets.actionSet, persp.actionSet:org.eclipse.rse.core.search.searchActionSet, persp.actionSet:org.eclipse.search.searchActionSet, persp.actionSet:org.eclipse.ui.edit.text.actionSet.annotationNavigation, persp.actionSet:org.eclipse.ui.edit.text.actionSet.navigation, persp.actionSet:org.eclipse.ui.edit.text.actionSet.convertLineDelimitersTo, persp.actionSet:org.eclipse.ui.externaltools.ExternalToolsSet, persp.actionSet:org.eclipse.ui.actionSet.keyBindings, persp.actionSet:org.eclipse.ui.actionSet.openFiles, persp.actionSet:ilg.gnumcueclipse.debug.gdbjtag.restart.actionset, persp.actionSet:org.eclipse.cdt.ui.SearchActionSet, persp.actionSet:org.eclipse.cdt.ui.CElementCreationActionSet, persp.actionSet:org.eclipse.ui.NavigateActionSet, persp.showIn:org.eclipse.cdt.codan.internal.ui.views.ProblemDetails, persp.actionSet:org.eclipse.debug.ui.breakpointActionSet, persp.actionSet:org.eclipse.cdt.make.ui.makeTargetActionSet, persp.actionSet:org.eclipse.debug.ui.launchActionSet, persp.actionSet:org.eclipse.cdt.ui.buildConfigActionSet, persp.actionSet:org.eclipse.cdt.ui.NavigationActionSet, persp.actionSet:org.eclipse.cdt.ui.OpenActionSet, persp.actionSet:org.eclipse.cdt.ui.CodingActionSet, persp.actionSet:org.eclipse.ui.edit.text.actionSet.presentation, persp.showIn:org.eclipse.cdt.ui.includeBrowser, persp.showIn:org.eclipse.cdt.ui.CView, persp.showIn:org.eclipse.ui.navigator.ProjectExplorer, persp.actionSet:org.eclipse.debug.ui.profileActionSet, persp.actionSet:org.eclipse.egit.ui.gitaction, persp.newWizSC:org.eclipse.cdt.autotools.ui.wizards.conversionWizard, persp.newWizSC:org.eclipse.cdt.ui.wizards.ConvertToMakeWizard, persp.newWizSC:org.eclipse.cdt.ui.wizards.NewMakeFromExisting, persp.newWizSC:org.eclipse.cdt.ui.wizards.NewSourceFileCreationWizard, persp.newWizSC:org.eclipse.cdt.ui.wizards.NewHeaderFileCreationWizard, persp.newWizSC:org.eclipse.cdt.ui.wizards.NewFileCreationWizard, persp.newWizSC:org.eclipse.cdt.ui.wizards.NewSourceFolderCreationWizard, persp.newWizSC:org.eclipse.cdt.ui.wizards.NewFolderCreationWizard, persp.newWizSC:org.eclipse.cdt.ui.wizards.NewClassCreationWizard, persp.newWizSC:org.eclipse.cdt.ui.wizards.NewCWizard1, persp.newWizSC:org.eclipse.cdt.ui.wizards.NewCWizard2, persp.newWizSC:org.eclipse.cdt.ui.wizard.project, persp.newWizSC:org.eclipse.egit.ui.CreateRepositoryWizard, persp.newWizSC:org.eclipse.mylyn.tasks.ui.wizards.new.repository.task, persp.perspSC:org.eclipse.debug.ui.DebugPerspective, persp.perspSC:ilg.gnumcueclipse.codered.perspectives.CodeRedPerspective, persp.perspSC:org.eclipse.team.ui.TeamSynchronizingPerspective, persp.viewSC:org.eclipse.cdt.make.ui.views.MakeView, persp.viewSC:ilg.gnumcueclipse.managedbuild.packs.ui.views.DocsView, persp.viewSC:org.eclipse.search.ui.views.SearchView, persp.viewSC:org.eclipse.ui.console.ConsoleView, persp.viewSC:org.eclipse.ui.views.ResourceNavigator, persp.viewSC:org.eclipse.ui.views.TaskList, persp.viewSC:org.eclipse.ui.views.ProblemView, persp.viewSC:org.eclipse.ui.navigator.ProjectExplorer, persp.viewSC:org.eclipse.ui.views.PropertySheet, persp.viewSC:org.eclipse.ui.views.ContentOutline, persp.viewSC:org.eclipse.cdt.codan.internal.ui.views.ProblemDetails, persp.viewSC:org.eclipse.cdt.ui.CView, persp.viewSC:org.eclipse.cdt.ui.includeBrowser, persp.viewSC:org.eclipse.mylyn.tasks.ui.views.tasks, persp.actionSet:ilg.gnuarmeclipse.debug.gdbjtag.restart.actionset], contributorURI: null) (widget: Composite {}, renderer: org.eclipse.e4.ui.workbench.renderers.swt.PerspectiveRenderer@d40184, toBeRendered: true, onTop: false, visible: true, containerData: null, accessibilityPhrase: null) (label: C/C++, iconURI: platform:/plugin/org.eclipse.cdt.ui/icons/view16/c_pers.gif, tooltip: null, context: PerspectiveImpl (org.eclipse.cdt.ui.CPerspective) Context, variables: [])} to handler org.eclipse.e4.ui.services.internal.events.UIEventHandler@bc491a
+!STACK 0
+java.lang.NullPointerException
+	at org.eclipse.e4.ui.internal.workbench.PartServiceImpl.switchPerspective(PartServiceImpl.java:653)
+	at org.eclipse.e4.ui.workbench.renderers.swt.PerspectiveStackRenderer.showTab(PerspectiveStackRenderer.java:106)
+	at org.eclipse.e4.ui.workbench.renderers.swt.LazyStackRenderer$1.handleEvent(LazyStackRenderer.java:72)
+	at org.eclipse.e4.ui.services.internal.events.UIEventHandler$1.run(UIEventHandler.java:40)
+	at org.eclipse.swt.widgets.Synchronizer.syncExec(Synchronizer.java:233)
+	at org.eclipse.ui.internal.UISynchronizer.syncExec(UISynchronizer.java:145)
+	at org.eclipse.swt.widgets.Display.syncExec(Display.java:4821)
+	at org.eclipse.e4.ui.internal.workbench.swt.E4Application$1.syncExec(E4Application.java:211)
+	at org.eclipse.e4.ui.services.internal.events.UIEventHandler.handleEvent(UIEventHandler.java:36)
+	at org.eclipse.equinox.internal.event.EventHandlerWrapper.handleEvent(EventHandlerWrapper.java:201)
+	at org.eclipse.equinox.internal.event.EventHandlerTracker.dispatchEvent(EventHandlerTracker.java:197)
+	at org.eclipse.equinox.internal.event.EventHandlerTracker.dispatchEvent(EventHandlerTracker.java:1)
+	at org.eclipse.osgi.framework.eventmgr.EventManager.dispatchEvent(EventManager.java:230)
+	at org.eclipse.osgi.framework.eventmgr.ListenerQueue.dispatchEventSynchronous(ListenerQueue.java:148)
+	at org.eclipse.equinox.internal.event.EventAdminImpl.dispatchEvent(EventAdminImpl.java:135)
+	at org.eclipse.equinox.internal.event.EventAdminImpl.sendEvent(EventAdminImpl.java:78)
+	at org.eclipse.equinox.internal.event.EventComponent.sendEvent(EventComponent.java:39)
+	at org.eclipse.e4.ui.services.internal.events.EventBroker.send(EventBroker.java:94)
+	at org.eclipse.e4.ui.internal.workbench.UIEventPublisher.notifyChanged(UIEventPublisher.java:60)
+	at org.eclipse.emf.common.notify.impl.BasicNotifierImpl.eNotify(BasicNotifierImpl.java:374)
+	at org.eclipse.e4.ui.model.application.ui.advanced.impl.PerspectiveStackImpl.setSelectedElement(PerspectiveStackImpl.java:135)
+	at org.eclipse.e4.ui.model.application.ui.advanced.impl.PerspectiveStackImpl.setSelectedElement(PerspectiveStackImpl.java:1)
+	at org.eclipse.e4.ui.workbench.addons.perspectiveswitcher.PerspectiveSwitcher$12.widgetSelected(PerspectiveSwitcher.java:593)
+	at org.eclipse.swt.widgets.TypedListener.handleEvent(TypedListener.java:249)
+	at org.eclipse.swt.widgets.EventTable.sendEvent(EventTable.java:84)
+	at org.eclipse.swt.widgets.Display.sendEvent(Display.java:4418)
+	at org.eclipse.swt.widgets.Widget.sendEvent(Widget.java:1079)
+	at org.eclipse.swt.widgets.Display.runDeferredEvents(Display.java:4236)
+	at org.eclipse.swt.widgets.Display.readAndDispatch(Display.java:3824)
+	at org.eclipse.e4.ui.internal.workbench.swt.PartRenderingEngine$4.run(PartRenderingEngine.java:1121)
+	at org.eclipse.core.databinding.observable.Realm.runWithDefault(Realm.java:336)
+	at org.eclipse.e4.ui.internal.workbench.swt.PartRenderingEngine.run(PartRenderingEngine.java:1022)
+	at org.eclipse.e4.ui.internal.workbench.E4Workbench.createAndRunUI(E4Workbench.java:150)
+	at org.eclipse.ui.internal.Workbench$5.run(Workbench.java:693)
+	at org.eclipse.core.databinding.observable.Realm.runWithDefault(Realm.java:336)
+	at org.eclipse.ui.internal.Workbench.createAndRunWorkbench(Workbench.java:610)
+	at org.eclipse.ui.PlatformUI.createAndRunWorkbench(PlatformUI.java:148)
+	at org.eclipse.ui.internal.ide.application.IDEApplication.start(IDEApplication.java:138)
+	at org.eclipse.equinox.internal.app.EclipseAppHandle.run(EclipseAppHandle.java:196)
+	at org.eclipse.core.runtime.internal.adaptor.EclipseAppLauncher.runApplication(EclipseAppLauncher.java:134)
+	at org.eclipse.core.runtime.internal.adaptor.EclipseAppLauncher.start(EclipseAppLauncher.java:104)
+	at org.eclipse.core.runtime.adaptor.EclipseStarter.run(EclipseStarter.java:388)
+	at org.eclipse.core.runtime.adaptor.EclipseStarter.run(EclipseStarter.java:243)
+	at sun.reflect.NativeMethodAccessorImpl.invoke0(Native Method)
+	at sun.reflect.NativeMethodAccessorImpl.invoke(Unknown Source)
+	at sun.reflect.DelegatingMethodAccessorImpl.invoke(Unknown Source)
+	at java.lang.reflect.Method.invoke(Unknown Source)
+	at org.eclipse.equinox.launcher.Main.invokeFramework(Main.java:673)
+	at org.eclipse.equinox.launcher.Main.basicRun(Main.java:610)
+	at org.eclipse.equinox.launcher.Main.run(Main.java:1519)
+
+!ENTRY ilg.gnuarmeclipse.packs.core 4 1 2018-05-25 08:57:45.345
+!MESSAGE C:/Program Files (x86)/SEGGER/JLink_V620f/JLinkGDBServerCL.exe -if swd -device STM32F091RC -endian little -speed auto -port 2331 -swoport 2332 -telnetport 2333 -vd -ir -localhostonly 1 -singlerun -strict -timeout 0 -nogui
+
+!ENTRY ilg.gnuarmeclipse.packs.core 4 1 2018-05-25 08:57:46.033
+!MESSAGE arm-none-eabi-gdb --interpreter=mi2 --nx
+
+!ENTRY ilg.gnuarmeclipse.packs.core 4 1 2018-05-25 08:58:22.387
+!MESSAGE C:/Program Files (x86)/SEGGER/JLink_V620f/JLinkGDBServerCL.exe -if swd -device STM32F091RC -endian little -speed auto -port 2331 -swoport 2332 -telnetport 2333 -vd -ir -localhostonly 1 -singlerun -strict -timeout 0 -nogui
+
+!ENTRY ilg.gnuarmeclipse.packs.core 4 1 2018-05-25 08:58:23.064
+!MESSAGE arm-none-eabi-gdb --interpreter=mi2 --nx
+
+!ENTRY ilg.gnuarmeclipse.packs.core 4 1 2018-05-25 08:58:33.871
+!MESSAGE C:/Program Files (x86)/SEGGER/JLink_V620f/JLinkGDBServerCL.exe -if swd -device STM32F091RC -endian little -speed auto -port 2331 -swoport 2332 -telnetport 2333 -vd -ir -localhostonly 1 -singlerun -strict -timeout 0 -nogui
+
+!ENTRY ilg.gnuarmeclipse.packs.core 4 1 2018-05-25 08:58:34.557
+!MESSAGE arm-none-eabi-gdb --interpreter=mi2 --nx
+
+!ENTRY ilg.gnuarmeclipse.packs.core 4 1 2018-05-25 09:02:17.768
+!MESSAGE C:/Program Files (x86)/SEGGER/JLink_V620f/JLinkGDBServerCL.exe -if swd -device STM32F091RC -endian little -speed auto -port 2331 -swoport 2332 -telnetport 2333 -vd -ir -localhostonly 1 -singlerun -strict -timeout 0 -nogui
+
+!ENTRY ilg.gnuarmeclipse.packs.core 4 1 2018-05-25 09:02:18.457
+!MESSAGE arm-none-eabi-gdb --interpreter=mi2 --nx
+
+!ENTRY org.eclipse.cdt.core 1 0 2018-05-25 09:42:04.139
+!MESSAGE Indexed 'STM32F091RCTx_freeRTOS' (51 sources, 131 headers) in 3.08 sec: 12,681 declarations; 69,190 references; 0 unresolved inclusions; 145 syntax errors; 62 unresolved names (0.076%)
+
+!ENTRY ilg.gnuarmeclipse.packs.core 4 1 2018-05-25 15:47:21.138
+!MESSAGE C:/Program Files (x86)/SEGGER/JLink_V620f/JLinkGDBServerCL.exe -if swd -device STM32F091RC -endian little -speed auto -port 2331 -swoport 2332 -telnetport 2333 -vd -ir -localhostonly 1 -singlerun -strict -timeout 0 -nogui
+
+!ENTRY ilg.gnuarmeclipse.debug.gdbjtag 4 0 2018-05-25 15:47:21.472
+!MESSAGE J-Link GDB Server failed: 
+Could not connect to J-Link. Please check if plugged into USB port or Ethernet switch.
+
+For more details, see the JLinkGDBServerCL.exe console.
+
+!ENTRY ilg.gnuarmeclipse.packs.core 4 1 2018-05-25 15:47:47.681
+!MESSAGE C:/Program Files (x86)/SEGGER/JLink_V620f/JLinkGDBServerCL.exe -if swd -device STM32F091RC -endian little -speed auto -port 2331 -swoport 2332 -telnetport 2333 -vd -ir -localhostonly 1 -singlerun -strict -timeout 0 -nogui
+
+!ENTRY ilg.gnuarmeclipse.packs.core 4 1 2018-05-25 15:47:48.376
+!MESSAGE arm-none-eabi-gdb --interpreter=mi2 --nx
+
+!ENTRY ilg.gnuarmeclipse.packs.core 4 1 2018-05-25 15:49:31.858
+!MESSAGE C:/Program Files (x86)/SEGGER/JLink_V620f/JLinkGDBServerCL.exe -if swd -device STM32F091RC -endian little -speed auto -port 2331 -swoport 2332 -telnetport 2333 -vd -ir -localhostonly 1 -singlerun -strict -timeout 0 -nogui
+
+!ENTRY ilg.gnuarmeclipse.packs.core 4 1 2018-05-25 15:49:32.544
+!MESSAGE arm-none-eabi-gdb --interpreter=mi2 --nx
+
+!ENTRY ilg.gnuarmeclipse.packs.core 4 1 2018-05-25 15:55:14.538
+!MESSAGE C:/Program Files (x86)/SEGGER/JLink_V620f/JLinkGDBServerCL.exe -if swd -device STM32F091RC -endian little -speed auto -port 2331 -swoport 2332 -telnetport 2333 -vd -ir -localhostonly 1 -singlerun -strict -timeout 0 -nogui
+
+!ENTRY ilg.gnuarmeclipse.debug.gdbjtag 4 0 2018-05-25 15:55:14.862
+!MESSAGE J-Link GDB Server failed: 
+Could not connect to J-Link. Please check if plugged into USB port or Ethernet switch.
+
+For more details, see the JLinkGDBServerCL.exe console.
+
+!ENTRY ilg.gnuarmeclipse.packs.core 4 1 2018-05-25 15:55:25.684
+!MESSAGE C:/Program Files (x86)/SEGGER/JLink_V620f/JLinkGDBServerCL.exe -if swd -device STM32F091RC -endian little -speed auto -port 2331 -swoport 2332 -telnetport 2333 -vd -ir -localhostonly 1 -singlerun -strict -timeout 0 -nogui
+
+!ENTRY ilg.gnuarmeclipse.debug.gdbjtag 4 0 2018-05-25 15:55:26.004
+!MESSAGE J-Link GDB Server failed: 
+Could not connect to J-Link. Please check if plugged into USB port or Ethernet switch.
+
+For more details, see the JLinkGDBServerCL.exe console.
+
+!ENTRY ilg.gnuarmeclipse.packs.core 4 1 2018-05-25 15:55:56.664
+!MESSAGE C:/Program Files (x86)/SEGGER/JLink_V620f/JLinkGDBServerCL.exe -if swd -device STM32F091RC -endian little -speed auto -port 2331 -swoport 2332 -telnetport 2333 -vd -ir -localhostonly 1 -singlerun -strict -timeout 0 -nogui
+
+!ENTRY ilg.gnuarmeclipse.debug.gdbjtag 4 0 2018-05-25 15:55:56.967
+!MESSAGE J-Link GDB Server failed: 
+Could not connect to J-Link. Please check if plugged into USB port or Ethernet switch.
+
+For more details, see the JLinkGDBServerCL.exe console.
+
+!ENTRY ilg.gnuarmeclipse.packs.core 4 1 2018-05-25 15:56:25.560
+!MESSAGE C:/Program Files (x86)/SEGGER/JLink_V620f/JLinkGDBServerCL.exe -if swd -device STM32F091RC -endian little -speed auto -port 2331 -swoport 2332 -telnetport 2333 -vd -ir -localhostonly 1 -singlerun -strict -timeout 0 -nogui
+
+!ENTRY ilg.gnuarmeclipse.debug.gdbjtag 4 0 2018-05-25 15:56:26.470
+!MESSAGE J-Link GDB Server failed: 
+Could not connect to target. Please check if target is powered and if ribbon cable is plugged properly.
+
+For more details, see the JLinkGDBServerCL.exe console.
+
+!ENTRY ilg.gnuarmeclipse.packs.core 4 1 2018-05-25 15:56:36.602
+!MESSAGE C:/Program Files (x86)/SEGGER/JLink_V620f/JLinkGDBServerCL.exe -if swd -device STM32F091RC -endian little -speed auto -port 2331 -swoport 2332 -telnetport 2333 -vd -ir -localhostonly 1 -singlerun -strict -timeout 0 -nogui
+
+!ENTRY ilg.gnuarmeclipse.debug.gdbjtag 4 0 2018-05-25 15:56:36.914
+!MESSAGE J-Link GDB Server failed: 
+Could not connect to J-Link. Please check if plugged into USB port or Ethernet switch.
+
+For more details, see the JLinkGDBServerCL.exe console.
+
+!ENTRY ilg.gnuarmeclipse.packs.core 4 1 2018-05-25 15:56:57.774
+!MESSAGE C:/Program Files (x86)/SEGGER/JLink_V620f/JLinkGDBServerCL.exe -if swd -device STM32F091RC -endian little -speed auto -port 2331 -swoport 2332 -telnetport 2333 -vd -ir -localhostonly 1 -singlerun -strict -timeout 0 -nogui
+
+!ENTRY ilg.gnuarmeclipse.debug.gdbjtag 4 0 2018-05-25 15:56:58.114
+!MESSAGE J-Link GDB Server failed: 
+Could not connect to J-Link. Please check if plugged into USB port or Ethernet switch.
+
+For more details, see the JLinkGDBServerCL.exe console.
+
+!ENTRY ilg.gnuarmeclipse.packs.core 4 1 2018-05-25 15:57:13.817
+!MESSAGE C:/Program Files (x86)/SEGGER/JLink_V620f/JLinkGDBServerCL.exe -if swd -device STM32F091RC -endian little -speed auto -port 2331 -swoport 2332 -telnetport 2333 -vd -ir -localhostonly 1 -singlerun -strict -timeout 0 -nogui
+
+!ENTRY ilg.gnuarmeclipse.packs.core 4 1 2018-05-25 15:57:14.526
+!MESSAGE arm-none-eabi-gdb --interpreter=mi2 --nx
+
+!ENTRY ilg.gnuarmeclipse.packs.core 4 1 2018-05-25 16:04:12.497
+!MESSAGE C:/Program Files (x86)/SEGGER/JLink_V620f/JLinkGDBServerCL.exe -if swd -device STM32F091RC -endian little -speed auto -port 2331 -swoport 2332 -telnetport 2333 -vd -ir -localhostonly 1 -singlerun -strict -timeout 0 -nogui
+
+!ENTRY ilg.gnuarmeclipse.packs.core 4 1 2018-05-25 16:04:13.197
+!MESSAGE arm-none-eabi-gdb --interpreter=mi2 --nx
+
+!ENTRY ilg.gnuarmeclipse.packs.core 4 1 2018-05-25 16:58:32.672
+!MESSAGE C:/Program Files (x86)/SEGGER/JLink_V620f/JLinkGDBServerCL.exe -if swd -device STM32F091RC -endian little -speed auto -port 2331 -swoport 2332 -telnetport 2333 -vd -ir -localhostonly 1 -singlerun -strict -timeout 0 -nogui
+
+!ENTRY ilg.gnuarmeclipse.packs.core 4 1 2018-05-25 16:58:33.363
+!MESSAGE arm-none-eabi-gdb --interpreter=mi2 --nx
+
+!ENTRY ilg.gnuarmeclipse.packs.core 4 1 2018-05-25 16:58:57.143
+!MESSAGE C:/Program Files (x86)/SEGGER/JLink_V620f/JLinkGDBServerCL.exe -if swd -device STM32F091RC -endian little -speed auto -port 2331 -swoport 2332 -telnetport 2333 -vd -ir -localhostonly 1 -singlerun -strict -timeout 0 -nogui
+
+!ENTRY ilg.gnuarmeclipse.packs.core 4 1 2018-05-25 16:58:57.818
+!MESSAGE arm-none-eabi-gdb --interpreter=mi2 --nx
+
+!ENTRY ilg.gnuarmeclipse.packs.core 4 1 2018-05-25 17:53:24.058
+!MESSAGE C:/Program Files (x86)/SEGGER/JLink_V620f/JLinkGDBServerCL.exe -if swd -device STM32F091RC -endian little -speed auto -port 2331 -swoport 2332 -telnetport 2333 -vd -ir -localhostonly 1 -singlerun -strict -timeout 0 -nogui
+
+!ENTRY ilg.gnuarmeclipse.packs.core 4 1 2018-05-25 17:53:24.760
+!MESSAGE arm-none-eabi-gdb --interpreter=mi2 --nx
+
+!ENTRY ilg.gnuarmeclipse.debug.gdbjtag 4 0 2018-05-25 17:57:05.221
+!MESSAGE Debug session 'STM32F091RCTx_freeRTOS Debug' already started. Terminate the first one before restarting.
+
+!ENTRY ilg.gnuarmeclipse.packs.core 4 1 2018-05-25 17:57:20.219
+!MESSAGE C:/Program Files (x86)/SEGGER/JLink_V620f/JLinkGDBServerCL.exe -if swd -device STM32F091RC -endian little -speed auto -port 2331 -swoport 2332 -telnetport 2333 -vd -ir -localhostonly 1 -singlerun -strict -timeout 0 -nogui
+
+!ENTRY ilg.gnuarmeclipse.packs.core 4 1 2018-05-25 17:57:20.908
+!MESSAGE arm-none-eabi-gdb --interpreter=mi2 --nx
+
+!ENTRY ilg.gnuarmeclipse.packs.core 4 1 2018-05-25 18:02:38.014
+!MESSAGE C:/Program Files (x86)/SEGGER/JLink_V620f/JLinkGDBServerCL.exe -if swd -device STM32F091RC -endian little -speed auto -port 2331 -swoport 2332 -telnetport 2333 -vd -ir -localhostonly 1 -singlerun -strict -timeout 0 -nogui
+
+!ENTRY ilg.gnuarmeclipse.packs.core 4 1 2018-05-25 18:02:38.693
+!MESSAGE arm-none-eabi-gdb --interpreter=mi2 --nx
+
+!ENTRY ilg.gnuarmeclipse.packs.core 4 1 2018-05-25 18:07:11.584
+!MESSAGE C:/Program Files (x86)/SEGGER/JLink_V620f/JLinkGDBServerCL.exe -if swd -device STM32F091RC -endian little -speed auto -port 2331 -swoport 2332 -telnetport 2333 -vd -ir -localhostonly 1 -singlerun -strict -timeout 0 -nogui
+
+!ENTRY ilg.gnuarmeclipse.packs.core 4 1 2018-05-25 18:07:12.291
+!MESSAGE arm-none-eabi-gdb --interpreter=mi2 --nx
+
+!ENTRY ilg.gnuarmeclipse.packs.core 4 1 2018-05-25 18:07:32.814
+!MESSAGE C:/Program Files (x86)/SEGGER/JLink_V620f/JLinkGDBServerCL.exe -if swd -device STM32F091RC -endian little -speed auto -port 2331 -swoport 2332 -telnetport 2333 -vd -ir -localhostonly 1 -singlerun -strict -timeout 0 -nogui
+
+!ENTRY ilg.gnuarmeclipse.packs.core 4 1 2018-05-25 18:07:33.531
+!MESSAGE arm-none-eabi-gdb --interpreter=mi2 --nx
+
+!ENTRY ilg.gnuarmeclipse.packs.core 4 1 2018-05-25 18:10:01.606
+!MESSAGE C:/Program Files (x86)/SEGGER/JLink_V620f/JLinkGDBServerCL.exe -if swd -device STM32F091RC -endian little -speed auto -port 2331 -swoport 2332 -telnetport 2333 -vd -ir -localhostonly 1 -singlerun -strict -timeout 0 -nogui
+
+!ENTRY ilg.gnuarmeclipse.debug.gdbjtag 4 0 2018-05-25 18:10:03.532
+!MESSAGE J-Link GDB Server failed: 
+Could not connect to target. Please check if target is powered and if ribbon cable is plugged properly.
+
+For more details, see the JLinkGDBServerCL.exe console.
+
+!ENTRY ilg.gnuarmeclipse.packs.core 4 1 2018-05-25 18:10:15.259
+!MESSAGE C:/Program Files (x86)/SEGGER/JLink_V620f/JLinkGDBServerCL.exe -if swd -device STM32F091RC -endian little -speed auto -port 2331 -swoport 2332 -telnetport 2333 -vd -ir -localhostonly 1 -singlerun -strict -timeout 0 -nogui
+
+!ENTRY ilg.gnuarmeclipse.packs.core 4 1 2018-05-25 18:10:15.963
+!MESSAGE arm-none-eabi-gdb --interpreter=mi2 --nx
+
+!ENTRY ilg.gnuarmeclipse.packs.core 4 1 2018-05-25 18:10:34.740
+!MESSAGE C:/Program Files (x86)/SEGGER/JLink_V620f/JLinkGDBServerCL.exe -if swd -device STM32F091RC -endian little -speed auto -port 2331 -swoport 2332 -telnetport 2333 -vd -ir -localhostonly 1 -singlerun -strict -timeout 0 -nogui
+
+!ENTRY ilg.gnuarmeclipse.debug.gdbjtag 4 0 2018-05-25 18:10:35.072
+!MESSAGE J-Link GDB Server failed: 
+Could not connect to J-Link. Please check if plugged into USB port or Ethernet switch.
+
+For more details, see the JLinkGDBServerCL.exe console.
+
+!ENTRY ilg.gnuarmeclipse.packs.core 4 1 2018-05-25 18:10:40.410
+!MESSAGE C:/Program Files (x86)/SEGGER/JLink_V620f/JLinkGDBServerCL.exe -if swd -device STM32F091RC -endian little -speed auto -port 2331 -swoport 2332 -telnetport 2333 -vd -ir -localhostonly 1 -singlerun -strict -timeout 0 -nogui
+
+!ENTRY ilg.gnuarmeclipse.packs.core 4 1 2018-05-25 18:10:41.102
+!MESSAGE arm-none-eabi-gdb --interpreter=mi2 --nx
+
+!ENTRY ilg.gnuarmeclipse.packs.core 4 1 2018-05-25 18:11:36.418
+!MESSAGE C:/Program Files (x86)/SEGGER/JLink_V620f/JLinkGDBServerCL.exe -if swd -device STM32F091RC -endian little -speed auto -port 2331 -swoport 2332 -telnetport 2333 -vd -ir -localhostonly 1 -singlerun -strict -timeout 0 -nogui
+
+!ENTRY ilg.gnuarmeclipse.packs.core 4 1 2018-05-25 18:11:37.111
+!MESSAGE arm-none-eabi-gdb --interpreter=mi2 --nx
+
+!ENTRY ilg.gnuarmeclipse.packs.core 4 1 2018-05-25 18:12:38.220
+!MESSAGE C:/Program Files (x86)/SEGGER/JLink_V620f/JLinkGDBServerCL.exe -if swd -device STM32F091RC -endian little -speed auto -port 2331 -swoport 2332 -telnetport 2333 -vd -ir -localhostonly 1 -singlerun -strict -timeout 0 -nogui
+
+!ENTRY ilg.gnuarmeclipse.packs.core 4 1 2018-05-25 18:12:38.931
+!MESSAGE arm-none-eabi-gdb --interpreter=mi2 --nx
+
+!ENTRY org.eclipse.cdt.core 1 0 2018-05-27 14:37:37.722
+!MESSAGE Indexed 'STM32F091RCTx_freeRTOS' (51 sources, 131 headers) in 3.18 sec: 12,671 declarations; 69,139 references; 0 unresolved inclusions; 145 syntax errors; 62 unresolved names (0.076%)
+
+!ENTRY org.eclipse.core.jobs 2 2 2018-05-27 23:48:52.328
+!MESSAGE Job found still running after platform shutdown.  Jobs should be canceled by the plugin that scheduled them during shutdown: org.eclipse.cdt.dsf.gdb.internal.ui.console.GdbBasicCliConsole$ErrorReadJob
+
+!ENTRY org.eclipse.core.jobs 2 2 2018-05-27 23:48:52.329
+!MESSAGE Job found still running after platform shutdown.  Jobs should be canceled by the plugin that scheduled them during shutdown: org.eclipse.cdt.dsf.gdb.internal.ui.console.GdbBasicCliConsole$ErrorReadJob
+!SESSION 2018-05-28 08:50:20.270 -----------------------------------------------
+eclipse.buildId=4.6.3.M20170301-0400
+java.version=1.8.0_172
+java.vendor=Oracle Corporation
+BootLoader constants: OS=win32, ARCH=x86, WS=win32, NL=zh_TW
+Framework arguments:  -product org.eclipse.epp.package.cpp.product
+Command-line arguments:  -os win32 -ws win32 -arch x86 -product org.eclipse.epp.package.cpp.product
+
+!ENTRY org.eclipse.core.runtime 4 0 2018-05-28 08:53:39.406
+!MESSAGE Invalid input url:platform:/plugin/ilg.gnumcueclipse.managedbuild.packs/icons/pdficon_small.png
+!STACK 0
+java.io.IOException: Unable to resolve plug-in "platform:/plugin/ilg.gnumcueclipse.managedbuild.packs/icons/pdficon_small.png".
+	at org.eclipse.core.internal.runtime.PlatformURLPluginConnection.parse(PlatformURLPluginConnection.java:61)
+	at org.eclipse.core.internal.runtime.FindSupport.find(FindSupport.java:290)
+	at org.eclipse.core.runtime.FileLocator.find(FileLocator.java:152)
+	at org.eclipse.jface.resource.URLImageDescriptor.getFilePath(URLImageDescriptor.java:209)
+	at org.eclipse.jface.resource.URLImageDescriptor.access$1(URLImageDescriptor.java:200)
+	at org.eclipse.jface.resource.URLImageDescriptor$URLImageFileNameProvider.getImagePath(URLImageDescriptor.java:53)
+	at org.eclipse.swt.internal.DPIUtil.validateAndGetImagePathAtZoom(DPIUtil.java:407)
+	at org.eclipse.swt.graphics.Image.<init>(Image.java:684)
+	at org.eclipse.jface.resource.URLImageDescriptor.createImage(URLImageDescriptor.java:244)
+	at org.eclipse.jface.resource.ImageDescriptor.createImage(ImageDescriptor.java:224)
+	at org.eclipse.jface.resource.ImageDescriptor.createImage(ImageDescriptor.java:202)
+	at org.eclipse.e4.ui.workbench.renderers.swt.SWTPartRenderer.getImageFromURI(SWTPartRenderer.java:224)
+	at org.eclipse.e4.ui.workbench.renderers.swt.SWTPartRenderer.getImage(SWTPartRenderer.java:235)
+	at org.eclipse.e4.ui.workbench.renderers.swt.StackRenderer.createTab(StackRenderer.java:895)
+	at org.eclipse.e4.ui.workbench.renderers.swt.LazyStackRenderer.processContents(LazyStackRenderer.java:139)
+	at org.eclipse.e4.ui.internal.workbench.swt.PartRenderingEngine.safeCreateGui(PartRenderingEngine.java:665)
+	at org.eclipse.e4.ui.internal.workbench.swt.PartRenderingEngine.safeCreateGui(PartRenderingEngine.java:757)
+	at org.eclipse.e4.ui.internal.workbench.swt.PartRenderingEngine.access$0(PartRenderingEngine.java:728)
+	at org.eclipse.e4.ui.internal.workbench.swt.PartRenderingEngine$2.run(PartRenderingEngine.java:722)
+	at org.eclipse.core.runtime.SafeRunner.run(SafeRunner.java:42)
+	at org.eclipse.e4.ui.internal.workbench.swt.PartRenderingEngine.createGui(PartRenderingEngine.java:706)
+	at org.eclipse.e4.ui.workbench.renderers.swt.SWTPartRenderer.processContents(SWTPartRenderer.java:70)
+	at org.eclipse.e4.ui.workbench.renderers.swt.SashRenderer.processContents(SashRenderer.java:142)
+	at org.eclipse.e4.ui.internal.workbench.swt.PartRenderingEngine.safeCreateGui(PartRenderingEngine.java:665)
+	at org.eclipse.e4.ui.internal.workbench.swt.PartRenderingEngine.safeCreateGui(PartRenderingEngine.java:757)
+	at org.eclipse.e4.ui.internal.workbench.swt.PartRenderingEngine.access$0(PartRenderingEngine.java:728)
+	at org.eclipse.e4.ui.internal.workbench.swt.PartRenderingEngine$2.run(PartRenderingEngine.java:722)
+	at org.eclipse.core.runtime.SafeRunner.run(SafeRunner.java:42)
+	at org.eclipse.e4.ui.internal.workbench.swt.PartRenderingEngine.createGui(PartRenderingEngine.java:706)
+	at org.eclipse.e4.ui.workbench.renderers.swt.SWTPartRenderer.processContents(SWTPartRenderer.java:70)
+	at org.eclipse.e4.ui.workbench.renderers.swt.SashRenderer.processContents(SashRenderer.java:142)
+	at org.eclipse.e4.ui.internal.workbench.swt.PartRenderingEngine.safeCreateGui(PartRenderingEngine.java:665)
+	at org.eclipse.e4.ui.internal.workbench.swt.PartRenderingEngine.safeCreateGui(PartRenderingEngine.java:757)
+	at org.eclipse.e4.ui.internal.workbench.swt.PartRenderingEngine.access$0(PartRenderingEngine.java:728)
+	at org.eclipse.e4.ui.internal.workbench.swt.PartRenderingEngine$2.run(PartRenderingEngine.java:722)
+	at org.eclipse.core.runtime.SafeRunner.run(SafeRunner.java:42)
+	at org.eclipse.e4.ui.internal.workbench.swt.PartRenderingEngine.createGui(PartRenderingEngine.java:706)
+	at org.eclipse.e4.ui.workbench.renderers.swt.SWTPartRenderer.processContents(SWTPartRenderer.java:70)
+	at org.eclipse.e4.ui.workbench.renderers.swt.SashRenderer.processContents(SashRenderer.java:142)
+	at org.eclipse.e4.ui.internal.workbench.swt.PartRenderingEngine.safeCreateGui(PartRenderingEngine.java:665)
+	at org.eclipse.e4.ui.internal.workbench.swt.PartRenderingEngine.safeCreateGui(PartRenderingEngine.java:757)
+	at org.eclipse.e4.ui.internal.workbench.swt.PartRenderingEngine.access$0(PartRenderingEngine.java:728)
+	at org.eclipse.e4.ui.internal.workbench.swt.PartRenderingEngine$2.run(PartRenderingEngine.java:722)
+	at org.eclipse.core.runtime.SafeRunner.run(SafeRunner.java:42)
+	at org.eclipse.e4.ui.internal.workbench.swt.PartRenderingEngine.createGui(PartRenderingEngine.java:706)
+	at org.eclipse.e4.ui.workbench.renderers.swt.SWTPartRenderer.processContents(SWTPartRenderer.java:70)
+	at org.eclipse.e4.ui.workbench.renderers.swt.PerspectiveRenderer.processContents(PerspectiveRenderer.java:49)
+	at org.eclipse.e4.ui.internal.workbench.swt.PartRenderingEngine.safeCreateGui(PartRenderingEngine.java:665)
+	at org.eclipse.e4.ui.internal.workbench.swt.PartRenderingEngine.safeCreateGui(PartRenderingEngine.java:757)
+	at org.eclipse.e4.ui.internal.workbench.swt.PartRenderingEngine.access$0(PartRenderingEngine.java:728)
+	at org.eclipse.e4.ui.internal.workbench.swt.PartRenderingEngine$2.run(PartRenderingEngine.java:722)
+	at org.eclipse.core.runtime.SafeRunner.run(SafeRunner.java:42)
+	at org.eclipse.e4.ui.internal.workbench.swt.PartRenderingEngine.createGui(PartRenderingEngine.java:706)
+	at org.eclipse.e4.ui.workbench.renderers.swt.PerspectiveStackRenderer.showTab(PerspectiveStackRenderer.java:82)
+	at org.eclipse.e4.ui.workbench.renderers.swt.LazyStackRenderer.postProcess(LazyStackRenderer.java:103)
+	at org.eclipse.e4.ui.workbench.renderers.swt.PerspectiveStackRenderer.postProcess(PerspectiveStackRenderer.java:63)
+	at org.eclipse.e4.ui.internal.workbench.swt.PartRenderingEngine.safeCreateGui(PartRenderingEngine.java:669)
+	at org.eclipse.e4.ui.internal.workbench.swt.PartRenderingEngine.safeCreateGui(PartRenderingEngine.java:757)
+	at org.eclipse.e4.ui.internal.workbench.swt.PartRenderingEngine.access$0(PartRenderingEngine.java:728)
+	at org.eclipse.e4.ui.internal.workbench.swt.PartRenderingEngine$2.run(PartRenderingEngine.java:722)
+	at org.eclipse.core.runtime.SafeRunner.run(SafeRunner.java:42)
+	at org.eclipse.e4.ui.internal.workbench.swt.PartRenderingEngine.createGui(PartRenderingEngine.java:706)
+	at org.eclipse.e4.ui.workbench.renderers.swt.SWTPartRenderer.processContents(SWTPartRenderer.java:70)
+	at org.eclipse.e4.ui.workbench.renderers.swt.SashRenderer.processContents(SashRenderer.java:142)
+	at org.eclipse.e4.ui.internal.workbench.swt.PartRenderingEngine.safeCreateGui(PartRenderingEngine.java:665)
+	at org.eclipse.e4.ui.internal.workbench.swt.PartRenderingEngine.safeCreateGui(PartRenderingEngine.java:757)
+	at org.eclipse.e4.ui.internal.workbench.swt.PartRenderingEngine.access$0(PartRenderingEngine.java:728)
+	at org.eclipse.e4.ui.internal.workbench.swt.PartRenderingEngine$2.run(PartRenderingEngine.java:722)
+	at org.eclipse.core.runtime.SafeRunner.run(SafeRunner.java:42)
+	at org.eclipse.e4.ui.internal.workbench.swt.PartRenderingEngine.createGui(PartRenderingEngine.java:706)
+	at org.eclipse.e4.ui.workbench.renderers.swt.SWTPartRenderer.processContents(SWTPartRenderer.java:70)
+	at org.eclipse.e4.ui.workbench.renderers.swt.WBWRenderer.processContents(WBWRenderer.java:725)
+	at org.eclipse.e4.ui.internal.workbench.swt.PartRenderingEngine.safeCreateGui(PartRenderingEngine.java:665)
+	at org.eclipse.e4.ui.internal.workbench.swt.PartRenderingEngine.safeCreateGui(PartRenderingEngine.java:757)
+	at org.eclipse.e4.ui.internal.workbench.swt.PartRenderingEngine.access$0(PartRenderingEngine.java:728)
+	at org.eclipse.e4.ui.internal.workbench.swt.PartRenderingEngine$2.run(PartRenderingEngine.java:722)
+	at org.eclipse.core.runtime.SafeRunner.run(SafeRunner.java:42)
+	at org.eclipse.e4.ui.internal.workbench.swt.PartRenderingEngine.createGui(PartRenderingEngine.java:706)
+	at org.eclipse.e4.ui.internal.workbench.swt.PartRenderingEngine$4.run(PartRenderingEngine.java:1059)
+	at org.eclipse.core.databinding.observable.Realm.runWithDefault(Realm.java:336)
+	at org.eclipse.e4.ui.internal.workbench.swt.PartRenderingEngine.run(PartRenderingEngine.java:1022)
+	at org.eclipse.e4.ui.internal.workbench.E4Workbench.createAndRunUI(E4Workbench.java:150)
+	at org.eclipse.ui.internal.Workbench$5.run(Workbench.java:693)
+	at org.eclipse.core.databinding.observable.Realm.runWithDefault(Realm.java:336)
+	at org.eclipse.ui.internal.Workbench.createAndRunWorkbench(Workbench.java:610)
+	at org.eclipse.ui.PlatformUI.createAndRunWorkbench(PlatformUI.java:148)
+	at org.eclipse.ui.internal.ide.application.IDEApplication.start(IDEApplication.java:138)
+	at org.eclipse.equinox.internal.app.EclipseAppHandle.run(EclipseAppHandle.java:196)
+	at org.eclipse.core.runtime.internal.adaptor.EclipseAppLauncher.runApplication(EclipseAppLauncher.java:134)
+	at org.eclipse.core.runtime.internal.adaptor.EclipseAppLauncher.start(EclipseAppLauncher.java:104)
+	at org.eclipse.core.runtime.adaptor.EclipseStarter.run(EclipseStarter.java:388)
+	at org.eclipse.core.runtime.adaptor.EclipseStarter.run(EclipseStarter.java:243)
+	at sun.reflect.NativeMethodAccessorImpl.invoke0(Native Method)
+	at sun.reflect.NativeMethodAccessorImpl.invoke(Unknown Source)
+	at sun.reflect.DelegatingMethodAccessorImpl.invoke(Unknown Source)
+	at java.lang.reflect.Method.invoke(Unknown Source)
+	at org.eclipse.equinox.launcher.Main.invokeFramework(Main.java:673)
+	at org.eclipse.equinox.launcher.Main.basicRun(Main.java:610)
+	at org.eclipse.equinox.launcher.Main.run(Main.java:1519)
+
+!ENTRY org.eclipse.jface 4 0 2018-05-28 08:53:39.406
+!MESSAGE Unable to resolve plug-in "platform:/plugin/ilg.gnumcueclipse.managedbuild.packs/icons/pdficon_small.png".
+!STACK 0
+java.io.IOException: Unable to resolve plug-in "platform:/plugin/ilg.gnumcueclipse.managedbuild.packs/icons/pdficon_small.png".
+	at org.eclipse.core.internal.runtime.PlatformURLPluginConnection.parse(PlatformURLPluginConnection.java:61)
+	at org.eclipse.core.internal.runtime.PlatformURLPluginConnection.resolve(PlatformURLPluginConnection.java:70)
+	at org.eclipse.core.internal.boot.PlatformURLHandler.openConnection(PlatformURLHandler.java:66)
+	at org.eclipse.osgi.internal.url.URLStreamHandlerProxy.openConnection(URLStreamHandlerProxy.java:114)
+	at java.net.URL.openConnection(Unknown Source)
+	at org.eclipse.core.internal.runtime.PlatformURLConverter.toFileURL(PlatformURLConverter.java:31)
+	at org.eclipse.core.runtime.FileLocator.toFileURL(FileLocator.java:207)
+	at org.eclipse.jface.resource.URLImageDescriptor.getFilePath(URLImageDescriptor.java:213)
+	at org.eclipse.jface.resource.URLImageDescriptor.access$1(URLImageDescriptor.java:200)
+	at org.eclipse.jface.resource.URLImageDescriptor$URLImageFileNameProvider.getImagePath(URLImageDescriptor.java:53)
+	at org.eclipse.swt.internal.DPIUtil.validateAndGetImagePathAtZoom(DPIUtil.java:407)
+	at org.eclipse.swt.graphics.Image.<init>(Image.java:684)
+	at org.eclipse.jface.resource.URLImageDescriptor.createImage(URLImageDescriptor.java:244)
+	at org.eclipse.jface.resource.ImageDescriptor.createImage(ImageDescriptor.java:224)
+	at org.eclipse.jface.resource.ImageDescriptor.createImage(ImageDescriptor.java:202)
+	at org.eclipse.e4.ui.workbench.renderers.swt.SWTPartRenderer.getImageFromURI(SWTPartRenderer.java:224)
+	at org.eclipse.e4.ui.workbench.renderers.swt.SWTPartRenderer.getImage(SWTPartRenderer.java:235)
+	at org.eclipse.e4.ui.workbench.renderers.swt.StackRenderer.createTab(StackRenderer.java:895)
+	at org.eclipse.e4.ui.workbench.renderers.swt.LazyStackRenderer.processContents(LazyStackRenderer.java:139)
+	at org.eclipse.e4.ui.internal.workbench.swt.PartRenderingEngine.safeCreateGui(PartRenderingEngine.java:665)
+	at org.eclipse.e4.ui.internal.workbench.swt.PartRenderingEngine.safeCreateGui(PartRenderingEngine.java:757)
+	at org.eclipse.e4.ui.internal.workbench.swt.PartRenderingEngine.access$0(PartRenderingEngine.java:728)
+	at org.eclipse.e4.ui.internal.workbench.swt.PartRenderingEngine$2.run(PartRenderingEngine.java:722)
+	at org.eclipse.core.runtime.SafeRunner.run(SafeRunner.java:42)
+	at org.eclipse.e4.ui.internal.workbench.swt.PartRenderingEngine.createGui(PartRenderingEngine.java:706)
+	at org.eclipse.e4.ui.workbench.renderers.swt.SWTPartRenderer.processContents(SWTPartRenderer.java:70)
+	at org.eclipse.e4.ui.workbench.renderers.swt.SashRenderer.processContents(SashRenderer.java:142)
+	at org.eclipse.e4.ui.internal.workbench.swt.PartRenderingEngine.safeCreateGui(PartRenderingEngine.java:665)
+	at org.eclipse.e4.ui.internal.workbench.swt.PartRenderingEngine.safeCreateGui(PartRenderingEngine.java:757)
+	at org.eclipse.e4.ui.internal.workbench.swt.PartRenderingEngine.access$0(PartRenderingEngine.java:728)
+	at org.eclipse.e4.ui.internal.workbench.swt.PartRenderingEngine$2.run(PartRenderingEngine.java:722)
+	at org.eclipse.core.runtime.SafeRunner.run(SafeRunner.java:42)
+	at org.eclipse.e4.ui.internal.workbench.swt.PartRenderingEngine.createGui(PartRenderingEngine.java:706)
+	at org.eclipse.e4.ui.workbench.renderers.swt.SWTPartRenderer.processContents(SWTPartRenderer.java:70)
+	at org.eclipse.e4.ui.workbench.renderers.swt.SashRenderer.processContents(SashRenderer.java:142)
+	at org.eclipse.e4.ui.internal.workbench.swt.PartRenderingEngine.safeCreateGui(PartRenderingEngine.java:665)
+	at org.eclipse.e4.ui.internal.workbench.swt.PartRenderingEngine.safeCreateGui(PartRenderingEngine.java:757)
+	at org.eclipse.e4.ui.internal.workbench.swt.PartRenderingEngine.access$0(PartRenderingEngine.java:728)
+	at org.eclipse.e4.ui.internal.workbench.swt.PartRenderingEngine$2.run(PartRenderingEngine.java:722)
+	at org.eclipse.core.runtime.SafeRunner.run(SafeRunner.java:42)
+	at org.eclipse.e4.ui.internal.workbench.swt.PartRenderingEngine.createGui(PartRenderingEngine.java:706)
+	at org.eclipse.e4.ui.workbench.renderers.swt.SWTPartRenderer.processContents(SWTPartRenderer.java:70)
+	at org.eclipse.e4.ui.workbench.renderers.swt.SashRenderer.processContents(SashRenderer.java:142)
+	at org.eclipse.e4.ui.internal.workbench.swt.PartRenderingEngine.safeCreateGui(PartRenderingEngine.java:665)
+	at org.eclipse.e4.ui.internal.workbench.swt.PartRenderingEngine.safeCreateGui(PartRenderingEngine.java:757)
+	at org.eclipse.e4.ui.internal.workbench.swt.PartRenderingEngine.access$0(PartRenderingEngine.java:728)
+	at org.eclipse.e4.ui.internal.workbench.swt.PartRenderingEngine$2.run(PartRenderingEngine.java:722)
+	at org.eclipse.core.runtime.SafeRunner.run(SafeRunner.java:42)
+	at org.eclipse.e4.ui.internal.workbench.swt.PartRenderingEngine.createGui(PartRenderingEngine.java:706)
+	at org.eclipse.e4.ui.workbench.renderers.swt.SWTPartRenderer.processContents(SWTPartRenderer.java:70)
+	at org.eclipse.e4.ui.workbench.renderers.swt.PerspectiveRenderer.processContents(PerspectiveRenderer.java:49)
+	at org.eclipse.e4.ui.internal.workbench.swt.PartRenderingEngine.safeCreateGui(PartRenderingEngine.java:665)
+	at org.eclipse.e4.ui.internal.workbench.swt.PartRenderingEngine.safeCreateGui(PartRenderingEngine.java:757)
+	at org.eclipse.e4.ui.internal.workbench.swt.PartRenderingEngine.access$0(PartRenderingEngine.java:728)
+	at org.eclipse.e4.ui.internal.workbench.swt.PartRenderingEngine$2.run(PartRenderingEngine.java:722)
+	at org.eclipse.core.runtime.SafeRunner.run(SafeRunner.java:42)
+	at org.eclipse.e4.ui.internal.workbench.swt.PartRenderingEngine.createGui(PartRenderingEngine.java:706)
+	at org.eclipse.e4.ui.workbench.renderers.swt.PerspectiveStackRenderer.showTab(PerspectiveStackRenderer.java:82)
+	at org.eclipse.e4.ui.workbench.renderers.swt.LazyStackRenderer.postProcess(LazyStackRenderer.java:103)
+	at org.eclipse.e4.ui.workbench.renderers.swt.PerspectiveStackRenderer.postProcess(PerspectiveStackRenderer.java:63)
+	at org.eclipse.e4.ui.internal.workbench.swt.PartRenderingEngine.safeCreateGui(PartRenderingEngine.java:669)
+	at org.eclipse.e4.ui.internal.workbench.swt.PartRenderingEngine.safeCreateGui(PartRenderingEngine.java:757)
+	at org.eclipse.e4.ui.internal.workbench.swt.PartRenderingEngine.access$0(PartRenderingEngine.java:728)
+	at org.eclipse.e4.ui.internal.workbench.swt.PartRenderingEngine$2.run(PartRenderingEngine.java:722)
+	at org.eclipse.core.runtime.SafeRunner.run(SafeRunner.java:42)
+	at org.eclipse.e4.ui.internal.workbench.swt.PartRenderingEngine.createGui(PartRenderingEngine.java:706)
+	at org.eclipse.e4.ui.workbench.renderers.swt.SWTPartRenderer.processContents(SWTPartRenderer.java:70)
+	at org.eclipse.e4.ui.workbench.renderers.swt.SashRenderer.processContents(SashRenderer.java:142)
+	at org.eclipse.e4.ui.internal.workbench.swt.PartRenderingEngine.safeCreateGui(PartRenderingEngine.java:665)
+	at org.eclipse.e4.ui.internal.workbench.swt.PartRenderingEngine.safeCreateGui(PartRenderingEngine.java:757)
+	at org.eclipse.e4.ui.internal.workbench.swt.PartRenderingEngine.access$0(PartRenderingEngine.java:728)
+	at org.eclipse.e4.ui.internal.workbench.swt.PartRenderingEngine$2.run(PartRenderingEngine.java:722)
+	at org.eclipse.core.runtime.SafeRunner.run(SafeRunner.java:42)
+	at org.eclipse.e4.ui.internal.workbench.swt.PartRenderingEngine.createGui(PartRenderingEngine.java:706)
+	at org.eclipse.e4.ui.workbench.renderers.swt.SWTPartRenderer.processContents(SWTPartRenderer.java:70)
+	at org.eclipse.e4.ui.workbench.renderers.swt.WBWRenderer.processContents(WBWRenderer.java:725)
+	at org.eclipse.e4.ui.internal.workbench.swt.PartRenderingEngine.safeCreateGui(PartRenderingEngine.java:665)
+	at org.eclipse.e4.ui.internal.workbench.swt.PartRenderingEngine.safeCreateGui(PartRenderingEngine.java:757)
+	at org.eclipse.e4.ui.internal.workbench.swt.PartRenderingEngine.access$0(PartRenderingEngine.java:728)
+	at org.eclipse.e4.ui.internal.workbench.swt.PartRenderingEngine$2.run(PartRenderingEngine.java:722)
+	at org.eclipse.core.runtime.SafeRunner.run(SafeRunner.java:42)
+	at org.eclipse.e4.ui.internal.workbench.swt.PartRenderingEngine.createGui(PartRenderingEngine.java:706)
+	at org.eclipse.e4.ui.internal.workbench.swt.PartRenderingEngine$4.run(PartRenderingEngine.java:1059)
+	at org.eclipse.core.databinding.observable.Realm.runWithDefault(Realm.java:336)
+	at org.eclipse.e4.ui.internal.workbench.swt.PartRenderingEngine.run(PartRenderingEngine.java:1022)
+	at org.eclipse.e4.ui.internal.workbench.E4Workbench.createAndRunUI(E4Workbench.java:150)
+	at org.eclipse.ui.internal.Workbench$5.run(Workbench.java:693)
+	at org.eclipse.core.databinding.observable.Realm.runWithDefault(Realm.java:336)
+	at org.eclipse.ui.internal.Workbench.createAndRunWorkbench(Workbench.java:610)
+	at org.eclipse.ui.PlatformUI.createAndRunWorkbench(PlatformUI.java:148)
+	at org.eclipse.ui.internal.ide.application.IDEApplication.start(IDEApplication.java:138)
+	at org.eclipse.equinox.internal.app.EclipseAppHandle.run(EclipseAppHandle.java:196)
+	at org.eclipse.core.runtime.internal.adaptor.EclipseAppLauncher.runApplication(EclipseAppLauncher.java:134)
+	at org.eclipse.core.runtime.internal.adaptor.EclipseAppLauncher.start(EclipseAppLauncher.java:104)
+	at org.eclipse.core.runtime.adaptor.EclipseStarter.run(EclipseStarter.java:388)
+	at org.eclipse.core.runtime.adaptor.EclipseStarter.run(EclipseStarter.java:243)
+	at sun.reflect.NativeMethodAccessorImpl.invoke0(Native Method)
+	at sun.reflect.NativeMethodAccessorImpl.invoke(Unknown Source)
+	at sun.reflect.DelegatingMethodAccessorImpl.invoke(Unknown Source)
+	at java.lang.reflect.Method.invoke(Unknown Source)
+	at org.eclipse.equinox.launcher.Main.invokeFramework(Main.java:673)
+	at org.eclipse.equinox.launcher.Main.basicRun(Main.java:610)
+	at org.eclipse.equinox.launcher.Main.run(Main.java:1519)
+
+!ENTRY org.eclipse.core.runtime 4 0 2018-05-28 08:53:39.406
+!MESSAGE Invalid input url:platform:/plugin/ilg.gnumcueclipse.managedbuild.packs/icons/pdficon_small.png
+!STACK 0
+java.io.IOException: Unable to resolve plug-in "platform:/plugin/ilg.gnumcueclipse.managedbuild.packs/icons/pdficon_small.png".
+	at org.eclipse.core.internal.runtime.PlatformURLPluginConnection.parse(PlatformURLPluginConnection.java:61)
+	at org.eclipse.core.internal.runtime.FindSupport.find(FindSupport.java:290)
+	at org.eclipse.core.runtime.FileLocator.find(FileLocator.java:152)
+	at org.eclipse.jface.resource.URLImageDescriptor.getStream(URLImageDescriptor.java:134)
+	at org.eclipse.jface.resource.URLImageDescriptor.getImageData(URLImageDescriptor.java:106)
+	at org.eclipse.jface.resource.URLImageDescriptor.access$2(URLImageDescriptor.java:104)
+	at org.eclipse.jface.resource.URLImageDescriptor$URLImageDataProvider.getImageData(URLImageDescriptor.java:69)
+	at org.eclipse.swt.internal.DPIUtil.validateAndGetImageDataAtZoom(DPIUtil.java:392)
+	at org.eclipse.swt.graphics.Image.<init>(Image.java:729)
+	at org.eclipse.jface.resource.URLImageDescriptor.createImage(URLImageDescriptor.java:254)
+	at org.eclipse.jface.resource.ImageDescriptor.createImage(ImageDescriptor.java:224)
+	at org.eclipse.jface.resource.ImageDescriptor.createImage(ImageDescriptor.java:202)
+	at org.eclipse.e4.ui.workbench.renderers.swt.SWTPartRenderer.getImageFromURI(SWTPartRenderer.java:224)
+	at org.eclipse.e4.ui.workbench.renderers.swt.SWTPartRenderer.getImage(SWTPartRenderer.java:235)
+	at org.eclipse.e4.ui.workbench.renderers.swt.StackRenderer.createTab(StackRenderer.java:895)
+	at org.eclipse.e4.ui.workbench.renderers.swt.LazyStackRenderer.processContents(LazyStackRenderer.java:139)
+	at org.eclipse.e4.ui.internal.workbench.swt.PartRenderingEngine.safeCreateGui(PartRenderingEngine.java:665)
+	at org.eclipse.e4.ui.internal.workbench.swt.PartRenderingEngine.safeCreateGui(PartRenderingEngine.java:757)
+	at org.eclipse.e4.ui.internal.workbench.swt.PartRenderingEngine.access$0(PartRenderingEngine.java:728)
+	at org.eclipse.e4.ui.internal.workbench.swt.PartRenderingEngine$2.run(PartRenderingEngine.java:722)
+	at org.eclipse.core.runtime.SafeRunner.run(SafeRunner.java:42)
+	at org.eclipse.e4.ui.internal.workbench.swt.PartRenderingEngine.createGui(PartRenderingEngine.java:706)
+	at org.eclipse.e4.ui.workbench.renderers.swt.SWTPartRenderer.processContents(SWTPartRenderer.java:70)
+	at org.eclipse.e4.ui.workbench.renderers.swt.SashRenderer.processContents(SashRenderer.java:142)
+	at org.eclipse.e4.ui.internal.workbench.swt.PartRenderingEngine.safeCreateGui(PartRenderingEngine.java:665)
+	at org.eclipse.e4.ui.internal.workbench.swt.PartRenderingEngine.safeCreateGui(PartRenderingEngine.java:757)
+	at org.eclipse.e4.ui.internal.workbench.swt.PartRenderingEngine.access$0(PartRenderingEngine.java:728)
+	at org.eclipse.e4.ui.internal.workbench.swt.PartRenderingEngine$2.run(PartRenderingEngine.java:722)
+	at org.eclipse.core.runtime.SafeRunner.run(SafeRunner.java:42)
+	at org.eclipse.e4.ui.internal.workbench.swt.PartRenderingEngine.createGui(PartRenderingEngine.java:706)
+	at org.eclipse.e4.ui.workbench.renderers.swt.SWTPartRenderer.processContents(SWTPartRenderer.java:70)
+	at org.eclipse.e4.ui.workbench.renderers.swt.SashRenderer.processContents(SashRenderer.java:142)
+	at org.eclipse.e4.ui.internal.workbench.swt.PartRenderingEngine.safeCreateGui(PartRenderingEngine.java:665)
+	at org.eclipse.e4.ui.internal.workbench.swt.PartRenderingEngine.safeCreateGui(PartRenderingEngine.java:757)
+	at org.eclipse.e4.ui.internal.workbench.swt.PartRenderingEngine.access$0(PartRenderingEngine.java:728)
+	at org.eclipse.e4.ui.internal.workbench.swt.PartRenderingEngine$2.run(PartRenderingEngine.java:722)
+	at org.eclipse.core.runtime.SafeRunner.run(SafeRunner.java:42)
+	at org.eclipse.e4.ui.internal.workbench.swt.PartRenderingEngine.createGui(PartRenderingEngine.java:706)
+	at org.eclipse.e4.ui.workbench.renderers.swt.SWTPartRenderer.processContents(SWTPartRenderer.java:70)
+	at org.eclipse.e4.ui.workbench.renderers.swt.SashRenderer.processContents(SashRenderer.java:142)
+	at org.eclipse.e4.ui.internal.workbench.swt.PartRenderingEngine.safeCreateGui(PartRenderingEngine.java:665)
+	at org.eclipse.e4.ui.internal.workbench.swt.PartRenderingEngine.safeCreateGui(PartRenderingEngine.java:757)
+	at org.eclipse.e4.ui.internal.workbench.swt.PartRenderingEngine.access$0(PartRenderingEngine.java:728)
+	at org.eclipse.e4.ui.internal.workbench.swt.PartRenderingEngine$2.run(PartRenderingEngine.java:722)
+	at org.eclipse.core.runtime.SafeRunner.run(SafeRunner.java:42)
+	at org.eclipse.e4.ui.internal.workbench.swt.PartRenderingEngine.createGui(PartRenderingEngine.java:706)
+	at org.eclipse.e4.ui.workbench.renderers.swt.SWTPartRenderer.processContents(SWTPartRenderer.java:70)
+	at org.eclipse.e4.ui.workbench.renderers.swt.PerspectiveRenderer.processContents(PerspectiveRenderer.java:49)
+	at org.eclipse.e4.ui.internal.workbench.swt.PartRenderingEngine.safeCreateGui(PartRenderingEngine.java:665)
+	at org.eclipse.e4.ui.internal.workbench.swt.PartRenderingEngine.safeCreateGui(PartRenderingEngine.java:757)
+	at org.eclipse.e4.ui.internal.workbench.swt.PartRenderingEngine.access$0(PartRenderingEngine.java:728)
+	at org.eclipse.e4.ui.internal.workbench.swt.PartRenderingEngine$2.run(PartRenderingEngine.java:722)
+	at org.eclipse.core.runtime.SafeRunner.run(SafeRunner.java:42)
+	at org.eclipse.e4.ui.internal.workbench.swt.PartRenderingEngine.createGui(PartRenderingEngine.java:706)
+	at org.eclipse.e4.ui.workbench.renderers.swt.PerspectiveStackRenderer.showTab(PerspectiveStackRenderer.java:82)
+	at org.eclipse.e4.ui.workbench.renderers.swt.LazyStackRenderer.postProcess(LazyStackRenderer.java:103)
+	at org.eclipse.e4.ui.workbench.renderers.swt.PerspectiveStackRenderer.postProcess(PerspectiveStackRenderer.java:63)
+	at org.eclipse.e4.ui.internal.workbench.swt.PartRenderingEngine.safeCreateGui(PartRenderingEngine.java:669)
+	at org.eclipse.e4.ui.internal.workbench.swt.PartRenderingEngine.safeCreateGui(PartRenderingEngine.java:757)
+	at org.eclipse.e4.ui.internal.workbench.swt.PartRenderingEngine.access$0(PartRenderingEngine.java:728)
+	at org.eclipse.e4.ui.internal.workbench.swt.PartRenderingEngine$2.run(PartRenderingEngine.java:722)
+	at org.eclipse.core.runtime.SafeRunner.run(SafeRunner.java:42)
+	at org.eclipse.e4.ui.internal.workbench.swt.PartRenderingEngine.createGui(PartRenderingEngine.java:706)
+	at org.eclipse.e4.ui.workbench.renderers.swt.SWTPartRenderer.processContents(SWTPartRenderer.java:70)
+	at org.eclipse.e4.ui.workbench.renderers.swt.SashRenderer.processContents(SashRenderer.java:142)
+	at org.eclipse.e4.ui.internal.workbench.swt.PartRenderingEngine.safeCreateGui(PartRenderingEngine.java:665)
+	at org.eclipse.e4.ui.internal.workbench.swt.PartRenderingEngine.safeCreateGui(PartRenderingEngine.java:757)
+	at org.eclipse.e4.ui.internal.workbench.swt.PartRenderingEngine.access$0(PartRenderingEngine.java:728)
+	at org.eclipse.e4.ui.internal.workbench.swt.PartRenderingEngine$2.run(PartRenderingEngine.java:722)
+	at org.eclipse.core.runtime.SafeRunner.run(SafeRunner.java:42)
+	at org.eclipse.e4.ui.internal.workbench.swt.PartRenderingEngine.createGui(PartRenderingEngine.java:706)
+	at org.eclipse.e4.ui.workbench.renderers.swt.SWTPartRenderer.processContents(SWTPartRenderer.java:70)
+	at org.eclipse.e4.ui.workbench.renderers.swt.WBWRenderer.processContents(WBWRenderer.java:725)
+	at org.eclipse.e4.ui.internal.workbench.swt.PartRenderingEngine.safeCreateGui(PartRenderingEngine.java:665)
+	at org.eclipse.e4.ui.internal.workbench.swt.PartRenderingEngine.safeCreateGui(PartRenderingEngine.java:757)
+	at org.eclipse.e4.ui.internal.workbench.swt.PartRenderingEngine.access$0(PartRenderingEngine.java:728)
+	at org.eclipse.e4.ui.internal.workbench.swt.PartRenderingEngine$2.run(PartRenderingEngine.java:722)
+	at org.eclipse.core.runtime.SafeRunner.run(SafeRunner.java:42)
+	at org.eclipse.e4.ui.internal.workbench.swt.PartRenderingEngine.createGui(PartRenderingEngine.java:706)
+	at org.eclipse.e4.ui.internal.workbench.swt.PartRenderingEngine$4.run(PartRenderingEngine.java:1059)
+	at org.eclipse.core.databinding.observable.Realm.runWithDefault(Realm.java:336)
+	at org.eclipse.e4.ui.internal.workbench.swt.PartRenderingEngine.run(PartRenderingEngine.java:1022)
+	at org.eclipse.e4.ui.internal.workbench.E4Workbench.createAndRunUI(E4Workbench.java:150)
+	at org.eclipse.ui.internal.Workbench$5.run(Workbench.java:693)
+	at org.eclipse.core.databinding.observable.Realm.runWithDefault(Realm.java:336)
+	at org.eclipse.ui.internal.Workbench.createAndRunWorkbench(Workbench.java:610)
+	at org.eclipse.ui.PlatformUI.createAndRunWorkbench(PlatformUI.java:148)
+	at org.eclipse.ui.internal.ide.application.IDEApplication.start(IDEApplication.java:138)
+	at org.eclipse.equinox.internal.app.EclipseAppHandle.run(EclipseAppHandle.java:196)
+	at org.eclipse.core.runtime.internal.adaptor.EclipseAppLauncher.runApplication(EclipseAppLauncher.java:134)
+	at org.eclipse.core.runtime.internal.adaptor.EclipseAppLauncher.start(EclipseAppLauncher.java:104)
+	at org.eclipse.core.runtime.adaptor.EclipseStarter.run(EclipseStarter.java:388)
+	at org.eclipse.core.runtime.adaptor.EclipseStarter.run(EclipseStarter.java:243)
+	at sun.reflect.NativeMethodAccessorImpl.invoke0(Native Method)
+	at sun.reflect.NativeMethodAccessorImpl.invoke(Unknown Source)
+	at sun.reflect.DelegatingMethodAccessorImpl.invoke(Unknown Source)
+	at java.lang.reflect.Method.invoke(Unknown Source)
+	at org.eclipse.equinox.launcher.Main.invokeFramework(Main.java:673)
+	at org.eclipse.equinox.launcher.Main.basicRun(Main.java:610)
+	at org.eclipse.equinox.launcher.Main.run(Main.java:1519)
+
+!ENTRY org.eclipse.egit.ui 2 0 2018-05-28 08:53:40.405
+!MESSAGE Warning: The environment variable HOME is not set. The following directory will be used to store the Git
+user global configuration and to define the default location to store repositories: 'C:\Users\Chenj'. If this is
+not correct please set the HOME environment variable and restart Eclipse. Otherwise Git for Windows and
+EGit might behave differently since they see different configuration options.
+This warning can be switched off on the Team > Git > Confirmations and Warnings preference page.
+!SESSION 2018-05-29 09:00:16.904 -----------------------------------------------
+eclipse.buildId=4.6.3.M20170301-0400
+java.version=1.8.0_172
+java.vendor=Oracle Corporation
+BootLoader constants: OS=win32, ARCH=x86, WS=win32, NL=zh_TW
+Framework arguments:  -product org.eclipse.epp.package.cpp.product
+Command-line arguments:  -os win32 -ws win32 -arch x86 -product org.eclipse.epp.package.cpp.product
+
+!ENTRY org.eclipse.core.runtime 4 0 2018-05-29 09:06:19.352
+!MESSAGE Invalid input url:platform:/plugin/ilg.gnumcueclipse.managedbuild.packs/icons/pdficon_small.png
+!STACK 0
+java.io.IOException: Unable to resolve plug-in "platform:/plugin/ilg.gnumcueclipse.managedbuild.packs/icons/pdficon_small.png".
+	at org.eclipse.core.internal.runtime.PlatformURLPluginConnection.parse(PlatformURLPluginConnection.java:61)
+	at org.eclipse.core.internal.runtime.FindSupport.find(FindSupport.java:290)
+	at org.eclipse.core.runtime.FileLocator.find(FileLocator.java:152)
+	at org.eclipse.jface.resource.URLImageDescriptor.getFilePath(URLImageDescriptor.java:209)
+	at org.eclipse.jface.resource.URLImageDescriptor.access$1(URLImageDescriptor.java:200)
+	at org.eclipse.jface.resource.URLImageDescriptor$URLImageFileNameProvider.getImagePath(URLImageDescriptor.java:53)
+	at org.eclipse.swt.internal.DPIUtil.validateAndGetImagePathAtZoom(DPIUtil.java:407)
+	at org.eclipse.swt.graphics.Image.<init>(Image.java:684)
+	at org.eclipse.jface.resource.URLImageDescriptor.createImage(URLImageDescriptor.java:244)
+	at org.eclipse.jface.resource.ImageDescriptor.createImage(ImageDescriptor.java:224)
+	at org.eclipse.jface.resource.ImageDescriptor.createImage(ImageDescriptor.java:202)
+	at org.eclipse.e4.ui.workbench.renderers.swt.SWTPartRenderer.getImageFromURI(SWTPartRenderer.java:224)
+	at org.eclipse.e4.ui.workbench.renderers.swt.SWTPartRenderer.getImage(SWTPartRenderer.java:235)
+	at org.eclipse.e4.ui.workbench.renderers.swt.StackRenderer.createTab(StackRenderer.java:895)
+	at org.eclipse.e4.ui.workbench.renderers.swt.LazyStackRenderer.processContents(LazyStackRenderer.java:139)
+	at org.eclipse.e4.ui.internal.workbench.swt.PartRenderingEngine.safeCreateGui(PartRenderingEngine.java:665)
+	at org.eclipse.e4.ui.internal.workbench.swt.PartRenderingEngine.safeCreateGui(PartRenderingEngine.java:757)
+	at org.eclipse.e4.ui.internal.workbench.swt.PartRenderingEngine.access$0(PartRenderingEngine.java:728)
+	at org.eclipse.e4.ui.internal.workbench.swt.PartRenderingEngine$2.run(PartRenderingEngine.java:722)
+	at org.eclipse.core.runtime.SafeRunner.run(SafeRunner.java:42)
+	at org.eclipse.e4.ui.internal.workbench.swt.PartRenderingEngine.createGui(PartRenderingEngine.java:706)
+	at org.eclipse.e4.ui.workbench.renderers.swt.SWTPartRenderer.processContents(SWTPartRenderer.java:70)
+	at org.eclipse.e4.ui.workbench.renderers.swt.SashRenderer.processContents(SashRenderer.java:142)
+	at org.eclipse.e4.ui.internal.workbench.swt.PartRenderingEngine.safeCreateGui(PartRenderingEngine.java:665)
+	at org.eclipse.e4.ui.internal.workbench.swt.PartRenderingEngine.safeCreateGui(PartRenderingEngine.java:757)
+	at org.eclipse.e4.ui.internal.workbench.swt.PartRenderingEngine.access$0(PartRenderingEngine.java:728)
+	at org.eclipse.e4.ui.internal.workbench.swt.PartRenderingEngine$2.run(PartRenderingEngine.java:722)
+	at org.eclipse.core.runtime.SafeRunner.run(SafeRunner.java:42)
+	at org.eclipse.e4.ui.internal.workbench.swt.PartRenderingEngine.createGui(PartRenderingEngine.java:706)
+	at org.eclipse.e4.ui.workbench.renderers.swt.SWTPartRenderer.processContents(SWTPartRenderer.java:70)
+	at org.eclipse.e4.ui.workbench.renderers.swt.SashRenderer.processContents(SashRenderer.java:142)
+	at org.eclipse.e4.ui.internal.workbench.swt.PartRenderingEngine.safeCreateGui(PartRenderingEngine.java:665)
+	at org.eclipse.e4.ui.internal.workbench.swt.PartRenderingEngine.safeCreateGui(PartRenderingEngine.java:757)
+	at org.eclipse.e4.ui.internal.workbench.swt.PartRenderingEngine.access$0(PartRenderingEngine.java:728)
+	at org.eclipse.e4.ui.internal.workbench.swt.PartRenderingEngine$2.run(PartRenderingEngine.java:722)
+	at org.eclipse.core.runtime.SafeRunner.run(SafeRunner.java:42)
+	at org.eclipse.e4.ui.internal.workbench.swt.PartRenderingEngine.createGui(PartRenderingEngine.java:706)
+	at org.eclipse.e4.ui.workbench.renderers.swt.SWTPartRenderer.processContents(SWTPartRenderer.java:70)
+	at org.eclipse.e4.ui.workbench.renderers.swt.SashRenderer.processContents(SashRenderer.java:142)
+	at org.eclipse.e4.ui.internal.workbench.swt.PartRenderingEngine.safeCreateGui(PartRenderingEngine.java:665)
+	at org.eclipse.e4.ui.internal.workbench.swt.PartRenderingEngine.safeCreateGui(PartRenderingEngine.java:757)
+	at org.eclipse.e4.ui.internal.workbench.swt.PartRenderingEngine.access$0(PartRenderingEngine.java:728)
+	at org.eclipse.e4.ui.internal.workbench.swt.PartRenderingEngine$2.run(PartRenderingEngine.java:722)
+	at org.eclipse.core.runtime.SafeRunner.run(SafeRunner.java:42)
+	at org.eclipse.e4.ui.internal.workbench.swt.PartRenderingEngine.createGui(PartRenderingEngine.java:706)
+	at org.eclipse.e4.ui.workbench.renderers.swt.SWTPartRenderer.processContents(SWTPartRenderer.java:70)
+	at org.eclipse.e4.ui.workbench.renderers.swt.PerspectiveRenderer.processContents(PerspectiveRenderer.java:49)
+	at org.eclipse.e4.ui.internal.workbench.swt.PartRenderingEngine.safeCreateGui(PartRenderingEngine.java:665)
+	at org.eclipse.e4.ui.internal.workbench.swt.PartRenderingEngine.safeCreateGui(PartRenderingEngine.java:757)
+	at org.eclipse.e4.ui.internal.workbench.swt.PartRenderingEngine.access$0(PartRenderingEngine.java:728)
+	at org.eclipse.e4.ui.internal.workbench.swt.PartRenderingEngine$2.run(PartRenderingEngine.java:722)
+	at org.eclipse.core.runtime.SafeRunner.run(SafeRunner.java:42)
+	at org.eclipse.e4.ui.internal.workbench.swt.PartRenderingEngine.createGui(PartRenderingEngine.java:706)
+	at org.eclipse.e4.ui.workbench.renderers.swt.PerspectiveStackRenderer.showTab(PerspectiveStackRenderer.java:82)
+	at org.eclipse.e4.ui.workbench.renderers.swt.LazyStackRenderer.postProcess(LazyStackRenderer.java:103)
+	at org.eclipse.e4.ui.workbench.renderers.swt.PerspectiveStackRenderer.postProcess(PerspectiveStackRenderer.java:63)
+	at org.eclipse.e4.ui.internal.workbench.swt.PartRenderingEngine.safeCreateGui(PartRenderingEngine.java:669)
+	at org.eclipse.e4.ui.internal.workbench.swt.PartRenderingEngine.safeCreateGui(PartRenderingEngine.java:757)
+	at org.eclipse.e4.ui.internal.workbench.swt.PartRenderingEngine.access$0(PartRenderingEngine.java:728)
+	at org.eclipse.e4.ui.internal.workbench.swt.PartRenderingEngine$2.run(PartRenderingEngine.java:722)
+	at org.eclipse.core.runtime.SafeRunner.run(SafeRunner.java:42)
+	at org.eclipse.e4.ui.internal.workbench.swt.PartRenderingEngine.createGui(PartRenderingEngine.java:706)
+	at org.eclipse.e4.ui.workbench.renderers.swt.SWTPartRenderer.processContents(SWTPartRenderer.java:70)
+	at org.eclipse.e4.ui.workbench.renderers.swt.SashRenderer.processContents(SashRenderer.java:142)
+	at org.eclipse.e4.ui.internal.workbench.swt.PartRenderingEngine.safeCreateGui(PartRenderingEngine.java:665)
+	at org.eclipse.e4.ui.internal.workbench.swt.PartRenderingEngine.safeCreateGui(PartRenderingEngine.java:757)
+	at org.eclipse.e4.ui.internal.workbench.swt.PartRenderingEngine.access$0(PartRenderingEngine.java:728)
+	at org.eclipse.e4.ui.internal.workbench.swt.PartRenderingEngine$2.run(PartRenderingEngine.java:722)
+	at org.eclipse.core.runtime.SafeRunner.run(SafeRunner.java:42)
+	at org.eclipse.e4.ui.internal.workbench.swt.PartRenderingEngine.createGui(PartRenderingEngine.java:706)
+	at org.eclipse.e4.ui.workbench.renderers.swt.SWTPartRenderer.processContents(SWTPartRenderer.java:70)
+	at org.eclipse.e4.ui.workbench.renderers.swt.WBWRenderer.processContents(WBWRenderer.java:725)
+	at org.eclipse.e4.ui.internal.workbench.swt.PartRenderingEngine.safeCreateGui(PartRenderingEngine.java:665)
+	at org.eclipse.e4.ui.internal.workbench.swt.PartRenderingEngine.safeCreateGui(PartRenderingEngine.java:757)
+	at org.eclipse.e4.ui.internal.workbench.swt.PartRenderingEngine.access$0(PartRenderingEngine.java:728)
+	at org.eclipse.e4.ui.internal.workbench.swt.PartRenderingEngine$2.run(PartRenderingEngine.java:722)
+	at org.eclipse.core.runtime.SafeRunner.run(SafeRunner.java:42)
+	at org.eclipse.e4.ui.internal.workbench.swt.PartRenderingEngine.createGui(PartRenderingEngine.java:706)
+	at org.eclipse.e4.ui.internal.workbench.swt.PartRenderingEngine$4.run(PartRenderingEngine.java:1059)
+	at org.eclipse.core.databinding.observable.Realm.runWithDefault(Realm.java:336)
+	at org.eclipse.e4.ui.internal.workbench.swt.PartRenderingEngine.run(PartRenderingEngine.java:1022)
+	at org.eclipse.e4.ui.internal.workbench.E4Workbench.createAndRunUI(E4Workbench.java:150)
+	at org.eclipse.ui.internal.Workbench$5.run(Workbench.java:693)
+	at org.eclipse.core.databinding.observable.Realm.runWithDefault(Realm.java:336)
+	at org.eclipse.ui.internal.Workbench.createAndRunWorkbench(Workbench.java:610)
+	at org.eclipse.ui.PlatformUI.createAndRunWorkbench(PlatformUI.java:148)
+	at org.eclipse.ui.internal.ide.application.IDEApplication.start(IDEApplication.java:138)
+	at org.eclipse.equinox.internal.app.EclipseAppHandle.run(EclipseAppHandle.java:196)
+	at org.eclipse.core.runtime.internal.adaptor.EclipseAppLauncher.runApplication(EclipseAppLauncher.java:134)
+	at org.eclipse.core.runtime.internal.adaptor.EclipseAppLauncher.start(EclipseAppLauncher.java:104)
+	at org.eclipse.core.runtime.adaptor.EclipseStarter.run(EclipseStarter.java:388)
+	at org.eclipse.core.runtime.adaptor.EclipseStarter.run(EclipseStarter.java:243)
+	at sun.reflect.NativeMethodAccessorImpl.invoke0(Native Method)
+	at sun.reflect.NativeMethodAccessorImpl.invoke(Unknown Source)
+	at sun.reflect.DelegatingMethodAccessorImpl.invoke(Unknown Source)
+	at java.lang.reflect.Method.invoke(Unknown Source)
+	at org.eclipse.equinox.launcher.Main.invokeFramework(Main.java:673)
+	at org.eclipse.equinox.launcher.Main.basicRun(Main.java:610)
+	at org.eclipse.equinox.launcher.Main.run(Main.java:1519)
+
+!ENTRY org.eclipse.jface 4 0 2018-05-29 09:06:19.358
+!MESSAGE Unable to resolve plug-in "platform:/plugin/ilg.gnumcueclipse.managedbuild.packs/icons/pdficon_small.png".
+!STACK 0
+java.io.IOException: Unable to resolve plug-in "platform:/plugin/ilg.gnumcueclipse.managedbuild.packs/icons/pdficon_small.png".
+	at org.eclipse.core.internal.runtime.PlatformURLPluginConnection.parse(PlatformURLPluginConnection.java:61)
+	at org.eclipse.core.internal.runtime.PlatformURLPluginConnection.resolve(PlatformURLPluginConnection.java:70)
+	at org.eclipse.core.internal.boot.PlatformURLHandler.openConnection(PlatformURLHandler.java:66)
+	at org.eclipse.osgi.internal.url.URLStreamHandlerProxy.openConnection(URLStreamHandlerProxy.java:114)
+	at java.net.URL.openConnection(Unknown Source)
+	at org.eclipse.core.internal.runtime.PlatformURLConverter.toFileURL(PlatformURLConverter.java:31)
+	at org.eclipse.core.runtime.FileLocator.toFileURL(FileLocator.java:207)
+	at org.eclipse.jface.resource.URLImageDescriptor.getFilePath(URLImageDescriptor.java:213)
+	at org.eclipse.jface.resource.URLImageDescriptor.access$1(URLImageDescriptor.java:200)
+	at org.eclipse.jface.resource.URLImageDescriptor$URLImageFileNameProvider.getImagePath(URLImageDescriptor.java:53)
+	at org.eclipse.swt.internal.DPIUtil.validateAndGetImagePathAtZoom(DPIUtil.java:407)
+	at org.eclipse.swt.graphics.Image.<init>(Image.java:684)
+	at org.eclipse.jface.resource.URLImageDescriptor.createImage(URLImageDescriptor.java:244)
+	at org.eclipse.jface.resource.ImageDescriptor.createImage(ImageDescriptor.java:224)
+	at org.eclipse.jface.resource.ImageDescriptor.createImage(ImageDescriptor.java:202)
+	at org.eclipse.e4.ui.workbench.renderers.swt.SWTPartRenderer.getImageFromURI(SWTPartRenderer.java:224)
+	at org.eclipse.e4.ui.workbench.renderers.swt.SWTPartRenderer.getImage(SWTPartRenderer.java:235)
+	at org.eclipse.e4.ui.workbench.renderers.swt.StackRenderer.createTab(StackRenderer.java:895)
+	at org.eclipse.e4.ui.workbench.renderers.swt.LazyStackRenderer.processContents(LazyStackRenderer.java:139)
+	at org.eclipse.e4.ui.internal.workbench.swt.PartRenderingEngine.safeCreateGui(PartRenderingEngine.java:665)
+	at org.eclipse.e4.ui.internal.workbench.swt.PartRenderingEngine.safeCreateGui(PartRenderingEngine.java:757)
+	at org.eclipse.e4.ui.internal.workbench.swt.PartRenderingEngine.access$0(PartRenderingEngine.java:728)
+	at org.eclipse.e4.ui.internal.workbench.swt.PartRenderingEngine$2.run(PartRenderingEngine.java:722)
+	at org.eclipse.core.runtime.SafeRunner.run(SafeRunner.java:42)
+	at org.eclipse.e4.ui.internal.workbench.swt.PartRenderingEngine.createGui(PartRenderingEngine.java:706)
+	at org.eclipse.e4.ui.workbench.renderers.swt.SWTPartRenderer.processContents(SWTPartRenderer.java:70)
+	at org.eclipse.e4.ui.workbench.renderers.swt.SashRenderer.processContents(SashRenderer.java:142)
+	at org.eclipse.e4.ui.internal.workbench.swt.PartRenderingEngine.safeCreateGui(PartRenderingEngine.java:665)
+	at org.eclipse.e4.ui.internal.workbench.swt.PartRenderingEngine.safeCreateGui(PartRenderingEngine.java:757)
+	at org.eclipse.e4.ui.internal.workbench.swt.PartRenderingEngine.access$0(PartRenderingEngine.java:728)
+	at org.eclipse.e4.ui.internal.workbench.swt.PartRenderingEngine$2.run(PartRenderingEngine.java:722)
+	at org.eclipse.core.runtime.SafeRunner.run(SafeRunner.java:42)
+	at org.eclipse.e4.ui.internal.workbench.swt.PartRenderingEngine.createGui(PartRenderingEngine.java:706)
+	at org.eclipse.e4.ui.workbench.renderers.swt.SWTPartRenderer.processContents(SWTPartRenderer.java:70)
+	at org.eclipse.e4.ui.workbench.renderers.swt.SashRenderer.processContents(SashRenderer.java:142)
+	at org.eclipse.e4.ui.internal.workbench.swt.PartRenderingEngine.safeCreateGui(PartRenderingEngine.java:665)
+	at org.eclipse.e4.ui.internal.workbench.swt.PartRenderingEngine.safeCreateGui(PartRenderingEngine.java:757)
+	at org.eclipse.e4.ui.internal.workbench.swt.PartRenderingEngine.access$0(PartRenderingEngine.java:728)
+	at org.eclipse.e4.ui.internal.workbench.swt.PartRenderingEngine$2.run(PartRenderingEngine.java:722)
+	at org.eclipse.core.runtime.SafeRunner.run(SafeRunner.java:42)
+	at org.eclipse.e4.ui.internal.workbench.swt.PartRenderingEngine.createGui(PartRenderingEngine.java:706)
+	at org.eclipse.e4.ui.workbench.renderers.swt.SWTPartRenderer.processContents(SWTPartRenderer.java:70)
+	at org.eclipse.e4.ui.workbench.renderers.swt.SashRenderer.processContents(SashRenderer.java:142)
+	at org.eclipse.e4.ui.internal.workbench.swt.PartRenderingEngine.safeCreateGui(PartRenderingEngine.java:665)
+	at org.eclipse.e4.ui.internal.workbench.swt.PartRenderingEngine.safeCreateGui(PartRenderingEngine.java:757)
+	at org.eclipse.e4.ui.internal.workbench.swt.PartRenderingEngine.access$0(PartRenderingEngine.java:728)
+	at org.eclipse.e4.ui.internal.workbench.swt.PartRenderingEngine$2.run(PartRenderingEngine.java:722)
+	at org.eclipse.core.runtime.SafeRunner.run(SafeRunner.java:42)
+	at org.eclipse.e4.ui.internal.workbench.swt.PartRenderingEngine.createGui(PartRenderingEngine.java:706)
+	at org.eclipse.e4.ui.workbench.renderers.swt.SWTPartRenderer.processContents(SWTPartRenderer.java:70)
+	at org.eclipse.e4.ui.workbench.renderers.swt.PerspectiveRenderer.processContents(PerspectiveRenderer.java:49)
+	at org.eclipse.e4.ui.internal.workbench.swt.PartRenderingEngine.safeCreateGui(PartRenderingEngine.java:665)
+	at org.eclipse.e4.ui.internal.workbench.swt.PartRenderingEngine.safeCreateGui(PartRenderingEngine.java:757)
+	at org.eclipse.e4.ui.internal.workbench.swt.PartRenderingEngine.access$0(PartRenderingEngine.java:728)
+	at org.eclipse.e4.ui.internal.workbench.swt.PartRenderingEngine$2.run(PartRenderingEngine.java:722)
+	at org.eclipse.core.runtime.SafeRunner.run(SafeRunner.java:42)
+	at org.eclipse.e4.ui.internal.workbench.swt.PartRenderingEngine.createGui(PartRenderingEngine.java:706)
+	at org.eclipse.e4.ui.workbench.renderers.swt.PerspectiveStackRenderer.showTab(PerspectiveStackRenderer.java:82)
+	at org.eclipse.e4.ui.workbench.renderers.swt.LazyStackRenderer.postProcess(LazyStackRenderer.java:103)
+	at org.eclipse.e4.ui.workbench.renderers.swt.PerspectiveStackRenderer.postProcess(PerspectiveStackRenderer.java:63)
+	at org.eclipse.e4.ui.internal.workbench.swt.PartRenderingEngine.safeCreateGui(PartRenderingEngine.java:669)
+	at org.eclipse.e4.ui.internal.workbench.swt.PartRenderingEngine.safeCreateGui(PartRenderingEngine.java:757)
+	at org.eclipse.e4.ui.internal.workbench.swt.PartRenderingEngine.access$0(PartRenderingEngine.java:728)
+	at org.eclipse.e4.ui.internal.workbench.swt.PartRenderingEngine$2.run(PartRenderingEngine.java:722)
+	at org.eclipse.core.runtime.SafeRunner.run(SafeRunner.java:42)
+	at org.eclipse.e4.ui.internal.workbench.swt.PartRenderingEngine.createGui(PartRenderingEngine.java:706)
+	at org.eclipse.e4.ui.workbench.renderers.swt.SWTPartRenderer.processContents(SWTPartRenderer.java:70)
+	at org.eclipse.e4.ui.workbench.renderers.swt.SashRenderer.processContents(SashRenderer.java:142)
+	at org.eclipse.e4.ui.internal.workbench.swt.PartRenderingEngine.safeCreateGui(PartRenderingEngine.java:665)
+	at org.eclipse.e4.ui.internal.workbench.swt.PartRenderingEngine.safeCreateGui(PartRenderingEngine.java:757)
+	at org.eclipse.e4.ui.internal.workbench.swt.PartRenderingEngine.access$0(PartRenderingEngine.java:728)
+	at org.eclipse.e4.ui.internal.workbench.swt.PartRenderingEngine$2.run(PartRenderingEngine.java:722)
+	at org.eclipse.core.runtime.SafeRunner.run(SafeRunner.java:42)
+	at org.eclipse.e4.ui.internal.workbench.swt.PartRenderingEngine.createGui(PartRenderingEngine.java:706)
+	at org.eclipse.e4.ui.workbench.renderers.swt.SWTPartRenderer.processContents(SWTPartRenderer.java:70)
+	at org.eclipse.e4.ui.workbench.renderers.swt.WBWRenderer.processContents(WBWRenderer.java:725)
+	at org.eclipse.e4.ui.internal.workbench.swt.PartRenderingEngine.safeCreateGui(PartRenderingEngine.java:665)
+	at org.eclipse.e4.ui.internal.workbench.swt.PartRenderingEngine.safeCreateGui(PartRenderingEngine.java:757)
+	at org.eclipse.e4.ui.internal.workbench.swt.PartRenderingEngine.access$0(PartRenderingEngine.java:728)
+	at org.eclipse.e4.ui.internal.workbench.swt.PartRenderingEngine$2.run(PartRenderingEngine.java:722)
+	at org.eclipse.core.runtime.SafeRunner.run(SafeRunner.java:42)
+	at org.eclipse.e4.ui.internal.workbench.swt.PartRenderingEngine.createGui(PartRenderingEngine.java:706)
+	at org.eclipse.e4.ui.internal.workbench.swt.PartRenderingEngine$4.run(PartRenderingEngine.java:1059)
+	at org.eclipse.core.databinding.observable.Realm.runWithDefault(Realm.java:336)
+	at org.eclipse.e4.ui.internal.workbench.swt.PartRenderingEngine.run(PartRenderingEngine.java:1022)
+	at org.eclipse.e4.ui.internal.workbench.E4Workbench.createAndRunUI(E4Workbench.java:150)
+	at org.eclipse.ui.internal.Workbench$5.run(Workbench.java:693)
+	at org.eclipse.core.databinding.observable.Realm.runWithDefault(Realm.java:336)
+	at org.eclipse.ui.internal.Workbench.createAndRunWorkbench(Workbench.java:610)
+	at org.eclipse.ui.PlatformUI.createAndRunWorkbench(PlatformUI.java:148)
+	at org.eclipse.ui.internal.ide.application.IDEApplication.start(IDEApplication.java:138)
+	at org.eclipse.equinox.internal.app.EclipseAppHandle.run(EclipseAppHandle.java:196)
+	at org.eclipse.core.runtime.internal.adaptor.EclipseAppLauncher.runApplication(EclipseAppLauncher.java:134)
+	at org.eclipse.core.runtime.internal.adaptor.EclipseAppLauncher.start(EclipseAppLauncher.java:104)
+	at org.eclipse.core.runtime.adaptor.EclipseStarter.run(EclipseStarter.java:388)
+	at org.eclipse.core.runtime.adaptor.EclipseStarter.run(EclipseStarter.java:243)
+	at sun.reflect.NativeMethodAccessorImpl.invoke0(Native Method)
+	at sun.reflect.NativeMethodAccessorImpl.invoke(Unknown Source)
+	at sun.reflect.DelegatingMethodAccessorImpl.invoke(Unknown Source)
+	at java.lang.reflect.Method.invoke(Unknown Source)
+	at org.eclipse.equinox.launcher.Main.invokeFramework(Main.java:673)
+	at org.eclipse.equinox.launcher.Main.basicRun(Main.java:610)
+	at org.eclipse.equinox.launcher.Main.run(Main.java:1519)
+
+!ENTRY org.eclipse.core.runtime 4 0 2018-05-29 09:06:19.359
+!MESSAGE Invalid input url:platform:/plugin/ilg.gnumcueclipse.managedbuild.packs/icons/pdficon_small.png
+!STACK 0
+java.io.IOException: Unable to resolve plug-in "platform:/plugin/ilg.gnumcueclipse.managedbuild.packs/icons/pdficon_small.png".
+	at org.eclipse.core.internal.runtime.PlatformURLPluginConnection.parse(PlatformURLPluginConnection.java:61)
+	at org.eclipse.core.internal.runtime.FindSupport.find(FindSupport.java:290)
+	at org.eclipse.core.runtime.FileLocator.find(FileLocator.java:152)
+	at org.eclipse.jface.resource.URLImageDescriptor.getStream(URLImageDescriptor.java:134)
+	at org.eclipse.jface.resource.URLImageDescriptor.getImageData(URLImageDescriptor.java:106)
+	at org.eclipse.jface.resource.URLImageDescriptor.access$2(URLImageDescriptor.java:104)
+	at org.eclipse.jface.resource.URLImageDescriptor$URLImageDataProvider.getImageData(URLImageDescriptor.java:69)
+	at org.eclipse.swt.internal.DPIUtil.validateAndGetImageDataAtZoom(DPIUtil.java:392)
+	at org.eclipse.swt.graphics.Image.<init>(Image.java:729)
+	at org.eclipse.jface.resource.URLImageDescriptor.createImage(URLImageDescriptor.java:254)
+	at org.eclipse.jface.resource.ImageDescriptor.createImage(ImageDescriptor.java:224)
+	at org.eclipse.jface.resource.ImageDescriptor.createImage(ImageDescriptor.java:202)
+	at org.eclipse.e4.ui.workbench.renderers.swt.SWTPartRenderer.getImageFromURI(SWTPartRenderer.java:224)
+	at org.eclipse.e4.ui.workbench.renderers.swt.SWTPartRenderer.getImage(SWTPartRenderer.java:235)
+	at org.eclipse.e4.ui.workbench.renderers.swt.StackRenderer.createTab(StackRenderer.java:895)
+	at org.eclipse.e4.ui.workbench.renderers.swt.LazyStackRenderer.processContents(LazyStackRenderer.java:139)
+	at org.eclipse.e4.ui.internal.workbench.swt.PartRenderingEngine.safeCreateGui(PartRenderingEngine.java:665)
+	at org.eclipse.e4.ui.internal.workbench.swt.PartRenderingEngine.safeCreateGui(PartRenderingEngine.java:757)
+	at org.eclipse.e4.ui.internal.workbench.swt.PartRenderingEngine.access$0(PartRenderingEngine.java:728)
+	at org.eclipse.e4.ui.internal.workbench.swt.PartRenderingEngine$2.run(PartRenderingEngine.java:722)
+	at org.eclipse.core.runtime.SafeRunner.run(SafeRunner.java:42)
+	at org.eclipse.e4.ui.internal.workbench.swt.PartRenderingEngine.createGui(PartRenderingEngine.java:706)
+	at org.eclipse.e4.ui.workbench.renderers.swt.SWTPartRenderer.processContents(SWTPartRenderer.java:70)
+	at org.eclipse.e4.ui.workbench.renderers.swt.SashRenderer.processContents(SashRenderer.java:142)
+	at org.eclipse.e4.ui.internal.workbench.swt.PartRenderingEngine.safeCreateGui(PartRenderingEngine.java:665)
+	at org.eclipse.e4.ui.internal.workbench.swt.PartRenderingEngine.safeCreateGui(PartRenderingEngine.java:757)
+	at org.eclipse.e4.ui.internal.workbench.swt.PartRenderingEngine.access$0(PartRenderingEngine.java:728)
+	at org.eclipse.e4.ui.internal.workbench.swt.PartRenderingEngine$2.run(PartRenderingEngine.java:722)
+	at org.eclipse.core.runtime.SafeRunner.run(SafeRunner.java:42)
+	at org.eclipse.e4.ui.internal.workbench.swt.PartRenderingEngine.createGui(PartRenderingEngine.java:706)
+	at org.eclipse.e4.ui.workbench.renderers.swt.SWTPartRenderer.processContents(SWTPartRenderer.java:70)
+	at org.eclipse.e4.ui.workbench.renderers.swt.SashRenderer.processContents(SashRenderer.java:142)
+	at org.eclipse.e4.ui.internal.workbench.swt.PartRenderingEngine.safeCreateGui(PartRenderingEngine.java:665)
+	at org.eclipse.e4.ui.internal.workbench.swt.PartRenderingEngine.safeCreateGui(PartRenderingEngine.java:757)
+	at org.eclipse.e4.ui.internal.workbench.swt.PartRenderingEngine.access$0(PartRenderingEngine.java:728)
+	at org.eclipse.e4.ui.internal.workbench.swt.PartRenderingEngine$2.run(PartRenderingEngine.java:722)
+	at org.eclipse.core.runtime.SafeRunner.run(SafeRunner.java:42)
+	at org.eclipse.e4.ui.internal.workbench.swt.PartRenderingEngine.createGui(PartRenderingEngine.java:706)
+	at org.eclipse.e4.ui.workbench.renderers.swt.SWTPartRenderer.processContents(SWTPartRenderer.java:70)
+	at org.eclipse.e4.ui.workbench.renderers.swt.SashRenderer.processContents(SashRenderer.java:142)
+	at org.eclipse.e4.ui.internal.workbench.swt.PartRenderingEngine.safeCreateGui(PartRenderingEngine.java:665)
+	at org.eclipse.e4.ui.internal.workbench.swt.PartRenderingEngine.safeCreateGui(PartRenderingEngine.java:757)
+	at org.eclipse.e4.ui.internal.workbench.swt.PartRenderingEngine.access$0(PartRenderingEngine.java:728)
+	at org.eclipse.e4.ui.internal.workbench.swt.PartRenderingEngine$2.run(PartRenderingEngine.java:722)
+	at org.eclipse.core.runtime.SafeRunner.run(SafeRunner.java:42)
+	at org.eclipse.e4.ui.internal.workbench.swt.PartRenderingEngine.createGui(PartRenderingEngine.java:706)
+	at org.eclipse.e4.ui.workbench.renderers.swt.SWTPartRenderer.processContents(SWTPartRenderer.java:70)
+	at org.eclipse.e4.ui.workbench.renderers.swt.PerspectiveRenderer.processContents(PerspectiveRenderer.java:49)
+	at org.eclipse.e4.ui.internal.workbench.swt.PartRenderingEngine.safeCreateGui(PartRenderingEngine.java:665)
+	at org.eclipse.e4.ui.internal.workbench.swt.PartRenderingEngine.safeCreateGui(PartRenderingEngine.java:757)
+	at org.eclipse.e4.ui.internal.workbench.swt.PartRenderingEngine.access$0(PartRenderingEngine.java:728)
+	at org.eclipse.e4.ui.internal.workbench.swt.PartRenderingEngine$2.run(PartRenderingEngine.java:722)
+	at org.eclipse.core.runtime.SafeRunner.run(SafeRunner.java:42)
+	at org.eclipse.e4.ui.internal.workbench.swt.PartRenderingEngine.createGui(PartRenderingEngine.java:706)
+	at org.eclipse.e4.ui.workbench.renderers.swt.PerspectiveStackRenderer.showTab(PerspectiveStackRenderer.java:82)
+	at org.eclipse.e4.ui.workbench.renderers.swt.LazyStackRenderer.postProcess(LazyStackRenderer.java:103)
+	at org.eclipse.e4.ui.workbench.renderers.swt.PerspectiveStackRenderer.postProcess(PerspectiveStackRenderer.java:63)
+	at org.eclipse.e4.ui.internal.workbench.swt.PartRenderingEngine.safeCreateGui(PartRenderingEngine.java:669)
+	at org.eclipse.e4.ui.internal.workbench.swt.PartRenderingEngine.safeCreateGui(PartRenderingEngine.java:757)
+	at org.eclipse.e4.ui.internal.workbench.swt.PartRenderingEngine.access$0(PartRenderingEngine.java:728)
+	at org.eclipse.e4.ui.internal.workbench.swt.PartRenderingEngine$2.run(PartRenderingEngine.java:722)
+	at org.eclipse.core.runtime.SafeRunner.run(SafeRunner.java:42)
+	at org.eclipse.e4.ui.internal.workbench.swt.PartRenderingEngine.createGui(PartRenderingEngine.java:706)
+	at org.eclipse.e4.ui.workbench.renderers.swt.SWTPartRenderer.processContents(SWTPartRenderer.java:70)
+	at org.eclipse.e4.ui.workbench.renderers.swt.SashRenderer.processContents(SashRenderer.java:142)
+	at org.eclipse.e4.ui.internal.workbench.swt.PartRenderingEngine.safeCreateGui(PartRenderingEngine.java:665)
+	at org.eclipse.e4.ui.internal.workbench.swt.PartRenderingEngine.safeCreateGui(PartRenderingEngine.java:757)
+	at org.eclipse.e4.ui.internal.workbench.swt.PartRenderingEngine.access$0(PartRenderingEngine.java:728)
+	at org.eclipse.e4.ui.internal.workbench.swt.PartRenderingEngine$2.run(PartRenderingEngine.java:722)
+	at org.eclipse.core.runtime.SafeRunner.run(SafeRunner.java:42)
+	at org.eclipse.e4.ui.internal.workbench.swt.PartRenderingEngine.createGui(PartRenderingEngine.java:706)
+	at org.eclipse.e4.ui.workbench.renderers.swt.SWTPartRenderer.processContents(SWTPartRenderer.java:70)
+	at org.eclipse.e4.ui.workbench.renderers.swt.WBWRenderer.processContents(WBWRenderer.java:725)
+	at org.eclipse.e4.ui.internal.workbench.swt.PartRenderingEngine.safeCreateGui(PartRenderingEngine.java:665)
+	at org.eclipse.e4.ui.internal.workbench.swt.PartRenderingEngine.safeCreateGui(PartRenderingEngine.java:757)
+	at org.eclipse.e4.ui.internal.workbench.swt.PartRenderingEngine.access$0(PartRenderingEngine.java:728)
+	at org.eclipse.e4.ui.internal.workbench.swt.PartRenderingEngine$2.run(PartRenderingEngine.java:722)
+	at org.eclipse.core.runtime.SafeRunner.run(SafeRunner.java:42)
+	at org.eclipse.e4.ui.internal.workbench.swt.PartRenderingEngine.createGui(PartRenderingEngine.java:706)
+	at org.eclipse.e4.ui.internal.workbench.swt.PartRenderingEngine$4.run(PartRenderingEngine.java:1059)
+	at org.eclipse.core.databinding.observable.Realm.runWithDefault(Realm.java:336)
+	at org.eclipse.e4.ui.internal.workbench.swt.PartRenderingEngine.run(PartRenderingEngine.java:1022)
+	at org.eclipse.e4.ui.internal.workbench.E4Workbench.createAndRunUI(E4Workbench.java:150)
+	at org.eclipse.ui.internal.Workbench$5.run(Workbench.java:693)
+	at org.eclipse.core.databinding.observable.Realm.runWithDefault(Realm.java:336)
+	at org.eclipse.ui.internal.Workbench.createAndRunWorkbench(Workbench.java:610)
+	at org.eclipse.ui.PlatformUI.createAndRunWorkbench(PlatformUI.java:148)
+	at org.eclipse.ui.internal.ide.application.IDEApplication.start(IDEApplication.java:138)
+	at org.eclipse.equinox.internal.app.EclipseAppHandle.run(EclipseAppHandle.java:196)
+	at org.eclipse.core.runtime.internal.adaptor.EclipseAppLauncher.runApplication(EclipseAppLauncher.java:134)
+	at org.eclipse.core.runtime.internal.adaptor.EclipseAppLauncher.start(EclipseAppLauncher.java:104)
+	at org.eclipse.core.runtime.adaptor.EclipseStarter.run(EclipseStarter.java:388)
+	at org.eclipse.core.runtime.adaptor.EclipseStarter.run(EclipseStarter.java:243)
+	at sun.reflect.NativeMethodAccessorImpl.invoke0(Native Method)
+	at sun.reflect.NativeMethodAccessorImpl.invoke(Unknown Source)
+	at sun.reflect.DelegatingMethodAccessorImpl.invoke(Unknown Source)
+	at java.lang.reflect.Method.invoke(Unknown Source)
+	at org.eclipse.equinox.launcher.Main.invokeFramework(Main.java:673)
+	at org.eclipse.equinox.launcher.Main.basicRun(Main.java:610)
+	at org.eclipse.equinox.launcher.Main.run(Main.java:1519)
+
+!ENTRY org.eclipse.egit.ui 2 0 2018-05-29 09:06:20.159
+!MESSAGE Warning: The environment variable HOME is not set. The following directory will be used to store the Git
+user global configuration and to define the default location to store repositories: 'C:\Users\Chenj'. If this is
+not correct please set the HOME environment variable and restart Eclipse. Otherwise Git for Windows and
+EGit might behave differently since they see different configuration options.
+This warning can be switched off on the Team > Git > Confirmations and Warnings preference page.
+
+!ENTRY org.eclipse.launchbar.core 2 0 2018-05-29 09:12:06.464
+!MESSAGE Enablement expression is missing for descriptor type org.eclipse.cdt.debug.core.coreBuildDescriptorType
+
+!ENTRY org.eclipse.launchbar.core 2 0 2018-05-29 09:12:06.466
+!MESSAGE Enablement expression is missing for config provider for org.eclipse.cdt.debug.core.coreBuildDescriptorType
+
+!ENTRY ilg.gnuarmeclipse.debug.gdbjtag.jlink 4 1 2018-05-29 09:12:15.863
+!MESSAGE C:/Program Files (x86)/SEGGER/JLink_V620f/JLinkGDBServerCL.exe -if swd -device STM32F091RC -endian little -speed auto -port 2331 -swoport 2332 -telnetport 2333 -vd -ir -localhostonly 1 -singlerun -strict -timeout 0 -nogui
+
+!ENTRY ilg.gnuarmeclipse.debug.gdbjtag.jlink 4 1 2018-05-29 09:12:16.624
+!MESSAGE arm-none-eabi-gdb --interpreter=mi2 --nx
+
+!ENTRY ilg.gnuarmeclipse.debug.gdbjtag.jlink 4 1 2018-05-29 09:12:27.994
+!MESSAGE C:/Program Files (x86)/SEGGER/JLink_V620f/JLinkGDBServerCL.exe -if swd -device STM32F091RC -endian little -speed auto -port 2331 -swoport 2332 -telnetport 2333 -vd -ir -localhostonly 1 -singlerun -strict -timeout 0 -nogui
+
+!ENTRY ilg.gnuarmeclipse.debug.gdbjtag.jlink 4 1 2018-05-29 09:12:29.070
+!MESSAGE arm-none-eabi-gdb --interpreter=mi2 --nx
+
+!ENTRY ilg.gnuarmeclipse.debug.gdbjtag.jlink 4 1 2018-05-29 09:17:05.899
+!MESSAGE C:/Program Files (x86)/SEGGER/JLink_V620f/JLinkGDBServerCL.exe -if swd -device STM32F091RC -endian little -speed auto -port 2331 -swoport 2332 -telnetport 2333 -vd -ir -localhostonly 1 -singlerun -strict -timeout 0 -nogui
+
+!ENTRY ilg.gnuarmeclipse.debug.gdbjtag.jlink 4 1 2018-05-29 09:17:06.999
+!MESSAGE arm-none-eabi-gdb --interpreter=mi2 --nx
+
+!ENTRY ilg.gnuarmeclipse.debug.gdbjtag.jlink 4 1 2018-05-29 09:19:52.389
+!MESSAGE C:/Program Files (x86)/SEGGER/JLink_V620f/JLinkGDBServerCL.exe -if swd -device STM32F091RC -endian little -speed auto -port 2331 -swoport 2332 -telnetport 2333 -vd -ir -localhostonly 1 -singlerun -strict -timeout 0 -nogui
+
+!ENTRY ilg.gnuarmeclipse.debug.gdbjtag.jlink 4 1 2018-05-29 09:19:53.483
+!MESSAGE arm-none-eabi-gdb --interpreter=mi2 --nx
+
+!ENTRY ilg.gnuarmeclipse.debug.gdbjtag.jlink 4 1 2018-05-29 09:23:06.783
+!MESSAGE C:/Program Files (x86)/SEGGER/JLink_V620f/JLinkGDBServerCL.exe -if swd -device STM32F091RC -endian little -speed auto -port 2331 -swoport 2332 -telnetport 2333 -vd -ir -localhostonly 1 -singlerun -strict -timeout 0 -nogui
+
+!ENTRY ilg.gnuarmeclipse.debug.gdbjtag.jlink 4 1 2018-05-29 09:23:07.872
+!MESSAGE arm-none-eabi-gdb --interpreter=mi2 --nx
+
+!ENTRY ilg.gnuarmeclipse.debug.gdbjtag.jlink 4 1 2018-05-29 10:05:04.763
+!MESSAGE C:/Program Files (x86)/SEGGER/JLink_V620f/JLinkGDBServerCL.exe -if swd -device STM32F091RC -endian little -speed auto -port 2331 -swoport 2332 -telnetport 2333 -vd -ir -localhostonly 1 -singlerun -strict -timeout 0 -nogui
+
+!ENTRY ilg.gnuarmeclipse.debug.gdbjtag.jlink 4 1 2018-05-29 10:05:05.502
+!MESSAGE arm-none-eabi-gdb --interpreter=mi2 --nx
+
+!ENTRY ilg.gnuarmeclipse.debug.gdbjtag.jlink 4 1 2018-05-29 10:08:32.887
+!MESSAGE C:/Program Files (x86)/SEGGER/JLink_V620f/JLinkGDBServerCL.exe -if swd -device STM32F091RC -endian little -speed auto -port 2331 -swoport 2332 -telnetport 2333 -vd -ir -localhostonly 1 -singlerun -strict -timeout 0 -nogui
+
+!ENTRY ilg.gnuarmeclipse.debug.gdbjtag.jlink 4 1 2018-05-29 10:08:33.596
+!MESSAGE arm-none-eabi-gdb --interpreter=mi2 --nx
+
+!ENTRY org.eclipse.equinox.event 4 0 2018-05-29 10:17:12.028
+!MESSAGE Exception while dispatching event org.osgi.service.event.Event [topic=org/eclipse/e4/ui/model/ui/ElementContainer/selectedElement/SET] {ChangedElement=org.eclipse.e4.ui.model.application.ui.advanced.impl.PerspectiveStackImpl@db056b (elementId: org.eclipse.ui.ide.perspectivestack, tags: [], contributorURI: null) (widget: Composite {}, renderer: org.eclipse.e4.ui.workbench.renderers.swt.PerspectiveStackRenderer@1d3f6ad, toBeRendered: true, onTop: false, visible: true, containerData: 7500, accessibilityPhrase: null), org.eclipse.e4.data={ChangedElement=org.eclipse.e4.ui.model.application.ui.advanced.impl.PerspectiveStackImpl@db056b (elementId: org.eclipse.ui.ide.perspectivestack, tags: [], contributorURI: null) (widget: Composite {}, renderer: org.eclipse.e4.ui.workbench.renderers.swt.PerspectiveStackRenderer@1d3f6ad, toBeRendered: true, onTop: false, visible: true, containerData: 7500, accessibilityPhrase: null), AttName=selectedElement, EventType=SET, OldValue=org.eclipse.e4.ui.model.application.ui.advanced.impl.PerspectiveImpl@682398 (elementId: org.eclipse.debug.ui.DebugPerspective, tags: [persp.actionSet:org.eclipse.mylyn.doc.actionSet, persp.actionSet:org.eclipse.mylyn.tasks.ui.navigation, persp.actionSet:org.eclipse.ui.cheatsheets.actionSet, persp.actionSet:org.eclipse.rse.core.search.searchActionSet, persp.actionSet:org.eclipse.search.searchActionSet, persp.actionSet:org.eclipse.ui.edit.text.actionSet.annotationNavigation, persp.actionSet:org.eclipse.ui.edit.text.actionSet.navigation, persp.actionSet:org.eclipse.ui.edit.text.actionSet.convertLineDelimitersTo, persp.actionSet:org.eclipse.ui.externaltools.ExternalToolsSet, persp.actionSet:org.eclipse.ui.actionSet.keyBindings, persp.actionSet:org.eclipse.ui.actionSet.openFiles, persp.actionSet:ilg.gnuarmeclipse.debug.gdbjtag.restart.actionset, persp.actionSet:org.eclipse.debug.ui.launchActionSet, persp.actionSet:org.eclipse.debug.ui.debugActionSet, persp.viewSC:org.eclipse.debug.ui.DebugView, persp.viewSC:org.eclipse.debug.ui.VariableView, persp.viewSC:org.eclipse.debug.ui.BreakpointView, persp.viewSC:org.eclipse.debug.ui.ExpressionView, persp.viewSC:org.eclipse.ui.views.ContentOutline, persp.viewSC:org.eclipse.ui.console.ConsoleView, persp.viewSC:org.eclipse.ui.views.TaskList, persp.perspSC:ilg.gnuarmeclipse.codered.perspectives.CodeRedPerspective, persp.viewSC:ilg.gnuarmeclipse.debug.gdbjtag.ui.views.PeripheralsView, persp.viewSC:org.eclipse.cdt.debug.ui.SignalsView, persp.viewSC:org.eclipse.debug.ui.RegisterView, persp.viewSC:org.eclipse.debug.ui.ModuleView, persp.viewSC:org.eclipse.debug.ui.MemoryView, persp.viewSC:org.eclipse.ui.views.ProblemView, persp.viewSC:org.eclipse.cdt.debug.ui.executablesView, persp.actionSet:org.eclipse.cdt.debug.ui.debugActionSet, persp.viewSC:org.eclipse.cdt.debug.ui.memory.memorybrowser.MemoryBrowser, persp.viewSC:org.eclipse.cdt.dsf.gdb.ui.tracecontrol.view, persp.viewSC:org.eclipse.cdt.debug.ui.debuggerConsoleView, persp.viewSC:org.eclipse.cdt.dsf.debug.ui.disassembly.view, persp.perspSC:org.eclipse.cdt.ui.CPerspective, persp.actionSet:org.eclipse.ui.NavigateActionSet, persp.actionSet:org.eclipse.debug.ui.breakpointActionSet, persp.viewSC:org.eclipse.pde.runtime.LogView, persp.showIn:org.eclipse.egit.ui.RepositoriesView, persp.perspSC:org.eclipse.wst.xml.ui.perspective], contributorURI: null) (widget: Composite {}, renderer: org.eclipse.e4.ui.workbench.renderers.swt.PerspectiveRenderer@d40184, toBeRendered: true, onTop: false, visible: true, containerData: null, accessibilityPhrase: null) (label: Debug, iconURI: platform:/plugin/org.eclipse.debug.ui/$nl$/icons/full/eview16/debug_persp.png, tooltip: null, context: PerspectiveImpl (org.eclipse.debug.ui.DebugPerspective) Context, variables: []), Widget=Composite {}, NewValue=org.eclipse.e4.ui.model.application.ui.advanced.impl.PerspectiveImpl@1926a36 (elementId: org.eclipse.cdt.ui.CPerspective, tags: [persp.actionSet:org.eclipse.mylyn.doc.actionSet, persp.actionSet:org.eclipse.mylyn.tasks.ui.navigation, persp.actionSet:org.eclipse.ui.cheatsheets.actionSet, persp.actionSet:org.eclipse.rse.core.search.searchActionSet, persp.actionSet:org.eclipse.search.searchActionSet, persp.actionSet:org.eclipse.ui.edit.text.actionSet.annotationNavigation, persp.actionSet:org.eclipse.ui.edit.text.actionSet.navigation, persp.actionSet:org.eclipse.ui.edit.text.actionSet.convertLineDelimitersTo, persp.actionSet:org.eclipse.ui.externaltools.ExternalToolsSet, persp.actionSet:org.eclipse.ui.actionSet.keyBindings, persp.actionSet:org.eclipse.ui.actionSet.openFiles, persp.actionSet:ilg.gnumcueclipse.debug.gdbjtag.restart.actionset, persp.actionSet:org.eclipse.cdt.ui.SearchActionSet, persp.actionSet:org.eclipse.cdt.ui.CElementCreationActionSet, persp.actionSet:org.eclipse.ui.NavigateActionSet, persp.showIn:org.eclipse.cdt.codan.internal.ui.views.ProblemDetails, persp.actionSet:org.eclipse.debug.ui.breakpointActionSet, persp.actionSet:org.eclipse.cdt.make.ui.makeTargetActionSet, persp.actionSet:org.eclipse.debug.ui.launchActionSet, persp.actionSet:org.eclipse.cdt.ui.buildConfigActionSet, persp.actionSet:org.eclipse.cdt.ui.NavigationActionSet, persp.actionSet:org.eclipse.cdt.ui.OpenActionSet, persp.actionSet:org.eclipse.cdt.ui.CodingActionSet, persp.actionSet:org.eclipse.ui.edit.text.actionSet.presentation, persp.showIn:org.eclipse.cdt.ui.includeBrowser, persp.showIn:org.eclipse.cdt.ui.CView, persp.showIn:org.eclipse.ui.navigator.ProjectExplorer, persp.actionSet:org.eclipse.debug.ui.profileActionSet, persp.actionSet:org.eclipse.egit.ui.gitaction, persp.newWizSC:org.eclipse.cdt.autotools.ui.wizards.conversionWizard, persp.newWizSC:org.eclipse.cdt.ui.wizards.ConvertToMakeWizard, persp.newWizSC:org.eclipse.cdt.ui.wizards.NewMakeFromExisting, persp.newWizSC:org.eclipse.cdt.ui.wizards.NewSourceFileCreationWizard, persp.newWizSC:org.eclipse.cdt.ui.wizards.NewHeaderFileCreationWizard, persp.newWizSC:org.eclipse.cdt.ui.wizards.NewFileCreationWizard, persp.newWizSC:org.eclipse.cdt.ui.wizards.NewSourceFolderCreationWizard, persp.newWizSC:org.eclipse.cdt.ui.wizards.NewFolderCreationWizard, persp.newWizSC:org.eclipse.cdt.ui.wizards.NewClassCreationWizard, persp.newWizSC:org.eclipse.cdt.ui.wizards.NewCWizard1, persp.newWizSC:org.eclipse.cdt.ui.wizards.NewCWizard2, persp.newWizSC:org.eclipse.cdt.ui.wizard.project, persp.newWizSC:org.eclipse.egit.ui.CreateRepositoryWizard, persp.newWizSC:org.eclipse.mylyn.tasks.ui.wizards.new.repository.task, persp.perspSC:org.eclipse.debug.ui.DebugPerspective, persp.perspSC:ilg.gnumcueclipse.codered.perspectives.CodeRedPerspective, persp.perspSC:org.eclipse.team.ui.TeamSynchronizingPerspective, persp.viewSC:org.eclipse.cdt.make.ui.views.MakeView, persp.viewSC:ilg.gnumcueclipse.managedbuild.packs.ui.views.DocsView, persp.viewSC:org.eclipse.search.ui.views.SearchView, persp.viewSC:org.eclipse.ui.console.ConsoleView, persp.viewSC:org.eclipse.ui.views.ResourceNavigator, persp.viewSC:org.eclipse.ui.views.TaskList, persp.viewSC:org.eclipse.ui.views.ProblemView, persp.viewSC:org.eclipse.ui.navigator.ProjectExplorer, persp.viewSC:org.eclipse.ui.views.PropertySheet, persp.viewSC:org.eclipse.ui.views.ContentOutline, persp.viewSC:org.eclipse.cdt.codan.internal.ui.views.ProblemDetails, persp.viewSC:org.eclipse.cdt.ui.CView, persp.viewSC:org.eclipse.cdt.ui.includeBrowser, persp.viewSC:org.eclipse.mylyn.tasks.ui.views.tasks, persp.actionSet:ilg.gnuarmeclipse.debug.gdbjtag.restart.actionset], contributorURI: null) (widget: Composite {}, renderer: org.eclipse.e4.ui.workbench.renderers.swt.PerspectiveRenderer@d40184, toBeRendered: true, onTop: false, visible: true, containerData: null, accessibilityPhrase: null) (label: C/C++, iconURI: platform:/plugin/org.eclipse.cdt.ui/icons/view16/c_pers.gif, tooltip: null, context: PerspectiveImpl (org.eclipse.cdt.ui.CPerspective) Context, variables: [])}, AttName=selectedElement, EventType=SET, OldValue=org.eclipse.e4.ui.model.application.ui.advanced.impl.PerspectiveImpl@682398 (elementId: org.eclipse.debug.ui.DebugPerspective, tags: [persp.actionSet:org.eclipse.mylyn.doc.actionSet, persp.actionSet:org.eclipse.mylyn.tasks.ui.navigation, persp.actionSet:org.eclipse.ui.cheatsheets.actionSet, persp.actionSet:org.eclipse.rse.core.search.searchActionSet, persp.actionSet:org.eclipse.search.searchActionSet, persp.actionSet:org.eclipse.ui.edit.text.actionSet.annotationNavigation, persp.actionSet:org.eclipse.ui.edit.text.actionSet.navigation, persp.actionSet:org.eclipse.ui.edit.text.actionSet.convertLineDelimitersTo, persp.actionSet:org.eclipse.ui.externaltools.ExternalToolsSet, persp.actionSet:org.eclipse.ui.actionSet.keyBindings, persp.actionSet:org.eclipse.ui.actionSet.openFiles, persp.actionSet:ilg.gnuarmeclipse.debug.gdbjtag.restart.actionset, persp.actionSet:org.eclipse.debug.ui.launchActionSet, persp.actionSet:org.eclipse.debug.ui.debugActionSet, persp.viewSC:org.eclipse.debug.ui.DebugView, persp.viewSC:org.eclipse.debug.ui.VariableView, persp.viewSC:org.eclipse.debug.ui.BreakpointView, persp.viewSC:org.eclipse.debug.ui.ExpressionView, persp.viewSC:org.eclipse.ui.views.ContentOutline, persp.viewSC:org.eclipse.ui.console.ConsoleView, persp.viewSC:org.eclipse.ui.views.TaskList, persp.perspSC:ilg.gnuarmeclipse.codered.perspectives.CodeRedPerspective, persp.viewSC:ilg.gnuarmeclipse.debug.gdbjtag.ui.views.PeripheralsView, persp.viewSC:org.eclipse.cdt.debug.ui.SignalsView, persp.viewSC:org.eclipse.debug.ui.RegisterView, persp.viewSC:org.eclipse.debug.ui.ModuleView, persp.viewSC:org.eclipse.debug.ui.MemoryView, persp.viewSC:org.eclipse.ui.views.ProblemView, persp.viewSC:org.eclipse.cdt.debug.ui.executablesView, persp.actionSet:org.eclipse.cdt.debug.ui.debugActionSet, persp.viewSC:org.eclipse.cdt.debug.ui.memory.memorybrowser.MemoryBrowser, persp.viewSC:org.eclipse.cdt.dsf.gdb.ui.tracecontrol.view, persp.viewSC:org.eclipse.cdt.debug.ui.debuggerConsoleView, persp.viewSC:org.eclipse.cdt.dsf.debug.ui.disassembly.view, persp.perspSC:org.eclipse.cdt.ui.CPerspective, persp.actionSet:org.eclipse.ui.NavigateActionSet, persp.actionSet:org.eclipse.debug.ui.breakpointActionSet, persp.viewSC:org.eclipse.pde.runtime.LogView, persp.showIn:org.eclipse.egit.ui.RepositoriesView, persp.perspSC:org.eclipse.wst.xml.ui.perspective], contributorURI: null) (widget: Composite {}, renderer: org.eclipse.e4.ui.workbench.renderers.swt.PerspectiveRenderer@d40184, toBeRendered: true, onTop: false, visible: true, containerData: null, accessibilityPhrase: null) (label: Debug, iconURI: platform:/plugin/org.eclipse.debug.ui/$nl$/icons/full/eview16/debug_persp.png, tooltip: null, context: PerspectiveImpl (org.eclipse.debug.ui.DebugPerspective) Context, variables: []), Widget=Composite {}, NewValue=org.eclipse.e4.ui.model.application.ui.advanced.impl.PerspectiveImpl@1926a36 (elementId: org.eclipse.cdt.ui.CPerspective, tags: [persp.actionSet:org.eclipse.mylyn.doc.actionSet, persp.actionSet:org.eclipse.mylyn.tasks.ui.navigation, persp.actionSet:org.eclipse.ui.cheatsheets.actionSet, persp.actionSet:org.eclipse.rse.core.search.searchActionSet, persp.actionSet:org.eclipse.search.searchActionSet, persp.actionSet:org.eclipse.ui.edit.text.actionSet.annotationNavigation, persp.actionSet:org.eclipse.ui.edit.text.actionSet.navigation, persp.actionSet:org.eclipse.ui.edit.text.actionSet.convertLineDelimitersTo, persp.actionSet:org.eclipse.ui.externaltools.ExternalToolsSet, persp.actionSet:org.eclipse.ui.actionSet.keyBindings, persp.actionSet:org.eclipse.ui.actionSet.openFiles, persp.actionSet:ilg.gnumcueclipse.debug.gdbjtag.restart.actionset, persp.actionSet:org.eclipse.cdt.ui.SearchActionSet, persp.actionSet:org.eclipse.cdt.ui.CElementCreationActionSet, persp.actionSet:org.eclipse.ui.NavigateActionSet, persp.showIn:org.eclipse.cdt.codan.internal.ui.views.ProblemDetails, persp.actionSet:org.eclipse.debug.ui.breakpointActionSet, persp.actionSet:org.eclipse.cdt.make.ui.makeTargetActionSet, persp.actionSet:org.eclipse.debug.ui.launchActionSet, persp.actionSet:org.eclipse.cdt.ui.buildConfigActionSet, persp.actionSet:org.eclipse.cdt.ui.NavigationActionSet, persp.actionSet:org.eclipse.cdt.ui.OpenActionSet, persp.actionSet:org.eclipse.cdt.ui.CodingActionSet, persp.actionSet:org.eclipse.ui.edit.text.actionSet.presentation, persp.showIn:org.eclipse.cdt.ui.includeBrowser, persp.showIn:org.eclipse.cdt.ui.CView, persp.showIn:org.eclipse.ui.navigator.ProjectExplorer, persp.actionSet:org.eclipse.debug.ui.profileActionSet, persp.actionSet:org.eclipse.egit.ui.gitaction, persp.newWizSC:org.eclipse.cdt.autotools.ui.wizards.conversionWizard, persp.newWizSC:org.eclipse.cdt.ui.wizards.ConvertToMakeWizard, persp.newWizSC:org.eclipse.cdt.ui.wizards.NewMakeFromExisting, persp.newWizSC:org.eclipse.cdt.ui.wizards.NewSourceFileCreationWizard, persp.newWizSC:org.eclipse.cdt.ui.wizards.NewHeaderFileCreationWizard, persp.newWizSC:org.eclipse.cdt.ui.wizards.NewFileCreationWizard, persp.newWizSC:org.eclipse.cdt.ui.wizards.NewSourceFolderCreationWizard, persp.newWizSC:org.eclipse.cdt.ui.wizards.NewFolderCreationWizard, persp.newWizSC:org.eclipse.cdt.ui.wizards.NewClassCreationWizard, persp.newWizSC:org.eclipse.cdt.ui.wizards.NewCWizard1, persp.newWizSC:org.eclipse.cdt.ui.wizards.NewCWizard2, persp.newWizSC:org.eclipse.cdt.ui.wizard.project, persp.newWizSC:org.eclipse.egit.ui.CreateRepositoryWizard, persp.newWizSC:org.eclipse.mylyn.tasks.ui.wizards.new.repository.task, persp.perspSC:org.eclipse.debug.ui.DebugPerspective, persp.perspSC:ilg.gnumcueclipse.codered.perspectives.CodeRedPerspective, persp.perspSC:org.eclipse.team.ui.TeamSynchronizingPerspective, persp.viewSC:org.eclipse.cdt.make.ui.views.MakeView, persp.viewSC:ilg.gnumcueclipse.managedbuild.packs.ui.views.DocsView, persp.viewSC:org.eclipse.search.ui.views.SearchView, persp.viewSC:org.eclipse.ui.console.ConsoleView, persp.viewSC:org.eclipse.ui.views.ResourceNavigator, persp.viewSC:org.eclipse.ui.views.TaskList, persp.viewSC:org.eclipse.ui.views.ProblemView, persp.viewSC:org.eclipse.ui.navigator.ProjectExplorer, persp.viewSC:org.eclipse.ui.views.PropertySheet, persp.viewSC:org.eclipse.ui.views.ContentOutline, persp.viewSC:org.eclipse.cdt.codan.internal.ui.views.ProblemDetails, persp.viewSC:org.eclipse.cdt.ui.CView, persp.viewSC:org.eclipse.cdt.ui.includeBrowser, persp.viewSC:org.eclipse.mylyn.tasks.ui.views.tasks, persp.actionSet:ilg.gnuarmeclipse.debug.gdbjtag.restart.actionset], contributorURI: null) (widget: Composite {}, renderer: org.eclipse.e4.ui.workbench.renderers.swt.PerspectiveRenderer@d40184, toBeRendered: true, onTop: false, visible: true, containerData: null, accessibilityPhrase: null) (label: C/C++, iconURI: platform:/plugin/org.eclipse.cdt.ui/icons/view16/c_pers.gif, tooltip: null, context: PerspectiveImpl (org.eclipse.cdt.ui.CPerspective) Context, variables: [])} to handler org.eclipse.e4.ui.services.internal.events.UIEventHandler@1fb2ef3
+!STACK 0
+java.lang.NullPointerException
+	at org.eclipse.e4.ui.internal.workbench.PartServiceImpl.switchPerspective(PartServiceImpl.java:653)
+	at org.eclipse.e4.ui.workbench.renderers.swt.PerspectiveStackRenderer.showTab(PerspectiveStackRenderer.java:106)
+	at org.eclipse.e4.ui.workbench.renderers.swt.LazyStackRenderer$1.handleEvent(LazyStackRenderer.java:72)
+	at org.eclipse.e4.ui.services.internal.events.UIEventHandler$1.run(UIEventHandler.java:40)
+	at org.eclipse.swt.widgets.Synchronizer.syncExec(Synchronizer.java:233)
+	at org.eclipse.ui.internal.UISynchronizer.syncExec(UISynchronizer.java:145)
+	at org.eclipse.swt.widgets.Display.syncExec(Display.java:4821)
+	at org.eclipse.e4.ui.internal.workbench.swt.E4Application$1.syncExec(E4Application.java:211)
+	at org.eclipse.e4.ui.services.internal.events.UIEventHandler.handleEvent(UIEventHandler.java:36)
+	at org.eclipse.equinox.internal.event.EventHandlerWrapper.handleEvent(EventHandlerWrapper.java:201)
+	at org.eclipse.equinox.internal.event.EventHandlerTracker.dispatchEvent(EventHandlerTracker.java:197)
+	at org.eclipse.equinox.internal.event.EventHandlerTracker.dispatchEvent(EventHandlerTracker.java:1)
+	at org.eclipse.osgi.framework.eventmgr.EventManager.dispatchEvent(EventManager.java:230)
+	at org.eclipse.osgi.framework.eventmgr.ListenerQueue.dispatchEventSynchronous(ListenerQueue.java:148)
+	at org.eclipse.equinox.internal.event.EventAdminImpl.dispatchEvent(EventAdminImpl.java:135)
+	at org.eclipse.equinox.internal.event.EventAdminImpl.sendEvent(EventAdminImpl.java:78)
+	at org.eclipse.equinox.internal.event.EventComponent.sendEvent(EventComponent.java:39)
+	at org.eclipse.e4.ui.services.internal.events.EventBroker.send(EventBroker.java:94)
+	at org.eclipse.e4.ui.internal.workbench.UIEventPublisher.notifyChanged(UIEventPublisher.java:60)
+	at org.eclipse.emf.common.notify.impl.BasicNotifierImpl.eNotify(BasicNotifierImpl.java:374)
+	at org.eclipse.e4.ui.model.application.ui.advanced.impl.PerspectiveStackImpl.setSelectedElement(PerspectiveStackImpl.java:135)
+	at org.eclipse.e4.ui.model.application.ui.advanced.impl.PerspectiveStackImpl.setSelectedElement(PerspectiveStackImpl.java:1)
+	at org.eclipse.e4.ui.workbench.addons.perspectiveswitcher.PerspectiveSwitcher$12.widgetSelected(PerspectiveSwitcher.java:593)
+	at org.eclipse.swt.widgets.TypedListener.handleEvent(TypedListener.java:249)
+	at org.eclipse.swt.widgets.EventTable.sendEvent(EventTable.java:84)
+	at org.eclipse.swt.widgets.Display.sendEvent(Display.java:4418)
+	at org.eclipse.swt.widgets.Widget.sendEvent(Widget.java:1079)
+	at org.eclipse.swt.widgets.Display.runDeferredEvents(Display.java:4236)
+	at org.eclipse.swt.widgets.Display.readAndDispatch(Display.java:3824)
+	at org.eclipse.e4.ui.internal.workbench.swt.PartRenderingEngine$4.run(PartRenderingEngine.java:1121)
+	at org.eclipse.core.databinding.observable.Realm.runWithDefault(Realm.java:336)
+	at org.eclipse.e4.ui.internal.workbench.swt.PartRenderingEngine.run(PartRenderingEngine.java:1022)
+	at org.eclipse.e4.ui.internal.workbench.E4Workbench.createAndRunUI(E4Workbench.java:150)
+	at org.eclipse.ui.internal.Workbench$5.run(Workbench.java:693)
+	at org.eclipse.core.databinding.observable.Realm.runWithDefault(Realm.java:336)
+	at org.eclipse.ui.internal.Workbench.createAndRunWorkbench(Workbench.java:610)
+	at org.eclipse.ui.PlatformUI.createAndRunWorkbench(PlatformUI.java:148)
+	at org.eclipse.ui.internal.ide.application.IDEApplication.start(IDEApplication.java:138)
+	at org.eclipse.equinox.internal.app.EclipseAppHandle.run(EclipseAppHandle.java:196)
+	at org.eclipse.core.runtime.internal.adaptor.EclipseAppLauncher.runApplication(EclipseAppLauncher.java:134)
+	at org.eclipse.core.runtime.internal.adaptor.EclipseAppLauncher.start(EclipseAppLauncher.java:104)
+	at org.eclipse.core.runtime.adaptor.EclipseStarter.run(EclipseStarter.java:388)
+	at org.eclipse.core.runtime.adaptor.EclipseStarter.run(EclipseStarter.java:243)
+	at sun.reflect.NativeMethodAccessorImpl.invoke0(Native Method)
+	at sun.reflect.NativeMethodAccessorImpl.invoke(Unknown Source)
+	at sun.reflect.DelegatingMethodAccessorImpl.invoke(Unknown Source)
+	at java.lang.reflect.Method.invoke(Unknown Source)
+	at org.eclipse.equinox.launcher.Main.invokeFramework(Main.java:673)
+	at org.eclipse.equinox.launcher.Main.basicRun(Main.java:610)
+	at org.eclipse.equinox.launcher.Main.run(Main.java:1519)
+
+!ENTRY ilg.gnuarmeclipse.debug.gdbjtag.jlink 4 1 2018-05-29 10:32:53.162
+!MESSAGE C:/Program Files (x86)/SEGGER/JLink_V620f/JLinkGDBServerCL.exe -if swd -device STM32F091RC -endian little -speed auto -port 2331 -swoport 2332 -telnetport 2333 -vd -ir -localhostonly 1 -singlerun -strict -timeout 0 -nogui
+
+!ENTRY ilg.gnuarmeclipse.debug.gdbjtag.jlink 4 1 2018-05-29 10:32:53.891
+!MESSAGE arm-none-eabi-gdb --interpreter=mi2 --nx
+
+!ENTRY org.eclipse.cdt.dsf 4 10005 2018-05-29 10:33:41.883
+!MESSAGE Request for monitor: 'RequestMonitor (org.eclipse.cdt.dsf.concurrent.RequestMonitor@10f9bbc): Status ERROR: org.eclipse.cdt.dsf.gdb code=10004 Interrupt failed. null' resulted in an error.
+!SUBENTRY 1 org.eclipse.cdt.dsf.gdb 4 10004 2018-05-29 10:33:41.883
+!MESSAGE Interrupt failed.
+
+!ENTRY ilg.gnuarmeclipse.debug.gdbjtag.jlink 4 1 2018-05-29 10:39:33.597
+!MESSAGE C:/Program Files (x86)/SEGGER/JLink_V620f/JLinkGDBServerCL.exe -if swd -device STM32F091RC -endian little -speed auto -port 2331 -swoport 2332 -telnetport 2333 -vd -ir -localhostonly 1 -singlerun -strict -timeout 0 -nogui
+
+!ENTRY ilg.gnuarmeclipse.debug.gdbjtag.jlink 4 1 2018-05-29 10:39:34.767
+!MESSAGE arm-none-eabi-gdb --interpreter=mi2 --nx
+
+!ENTRY ilg.gnuarmeclipse.debug.gdbjtag.jlink 4 1 2018-05-29 11:29:29.909
+!MESSAGE C:/Program Files (x86)/SEGGER/JLink_V620f/JLinkGDBServerCL.exe -if swd -device STM32F091RC -endian little -speed auto -port 2331 -swoport 2332 -telnetport 2333 -vd -ir -localhostonly 1 -singlerun -strict -timeout 0 -nogui
+
+!ENTRY ilg.gnuarmeclipse.debug.gdbjtag.jlink 4 1 2018-05-29 11:29:31.049
+!MESSAGE arm-none-eabi-gdb --interpreter=mi2 --nx
+
+!ENTRY ilg.gnuarmeclipse.debug.gdbjtag.jlink 4 1 2018-05-29 11:51:14.032
+!MESSAGE C:/Program Files (x86)/SEGGER/JLink_V620f/JLinkGDBServerCL.exe -if swd -device STM32F091RC -endian little -speed auto -port 2331 -swoport 2332 -telnetport 2333 -vd -ir -localhostonly 1 -singlerun -strict -timeout 0 -nogui
+
+!ENTRY ilg.gnuarmeclipse.debug.gdbjtag.jlink 4 1 2018-05-29 11:51:15.232
+!MESSAGE arm-none-eabi-gdb --interpreter=mi2 --nx
+
+!ENTRY ilg.gnuarmeclipse.debug.gdbjtag.jlink 4 1 2018-05-29 11:52:50.482
+!MESSAGE C:/Program Files (x86)/SEGGER/JLink_V620f/JLinkGDBServerCL.exe -if swd -device STM32F091RC -endian little -speed auto -port 2331 -swoport 2332 -telnetport 2333 -vd -ir -localhostonly 1 -singlerun -strict -timeout 0 -nogui
+
+!ENTRY ilg.gnuarmeclipse.debug.gdbjtag.jlink 4 1 2018-05-29 11:52:51.649
+!MESSAGE arm-none-eabi-gdb --interpreter=mi2 --nx
+
+!ENTRY ilg.gnuarmeclipse.debug.gdbjtag.jlink 4 1 2018-05-29 11:54:18.125
+!MESSAGE C:/Program Files (x86)/SEGGER/JLink_V620f/JLinkGDBServerCL.exe -if swd -device STM32F091RC -endian little -speed auto -port 2331 -swoport 2332 -telnetport 2333 -vd -ir -localhostonly 1 -singlerun -strict -timeout 0 -nogui
+
+!ENTRY ilg.gnuarmeclipse.debug.gdbjtag.jlink 4 1 2018-05-29 11:54:19.287
+!MESSAGE arm-none-eabi-gdb --interpreter=mi2 --nx
+
+!ENTRY ilg.gnuarmeclipse.debug.gdbjtag.jlink 4 1 2018-05-29 11:54:57.833
+!MESSAGE C:/Program Files (x86)/SEGGER/JLink_V620f/JLinkGDBServerCL.exe -if swd -device STM32F091RC -endian little -speed auto -port 2331 -swoport 2332 -telnetport 2333 -vd -ir -localhostonly 1 -singlerun -strict -timeout 0 -nogui
+
+!ENTRY ilg.gnuarmeclipse.debug.gdbjtag.jlink 4 1 2018-05-29 11:54:58.521
+!MESSAGE arm-none-eabi-gdb --interpreter=mi2 --nx
