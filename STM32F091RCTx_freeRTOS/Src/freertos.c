@@ -437,7 +437,7 @@ void ignition_entry(void const * argument)
 
 		switch(ig_event.IG_States){
 			case IG_Recovery:
-				// Recovery all of IG states and paremeters.
+				// Recovery all of IG states and parameters.
 				ig_event = gIG_Event;
 				ig_event.IG_States = IG_CloseUp;
 				break;
