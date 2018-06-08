@@ -6,9 +6,12 @@
 	<section name="">
 		<item value="1000" key="org.eclipse.search.resultpage.limit"/>
 	</section>
+	<section name="">
+		<item value="1000" key="org.eclipse.search.resultpage.limit"/>
+	</section>
 	<section name="TextSearchPage">
 		<item value="12" key="HISTORY_SIZE"/>
-		<item value="true" key="CASE_SENSITIVE"/>
+		<item value="false" key="CASE_SENSITIVE"/>
 		<item value="false" key="REG_EX_SEARCH"/>
 		<item value="false" key="WHOLE_WORD"/>
 		<item value="false" key="SEARCH_DERIVED"/>
@@ -17,10 +20,11 @@
 			<item value="false" key="ignoreCase"/>
 			<item value="0" key="scope"/>
 			<item value="false" key="isWholeWord"/>
-			<item value="FLASH" key="textPattern"/>
+			<item value="ADDR_FLASH_PAGE_16   " key="textPattern"/>
 			<item value="false" key="isRegExSearch"/>
 			<list key="fileNamePatterns">
-				<item value="*.c"/>
+				<item value="*"/>
+				<item value="*.*"/>
 			</list>
 			<list key="workingSets">
 			</list>
@@ -29,22 +33,24 @@
 			<item value="false" key="ignoreCase"/>
 			<item value="0" key="scope"/>
 			<item value="false" key="isWholeWord"/>
-			<item value="MUTEX_DebugHandle" key="textPattern"/>
+			<item value="MAX_CML_CHAR" key="textPattern"/>
 			<item value="false" key="isRegExSearch"/>
 			<list key="fileNamePatterns">
-				<item value="*.c"/>
+				<item value="*"/>
+				<item value="*.*"/>
 			</list>
 			<list key="workingSets">
 			</list>
 		</section>
 		<section name="HISTORY4">
-			<item value="false" key="ignoreCase"/>
+			<item value="true" key="ignoreCase"/>
 			<item value="0" key="scope"/>
 			<item value="false" key="isWholeWord"/>
-			<item value="typedef struct" key="textPattern"/>
+			<item value="ADDR_FLASH_PAGE" key="textPattern"/>
 			<item value="false" key="isRegExSearch"/>
 			<list key="fileNamePatterns">
-				<item value="*.c"/>
+				<item value="*.*"/>
+				<item value="*"/>
 			</list>
 			<list key="workingSets">
 			</list>
@@ -53,10 +59,11 @@
 			<item value="false" key="ignoreCase"/>
 			<item value="0" key="scope"/>
 			<item value="false" key="isWholeWord"/>
-			<item value="TIM" key="textPattern"/>
+			<item value="stm32f0xx_hal_rtc.h" key="textPattern"/>
 			<item value="false" key="isRegExSearch"/>
 			<list key="fileNamePatterns">
-				<item value="*.c"/>
+				<item value="*.*"/>
+				<item value="*"/>
 			</list>
 			<list key="workingSets">
 			</list>
@@ -65,22 +72,25 @@
 			<item value="false" key="ignoreCase"/>
 			<item value="0" key="scope"/>
 			<item value="false" key="isWholeWord"/>
-			<item value="HAL_GPIO_ReadPin" key="textPattern"/>
+			<item value="HAL_FLASHEx_Erase" key="textPattern"/>
 			<item value="false" key="isRegExSearch"/>
 			<list key="fileNamePatterns">
-				<item value="*.c"/>
+				<item value="*.*"/>
+				<item value="*"/>
 			</list>
 			<list key="workingSets">
 			</list>
 		</section>
 		<section name="EXTENSIONS">
-			<item value="*.c" key="0"/>
+			<item value="*, *.*" key="0"/>
+			<item value="*.*,*" key="1"/>
+			<item value="*.c" key="2"/>
 		</section>
 		<section name="HISTORY11">
-			<item value="true" key="ignoreCase"/>
+			<item value="false" key="ignoreCase"/>
 			<item value="0" key="scope"/>
 			<item value="false" key="isWholeWord"/>
-			<item value="TIM2" key="textPattern"/>
+			<item value="HAL_RTC_GetTime" key="textPattern"/>
 			<item value="false" key="isRegExSearch"/>
 			<list key="fileNamePatterns">
 				<item value="*.c"/>
@@ -92,10 +102,11 @@
 			<item value="false" key="ignoreCase"/>
 			<item value="0" key="scope"/>
 			<item value="false" key="isWholeWord"/>
-			<item value="MX_TIM2_Init" key="textPattern"/>
+			<item value="HAL_UART_Transmit" key="textPattern"/>
 			<item value="false" key="isRegExSearch"/>
 			<list key="fileNamePatterns">
-				<item value="*.c"/>
+				<item value="*.*"/>
+				<item value="*"/>
 			</list>
 			<list key="workingSets">
 			</list>
@@ -104,58 +115,63 @@
 			<item value="false" key="ignoreCase"/>
 			<item value="0" key="scope"/>
 			<item value="false" key="isWholeWord"/>
-			<item value="TIM_TypeDef" key="textPattern"/>
+			<item value="HAL_RTC_GetDate" key="textPattern"/>
 			<item value="false" key="isRegExSearch"/>
 			<list key="fileNamePatterns">
-				<item value="*.c"/>
+				<item value="*.*"/>
+				<item value="*"/>
 			</list>
 			<list key="workingSets">
 			</list>
 		</section>
 		<section name="HISTORY2">
-			<item value="false" key="ignoreCase"/>
+			<item value="true" key="ignoreCase"/>
 			<item value="0" key="scope"/>
 			<item value="false" key="isWholeWord"/>
-			<item value="enum" key="textPattern"/>
+			<item value="HAL_FLASH_Program" key="textPattern"/>
 			<item value="false" key="isRegExSearch"/>
 			<list key="fileNamePatterns">
-				<item value="*.c"/>
+				<item value="*.*"/>
+				<item value="*"/>
 			</list>
 			<list key="workingSets">
 			</list>
 		</section>
 		<section name="HISTORY3">
-			<item value="false" key="ignoreCase"/>
+			<item value="true" key="ignoreCase"/>
 			<item value="0" key="scope"/>
 			<item value="false" key="isWholeWord"/>
-			<item value="typedef enum" key="textPattern"/>
+			<item value="FLASH_EraseInitTypeDef" key="textPattern"/>
 			<item value="false" key="isRegExSearch"/>
 			<list key="fileNamePatterns">
-				<item value="*.c"/>
+				<item value="*"/>
+				<item value="*.*"/>
 			</list>
 			<list key="workingSets">
 			</list>
 		</section>
 		<section name="HISTORY0">
-			<item value="false" key="ignoreCase"/>
+			<item value="true" key="ignoreCase"/>
 			<item value="0" key="scope"/>
 			<item value="false" key="isWholeWord"/>
-			<item value="pwroff_delay" key="textPattern"/>
+			<item value="HAL_De" key="textPattern"/>
 			<item value="false" key="isRegExSearch"/>
 			<list key="fileNamePatterns">
-				<item value="*.c"/>
+				<item value="*.*"/>
+				<item value="*"/>
 			</list>
 			<list key="workingSets">
 			</list>
 		</section>
 		<section name="HISTORY1">
-			<item value="false" key="ignoreCase"/>
+			<item value="true" key="ignoreCase"/>
 			<item value="0" key="scope"/>
 			<item value="false" key="isWholeWord"/>
-			<item value="vTaskPriority" key="textPattern"/>
+			<item value="MUTEX_DebugHandle" key="textPattern"/>
 			<item value="false" key="isRegExSearch"/>
 			<list key="fileNamePatterns">
-				<item value="*.c"/>
+				<item value="*"/>
+				<item value="*.*"/>
 			</list>
 			<list key="workingSets">
 			</list>
@@ -185,7 +201,7 @@
 	</section>
 	<section name="DialogBounds_SearchDialog">
 		<item value="691" key="DIALOG_WIDTH"/>
-		<item value="1|Microsoft JhengHei UI|9.0|0|WINDOWS|1|-15|0|0|0|400|0|0|0|1|0|0|5|0|Microsoft JhengHei UI" key="DIALOG_FONT_NAME"/>
+		<item value="1|Microsoft JhengHei UI|9.0|0|WINDOWS|1|-15|0|0|0|400|0|0|0|1|0|0|0|0|Microsoft JhengHei UI" key="DIALOG_FONT_NAME"/>
 		<item value="539" key="DIALOG_HEIGHT"/>
 		<item value="624" key="DIALOG_X_ORIGIN"/>
 		<item value="183" key="DIALOG_Y_ORIGIN"/>

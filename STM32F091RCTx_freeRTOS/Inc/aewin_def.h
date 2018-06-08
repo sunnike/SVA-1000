@@ -35,28 +35,60 @@
    * @{
    */
 #define AEWIN_DBUG			(1)
-#define PRINT_BUFF			(64)
+#define PRINT_BUFF			(128)
 
 
-#define UART3_TIMEOUT		2
+
+#define UART1_TIMEOUT		1
+#define UART3_TIMEOUT		1
 
 
 
  /** @defgroup Aewin_Task_Entry_Time Tasks entry time configuration
    * @{
    */
-#define UART3_TASK_ENTRY_TIME		(5U)
-#define INGITION_TASK_ENTRY_TIME	(950U)
-#define IWDG_TASK_ENTRY_TIME		(10U)
+#define UART1_TASK_ENTRY_TIME		(100U)
+#define UART3_TASK_ENTRY_TIME		(1U)
+
+#define INGITION_TASK_ENTRY_TIME	(980U)
+#define GPIO_GET_TASK_TIME			(50)
+#define IWDG_TASK_ENTRY_TIME		(5U)
 
 
  /** @defgroup STM32F0XX_ADC STM32F0XX ADC Configuration
    * @{
    */
 #define ADC_DEVICE_NUM				(2U)
-#define ADC_CAP_TIME				(500U)
-#define ADC_RESET_TIME				(500U)
-/* USER CODE END Definition */
+#define ADC_CAP_TIME				(450U)
+#define ADC_RESET_TIME				(450U)
+
+
+
+
+ /** @defgroup Aewin_SVA-1000_Command_Protocol Aewin SVA-1000 Command Protocol
+   * @{
+   */
+#define CMD_MAX_LEN					(32U)
+#define CMS_TAIL_SIZE				(3U)
+#define CMD_SYN_CODE				(0x16U)
+#define CMD_STX_CODE				(0x02U)
+#define CMD_ETX_CODE				(0x03U)
+#define CMD_EOT_CODE				(0x04U)
+#define CMD_MCU_ID					(0x91U)
+
+
+/** Main Commands */
+#define M_CMD_MCU_SETTING 			(0x10U)
+#define M_CMD_IG_SETTING			(0x20U)
+#define M_CMD_4G_SETTING			(0x30U)
+
+#define CMD_HEAD_CHK				((CMD_SYN_CODE << 24) | (CMD_SYN_CODE << 16) | (CMD_STX_CODE << 8))
+#define CMD_MAIN_CHK(mcmd)			(CMD_HEAD_CHK | mcmd)
+
+
+#define SUB_MCU_FW_VER_LEN			(2U)
+
+ /* USER CODE END Definition */
 
 
 /* USER CODE BEGIN ENUM definitions */
@@ -74,6 +106,76 @@ typedef enum{
 	IG_CloseUp,
 	IG_End = 100
 }eIgnition_States;
+
+
+/******  SVA-1000 MCU setting/Information sub-commands ******************************************************************/
+typedef enum{
+	Subcmd_MCU_FW_Ver 		= 0x10,
+	Subcmd_MCU_Get_Date		= 0x20,
+	Subcmd_MCU_Set_Date 	= 0x21,
+	Subcmd_Get_Sys_InVOLT	= 0x22,
+	Subcmd_Set_Sys_InVOLT	= 0x23,
+	Subcmd_Get_RebootSrc	= 0x26,
+	Subcmd_Set_RebootSrc	= 0x27,
+	Subcmd_Get_BootMode		= 0x28,
+	Subcmd_Set_BootMode		= 0x29,
+	Subcmd_Get_WWAN_WKStat	= 0x30,
+	Subcmd_Set_WWAN_WKStat	= 0x31,
+	Subcmd_Get_WWAN_Stat	= 0x32,
+	Subcmd_Set_WWAN_Stat	= 0x33,
+	Subcmd_Get_DigiIn		= 0x34,
+	Subcmd_Get_DigiOut		= 0x36,
+	Subcmd_Set_DigiOut		= 0x37,
+	Subcmd_Get_SIM_Mode		= 0x3A,
+	Subcmd_Set_SIM_Mode		= 0x3B,
+	Subcmd_Get_WIFI_OnOff	= 0x40,
+	Subcmd_Set_WIFI_OnOff	= 0x41,
+	Subcmd_Get_LAN_WKStat	= 0x44,
+	Subcmd_Set_LAN_WKStat	= 0x45,
+	Subcmd_Get_DelayOffStat	= 0x50,
+	Subcmd_Set_DelayOffStat = 0x51,
+	Subcmd_Get_DelayOnStat	= 0x52,
+	Subcmd_Set_DelayOnStat  = 0x53,
+	Subcmd_Get_DelayOffTime	= 0x54,
+	Subcmd_Set_DelayOffTime = 0x55,
+	Subcmd_Get_DelayOnTime  = 0x56,
+	Subcmd_Set_DelayOnTime  = 0x57,
+	Subcmd_Get_ADC			= 0x70,
+	Subcmd_Get_GPS			= 0x80,
+	Subcmd_Get_Gsensor		= 0x90,
+	Subcmd_OS_Shutdown		= 0xA0
+}eMCU_Setting_SubCMDs;
+
+
+
+
+/******  SVA-1000 Ignition setting/Information sub-commands ******************************************************************/
+typedef enum{
+	Subcmd_IG_Get_OnOff 	= 0x10,
+	Subcmd_Get_LowBat_Data	= 0x14,
+	Subcmd_Set_LowBat_Data 	= 0x15,
+	Subcmd_Get_InVol_Limit	= 0x16,
+	Subcmd_Set_InVol_Limit	= 0x17,
+	Subcmd_Get_PwrOn_DelayT	= 0x18,
+	Subcmd_Set_PwrOn_DelayT = 0x19,
+	Subcmd_Get_Alarm_Stat	= 0x20,
+	Subcmd_Set_Alarm_Stat	= 0x21,
+	Subcmd_Get_RTC_LocalT	= 0x22,
+	Subcmd_Set_RTC_LocalT	= 0x23,
+	Subcmd_Get_RTC_AlarmT	= 0x24,
+	Subcmd_Set_RTC_AlarmT	= 0x25,
+	Subcmd_Get_RTC_WakeT	= 0x26,
+	Subcmd_Set_RTC_WakeT	= 0x27,
+	Subcmd_Get_Host_WTGT	= 0x40,
+	Subcmd_Set_Host_WTGT	= 0x41,
+}eIG_Setting_SubCMDs;
+
+
+/******  SVA-1000  Event/Log information sub-commands ******************************************************************/
+typedef enum{
+	Subcmd_TeleComm_Event	= 0x10
+}eEvent_Log_SubCMDs;
+
 
 /* USER CODE END ENUM definitions  */
 
@@ -133,6 +235,14 @@ typedef struct{
 /* USER CODE END structure definitions  */
 
 
+
+
+/* USER CODE BEGIN type definitions */
+typedef void (*cmd_fun)(int argc, char **argv);
+
+
+
+/* USER CODE END type defines */
 
 
 /* USER CODE BEGIN Private defines */

@@ -1,11 +1,11 @@
-11:54:56 **** Incremental Build of configuration Debug for project STM32F091RCTx_freeRTOS ****
+17:29:52 **** Incremental Build of configuration Debug for project STM32F091RCTx_freeRTOS ****
 make -j8 all 
 Invoking: GNU ARM Cross Print Size
 arm-none-eabi-size --format=berkeley "STM32F091RCTx_freeRTOS.elf"
    text	   data	    bss	    dec	    hex	filename
-  49012	    140	  11548	  60700	   ed1c	STM32F091RCTx_freeRTOS.elf
+  47804	    140	  11660	  59604	   e8d4	STM32F091RCTx_freeRTOS.elf
 Finished building: STM32F091RCTx_freeRTOS.siz
  
 
-11:54:57 Build Finished (took 977ms)
+17:29:53 Build Finished (took 1s.86ms)
 

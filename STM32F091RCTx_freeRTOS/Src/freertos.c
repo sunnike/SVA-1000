@@ -60,6 +60,7 @@
 #include <adc.h>
 #include <iwdg.h>
 #include <gpio.h>
+#include <rtc.h>
 /* USER CODE END Includes */
 
 /* Variables -----------------------------------------------------------------*/
@@ -78,11 +79,12 @@ osMessageQId ADC_VOLT_QHandle;
 osMessageQId ADC_TEMP_QHandle;
 osMutexId MUTEX_DebugHandle;
 osMutexId MUTEX_ADC_QHandle;
+osMutexId MUTEX_CMD_PROCHandle;
 
 /* USER CODE BEGIN Variables */
 #define SVA_1000			"SVA-1000:\\>"
 #define SVA_1000_NL     	"\n\rSVA-1000:\\>"
-#define MAX_CML_CHAR		128
+#define MAX_CML_CHAR		64
 
 #if (AEWIN_DBUG)
 char dbg_buff[PRINT_BUFF];
@@ -90,7 +92,21 @@ char dbg_buff[PRINT_BUFF];
 sSVA_GPI_STATE 	sva_gpi={0};
 sSVA_GPO_STATE 	sva_gpo={0};
 
+
+uint8_t cml_array[MAX_CML_CHAR] = {0};
+uint8_t cml_proc[MAX_CML_CHAR] = {0};
+
 sIG_EVENT gIG_Event ={ IG_Recovery, 2, 2, 10, 2, 2, 10, 2, 100, 5, FALSE, 5, 20, 145, 0, 50, 100, 50, 0, 0};
+volatile sIG_EVENT ig_event;
+
+/** @defgroup STM32F0XX_RTC STM32F0XX RTC time, date and alarm.
+  * @{
+  */
+RTC_TimeTypeDef  sTime = {0};
+RTC_DateTypeDef  sDate = {0};
+RTC_AlarmTypeDef sAlarm = {0};
+
+
 /* USER CODE END Variables */
 
 /* Function prototypes -------------------------------------------------------*/
@@ -121,11 +137,8 @@ void aewin_dbg(char *fmt,...);
 
 void MX_FREERTOS_Init(void) {
   /* USER CODE BEGIN Init */
-	HAL_UART_Transmit(&huart3, SVA_1000_NL, sizeof(SVA_1000_NL) - 1, 4);
+	HAL_UART_Transmit_DMA(&huart3, SVA_1000_NL, sizeof(SVA_1000_NL) - 1);
 
-	//HAL_UART_Abort(&huart3);
-	//HAL_UART_Abort(&huart2);
-	//HAL_UART_Abort(&huart1);
   /* USER CODE END Init */
 
   /* Create the mutex(es) */
@@ -136,6 +149,10 @@ void MX_FREERTOS_Init(void) {
   /* definition and creation of MUTEX_ADC_Q */
   osMutexDef(MUTEX_ADC_Q);
   MUTEX_ADC_QHandle = osMutexCreate(osMutex(MUTEX_ADC_Q));
+
+  /* definition and creation of MUTEX_CMD_PROC */
+  osMutexDef(MUTEX_CMD_PROC);
+  MUTEX_CMD_PROCHandle = osMutexCreate(osMutex(MUTEX_CMD_PROC));
 
   /* USER CODE BEGIN RTOS_MUTEX */
 	/* add mutexes, ... */
@@ -163,7 +180,7 @@ void MX_FREERTOS_Init(void) {
   USART2_TaskHandle = osThreadCreate(osThread(USART2_Task), NULL);
 
   /* definition and creation of USART3_Task */
-  osThreadDef(USART3_Task, usart3_entry, osPriorityAboveNormal, 0, 256);
+  osThreadDef(USART3_Task, usart3_entry, osPriorityAboveNormal, 0, 128);
   USART3_TaskHandle = osThreadCreate(osThread(USART3_Task), NULL);
 
   /* definition and creation of IGNITION_Task */
@@ -220,7 +237,7 @@ void StartDefaultTask(void const * argument)
   /* Infinite loop */
   for(;;)
   {
-    osDelay(5);
+    osDelay(100);
   }
   /* USER CODE END StartDefaultTask */
 }
@@ -229,23 +246,78 @@ void StartDefaultTask(void const * argument)
 void usart1_entry(void const * argument)
 {
   /* USER CODE BEGIN usart1_entry */
-	uint8_t recv1 = 0;
-	HAL_StatusTypeDef u1_states = HAL_OK;
+	uint8_t recv1[CMD_MAX_LEN] = {0};
+	uint8_t test[] = {0x16, 0x16 ,0x02 ,0x10 ,0x10 ,0x03 , 0x00, 0x04};
+	uint8_t data_rec_index = 0, chk_index = 0;
 	/* Infinite loop */
-	//HAL_UART_Abort(&huart1);
 
 	for(;;)
     {
-		if((u1_states = HAL_UART_Receive_DMA(&huart1, (uint8_t*)&recv1, 2)) == HAL_OK){
-		    HAL_UART_Transmit_DMA(&huart1, (uint8_t*)&recv1, 2);
+		#if 0
+		// Get SYN.
+		if(HAL_UART_Receive_DMA(&huart1, &recv1[chk_index++], UART1_TIMEOUT) == HAL_OK){
+			if(recv1[chk_index - 1] == CMD_SYN_CODE){
+				// GEt SYN.
+				if(HAL_UART_Receive_DMA(&huart1, &recv1[chk_index++], UART1_TIMEOUT)  == HAL_OK){
+					// GEt STX.
+					if(HAL_UART_Receive_DMA(&huart1, &recv1[chk_index++], UART1_TIMEOUT)  == HAL_OK){
+						// Get Main command.
+						if(HAL_UART_Receive_DMA(&huart1, &recv1[chk_index++], UART1_TIMEOUT)  == HAL_OK){
+							// Get sub-command.
+							if(HAL_UART_Receive_DMA(&huart1, &recv1[chk_index++], UART1_TIMEOUT) == HAL_OK){
+								if(*((uint32_t*)recv1) == CMD_MAIN_CHK(M_CMD_MCU_SETTING)){
+									switch(recv1[4]){
+										//-----------------------------------------------------
+										case Subcmd_MCU_FW_Ver:
+											data_rec_index = SUB_MCU_FW_VER_LEN + CMS_TAIL_SIZE;
+											do{
+												HAL_UART_Receive_DMA(&huart1, &recv1[chk_index++], 1);
+											}while(--data_rec_index);
+
+											if((recv1[chk_index - CMS_TAIL_SIZE] == CMD_ETX_CODE) && (recv1[chk_index - 1] == CMD_EOT_CODE) )
+												HAL_UART_Transmit_DMA(&huart1, test, sizeof(test));
+												//aewin_dbg("\r\nGet MCU version(0x10)");
+
+											break;
+									}
+								}
+							}
+						}
+					}
+				}
+			}
+			//HAL_UART_Transmit_DMA(&huart1, (uint8_t*)&recv1, 1);
+			/*osMutexWait(MUTEX_DebugHandle, osWaitForever);
+		    HAL_UART_Transmit_DMA(&huart3, (uint8_t*)&recv1, 1, 1);
+		    osMutexRelease(MUTEX_DebugHandle);*/
 		}
 		else if (u1_states == HAL_TIMEOUT){
 			//HAL_UART_Abort(&huart1);
 		}
-		/*if(HAL_UART_Receive_DMA(&huart1, (uint8_t*)&recv1, 2) == HAL_OK){
-			HAL_UART_Transmit_DMA(&huart1, (uint8_t*)&recv1, 2);
+		HAL_UART_Abort(&huart1);
+		chk_index = 0;
+		data_rec_index = 0;
+		memset(recv1, 0, CMD_MAX_LEN);
+#endif
+		//if(IG_Start_Up == ig_event.IG_States){
+
+		//}
+		/*data_rec_index = 1;
+		//HAL_UART_DMAResume(&huart1);
+		while(HAL_UART_Receive_DMA(&huart1, &recv1[0], 1) != HAL_OK){ //&& (CMD_SYN_CODE == recv1[0])
+			while((HAL_UART_Receive_DMA(&huart1, &recv1[data_rec_index++], (CMD_MAX_LEN - 1)) == HAL_OK) && (data_rec_index < CMD_MAX_LEN));
+		}
+
+		chk_index = 0;
+		if(data_rec_index > 1){
+			//HAL_UART_DMAResume(&huart1);
+			HAL_UART_Transmit_DMA(&huart1, recv1, (data_rec_index -1));
+		}
+		recv1[0] = 0;*/
+		/*if(HAL_UART_Receive(&huart1, &recv1[0], 1, 1) == HAL_OK){
+			HAL_UART_Transmit(&huart1, &recv1[0], 1, 1);
 		}*/
-		osDelay(2);
+		osDelay(UART1_TASK_ENTRY_TIME);
 	}
   /* USER CODE END usart1_entry */
 }
@@ -254,21 +326,23 @@ void usart1_entry(void const * argument)
 void usart2_entry(void const * argument)
 {
   /* USER CODE BEGIN usart2_entry */
-	uint8_t recv2 = 0;
-	HAL_StatusTypeDef u2_states = HAL_OK;
+	//uint8_t recv2 = 0;
+	//HAL_StatusTypeDef u2_states = HAL_OK;
     /* Infinite loop */
     for(;;)
     {
 		/*if(HAL_UART_Receive_DMA(&huart2, (uint8_t*)&recv2, 1) == HAL_OK){
 			HAL_UART_Transmit_DMA(&huart2, (uint8_t*)&recv2, 1);
 		}*/
+#if 0
 		if((u2_states = HAL_UART_Receive(&huart2, (uint8_t*)&recv2, 1, UART3_TIMEOUT)) == HAL_OK){
 			HAL_UART_Transmit(&huart2, (uint8_t*)&recv2, 1, UART3_TIMEOUT);
 		}
 		else if (u2_states == HAL_TIMEOUT){
 			HAL_UART_Abort(&huart2);
 		}
-		osDelay(2);
+#endif
+		osDelay(50);
     }
   /* USER CODE END usart2_entry */
 }
@@ -279,55 +353,62 @@ void usart3_entry(void const * argument)
   /* USER CODE BEGIN usart3_entry */
 	int temp;
 	uint8_t recv3[3] = {0};
-	uint8_t cml_array[MAX_CML_CHAR] = {SVA_1000};
 	uint8_t *cml_head, *cml_limit, *cml_ptr = cml_array;
 	HAL_StatusTypeDef u3_states = HAL_OK;
-	cml_ptr += sizeof(SVA_1000) - 1;
-	*cml_ptr = ' ';
 	cml_head = cml_limit = cml_ptr;
-	//HAL_UART_Abort(&huart3);
-	//osDelay(5);
-	// __HAL_UART_FLUSH_DRREGISTER(&huart3);
 
 	/* Infinite loop */
 	for(;;)
 	{
 		recv3[0] = 0;
 		osMutexWait(MUTEX_DebugHandle, osWaitForever);
-		if( (u3_states = HAL_UART_Receive(&huart3, (uint8_t*)&recv3[0], 1, 1)) == HAL_OK){
+		if(HAL_UART_Receive_DMA(&huart3, (uint8_t*)&recv3[0], 1) == HAL_OK){
+			HAL_Delay(1);
 			recv3[1] = 0;
-			if (HAL_UART_Receive(&huart3, (uint8_t*)&recv3[1], 1, 1) == HAL_TIMEOUT){
+			if (HAL_UART_Receive_DMA(&huart3, (uint8_t*)&recv3[1], 1) != HAL_OK){
 				switch(recv3[0]){
 					//-----------------------------------------------------
 					case '\r':
 					case '\n':
-						HAL_UART_Transmit(&huart3, SVA_1000_NL, sizeof(SVA_1000_NL) - 1, 10);
-						*(++cml_ptr) = '\0';
+						HAL_UART_Transmit_DMA(&huart3, SVA_1000_NL, sizeof(SVA_1000_NL) - 1);
+						*cml_limit = '\0';
+						//osMutexRelease(MUTEX_DebugHandle);
+						//aewin_dbg("\n\rCommands Length = %d",(uint32_t)(cml_limit - cml_head));
+						osMutexWait(MUTEX_CMD_PROCHandle, osWaitForever);
+						memcpy(cml_proc, cml_array, (uint32_t)(cml_limit - cml_head + 1));
+						osMutexRelease(MUTEX_CMD_PROCHandle);
 						cml_ptr = cml_limit = cml_head;
+
 						break;
 
 					//-----------------------------------------------------
-					case 0x7f:
+					/* Delete Key. */
+					case 0x7E:
+
+						break;
+					//-----------------------------------------------------
+					case 0x7F:
 						recv3[0] = '\b';
 
 					case '\b':
 						if ((cml_ptr > cml_head) && (cml_limit > cml_head)){
 							temp = cml_limit - cml_ptr;
+							*(--cml_ptr) = 0;
 							strncpy(cml_ptr, (cml_ptr + 1), temp);
-							*(cml_limit--) = 0;
-							HAL_UART_Transmit(&huart3, (uint8_t*)&recv3[0], 1, UART3_TIMEOUT);
-							HAL_UART_Transmit(&huart3, cml_ptr, temp , temp);
-							HAL_UART_Transmit(&huart3, " ", 1, UART3_TIMEOUT);
-							HAL_UART_Transmit(&huart3, (uint8_t*)&recv3[0], 1, UART3_TIMEOUT);
-							cml_ptr--;
+							HAL_UART_Transmit_DMA(&huart3, (uint8_t*)&recv3[0], 1);
+							HAL_UART_Transmit_DMA(&huart3, cml_ptr, temp);
+							HAL_UART_Transmit_DMA(&huart3, " ", 1);
+							//HAL_UART_Transmit_DMA(&huart3, (uint8_t*)&recv3[0], 1, UART3_TIMEOUT);
+
 
 							for(temp = 0; temp < cml_limit - cml_ptr; temp++){
-								HAL_UART_Transmit(&huart3, (uint8_t*)&recv3[0], 1, UART3_TIMEOUT);
+								HAL_UART_Transmit_DMA(&huart3, (uint8_t*)&recv3[0], 1);
 							}
+							*(--cml_limit) = 0;
 						}
 
-						//HAL_UART_Transmit(&huart3, " ", 1, 10);
-						//HAL_UART_Transmit(&huart3, (uint8_t*)&recv3[0], 1, 1);
+						//HAL_UART_Transmit_DMA(&huart3, " ", 1, 10);
+						//HAL_UART_Transmit_DMA(&huart3, (uint8_t*)&recv3[0], 1, 1);
 						break;
 
 					//-----------------------------------------------------
@@ -336,19 +417,19 @@ void usart3_entry(void const * argument)
 
 					//-----------------------------------------------------
 					default:
-						if (cml_ptr >= cml_head + (MAX_CML_CHAR - sizeof(SVA_1000) - 1)){
+						if (cml_ptr >= cml_head + MAX_CML_CHAR - 1){
 							break;
 						}
-						*(++cml_ptr) = recv3[0];
+						*(cml_ptr++) = recv3[0];
 						cml_limit = cml_ptr;
-						HAL_UART_Transmit(&huart3, (uint8_t*)&recv3[0], 1, 1);
+						HAL_UART_Transmit_DMA(&huart3, (uint8_t*)&recv3[0], 1);
 						break;
 				}
 
 			}
 			else{
 				recv3[2] = 0;
-				if (HAL_UART_Receive(&huart3, (uint8_t*)&recv3[2], 1, 1) == HAL_OK){
+				if (HAL_UART_Receive_DMA(&huart3, (uint8_t*)&recv3[2], 1) == HAL_OK){
 					if (recv3[0] =='\e'){
 						//recv3[0] = 0xE0;
 						switch(recv3[2]){
@@ -371,7 +452,7 @@ void usart3_entry(void const * argument)
 
 							if (cml_ptr < cml_limit){
 								cml_ptr++;
-								HAL_UART_Transmit(&huart3, (uint8_t*)&recv3[0], 3, UART3_TIMEOUT);
+								HAL_UART_Transmit_DMA(&huart3, (uint8_t*)&recv3[0], 3);
 							}
 
 							break;
@@ -381,7 +462,7 @@ void usart3_entry(void const * argument)
 						case 'D':
 							if (cml_ptr > cml_head){
 								cml_ptr--;
-								HAL_UART_Transmit(&huart3, (uint8_t*)&recv3[0], 3, UART3_TIMEOUT);
+								HAL_UART_Transmit_DMA(&huart3, (uint8_t*)&recv3[0], 3);
 							}
 							break;
 
@@ -394,11 +475,14 @@ void usart3_entry(void const * argument)
 				}
 			}
 		}
-		else /*if(u3_states == HAL_TIMEOUT)*/{
-			HAL_UART_Abort(&huart3);
-		}
-	osMutexRelease(MUTEX_DebugHandle);
-	osDelay(UART3_TASK_ENTRY_TIME);
+		//else /*if(u3_states == HAL_TIMEOUT)*/{
+			//HAL_UART_Abort(&huart3);
+		//}
+
+		//HAL_DMA_Abort(&hdma_usart3_tx);
+		//HAL_DMA_Abort(&hdma_usart3_rx);
+		osMutexRelease(MUTEX_DebugHandle);
+		osDelay(UART3_TASK_ENTRY_TIME);
 	}
 
   /* USER CODE END usart3_entry */
@@ -410,19 +494,24 @@ void ignition_entry(void const * argument)
   /* USER CODE BEGIN ignition_entry */
 	osEvent  	evt;
 	uint32_t 	adc_24v, adc_temp;
-	sIG_EVENT 	ig_event;
 
 	ig_event = gIG_Event;
     /* Infinite loop */
     for(;;)
     {
+
+		HAL_RTC_GetTime(&hrtc, &sTime, RTC_FORMAT_BIN);
+		HAL_RTC_GetDate(&hrtc, &sDate, RTC_FORMAT_BIN);
+		aewin_dbg("\n\rMUC Time: %2d:%2d:%2d",sTime.Hours ,sTime.Minutes, sTime.Seconds);
+		aewin_dbg("\n\rMUC Date: 20%2d_%2d_%2d  Weekday:%d",sDate.Year ,sDate.Month, sDate.Date ,sDate.WeekDay);
+
     	/** Get ADC 24V from Q. */
     	evt = osMessageGet(ADC_VOLT_QHandle, osWaitForever);
 		if (evt.status == osEventMessage){
 			adc_24v = evt.value.v;
 			//aewin_dbg("\n\r");
-			//aewin_dbg("\n\rGet ADC 24V = %d.%.2d V", (double)(((adc_24v & 0xfffU) * 3.3f) / 4096.0f), \
-							  	  	  	  	  	  	 (double) (((float)(((adc_24v & 0xfffU) * 3.3f) / 4096.0f) - (float)((double)(((adc_24v & 0xfffU) * 3.3f) / 4096.0f) / (double)1) ) * 100.0f));
+			//aewin_dbg("\n\rGet ADC 24V = %.1d.%.2d V", (((adc_24v & 0xfffU) * 330) / 409600), \
+							  	  	  	  	  	  	   ((((adc_24v & 0xfffU) * 330) / 4096) % 100));
 		}
 
 		/** Get the ADC value of MCU temperature. */
@@ -430,8 +519,8 @@ void ignition_entry(void const * argument)
 		if (evt.status == osEventMessage){
 			adc_temp = evt.value.v;
 			//aewin_dbg("\n\r");
-			//aewin_dbg("\n\rGet ADC TEMP = %d.%.2d V", (double)(((adc_temp & 0xfffU) * 3.3f) / 4096.0f), \
-							  	  	  	  	  	  	 (double) (((float)(((adc_temp & 0xfffU) * 3.3f) / 4096.0f) - (float)((double)(((adc_temp & 0xfffU) * 3.3f) / 4096.0f) / (double)1) ) * 100.0f));
+			//aewin_dbg("\n\rGet ADC TEMP = %.1d.%.2d V", (((adc_temp & 0xfffU) * 330) / 409600), \
+													  ((((adc_temp & 0xfffU) * 330) / 4096) % 100));
 		}
 
 
@@ -487,7 +576,7 @@ void ignition_entry(void const * argument)
 					if(0 == (ig_event.pwroff_btn_cnt--)){
 						ig_event.IG_States = IG_Recovery;
 						HAL_GPIO_WritePin(GPIOC, D2D_EN_Pin, GPIO_PIN_RESET);
-						aewin_dbg("\n\rIG_Wait_StartUp2 failed! IG_Wait_StartUp --> IG_Recovery");
+						aewin_dbg("\n\rIG_Wait_StartUp failed! IG_Wait_StartUp --> IG_Recovery");
 					}
 				}
 
@@ -521,7 +610,7 @@ void ignition_entry(void const * argument)
 				else{
 					ig_event.wait_startup_time = gIG_Event.wait_startup_time;
 					ig_event.IG_States = IG_PowerOn_Delay;
-					aewin_dbg("\n\rIG_Wait_StartUp1 failed! IG_Wait_StartUp --> IG_PowerOn_Delay");
+					aewin_dbg("\n\rIG_Wait_StartUp failed! IG_Wait_StartUp --> IG_PowerOn_Delay");
 				}
 				break;
 
@@ -562,7 +651,7 @@ void ignition_entry(void const * argument)
 					if (0 == (ig_event.pwroff_delay--)){
 						ig_event.IG_States = IG_shutting_Down;
 						ig_event.pwroff_delay = gIG_Event.pwroff_delay;
-						aewin_dbg("\n\rPower off delay pass! IG_PowerOn_Delay --> IG_Wait_StartUp");
+						aewin_dbg("\n\rPower off delay pass! IG_Shutdown_Delay --> IG_shutting_Down");
 					}
 				}
 				else{
@@ -594,7 +683,6 @@ void ignition_entry(void const * argument)
 				break;
 
 		}
-
     	osDelay(INGITION_TASK_ENTRY_TIME);
     }
   /* USER CODE END ignition_entry */
@@ -608,7 +696,7 @@ void i2c1_entry(void const * argument)
 	for(;;)
 	{
 		//aewin_dbg("\n\rI2C Task");
-        osDelay(2);
+        osDelay(50);
 	}
   /* USER CODE END i2c1_entry */
 }
@@ -695,7 +783,8 @@ void gpio_state_entry(void const * argument)
 		sva_gpi.dc2dc_pwrok	= HAL_GPIO_ReadPin(GPIOC, DC2DC_PWROK_Pin);
 		/* Get power button states. */
 		sva_gpi.pwr_btn 	= HAL_GPIO_ReadPin(GPIOC, PWR_BTN_IGN_R_Pin);
-		osDelay(50);
+
+		osDelay(GPIO_GET_TASK_TIME);
     }
   /* USER CODE END gpio_state_entry */
 }
@@ -709,12 +798,11 @@ void aewin_dbg(char *fmt,...){
 	va_start (arg_ptr, fmt);
 	vsnprintf(dbg_buff, PRINT_BUFF, fmt, arg_ptr);
 	while(i < (PRINT_BUFF - 1) && dbg_buff[i]){
-		if (HAL_UART_Transmit(&huart3, (uint8_t*)&dbg_buff[i], 1, 2) == HAL_OK){
+		if (HAL_UART_Transmit_DMA(&huart3, (uint8_t*)&dbg_buff[i], 1) == HAL_OK){
 			i++;
 		}
 	}
 	va_end(arg_ptr);
-	HAL_UART_Abort(&huart3);
 	osMutexRelease(MUTEX_DebugHandle);
 }
 #endif
