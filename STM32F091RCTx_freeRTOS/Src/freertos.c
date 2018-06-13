@@ -90,7 +90,15 @@ char dbg_buff[PRINT_BUFF];
 sSVA_GPI_STATE 	sva_gpi={0};
 sSVA_GPO_STATE 	sva_gpo={0};
 
-sIG_EVENT gIG_Event ={ IG_Recovery, 2, 2, 10, 2, 2, 10, 2, 100, 5, FALSE, 5, 20, 145, 0, 50, 100, 50, 0, 0};
+sIG_EVENT gIG_Event = {0, IG_Recovery, 2, 2, 10, 2, 2, 10, 2, 100, 5, FALSE, 5, 20, 145, 0, 50, 100, 50, 955, 0, 0};
+
+uint32_t gIG_Event_temp[22] = {EEPROM_TAG, IG_Recovery, 2, 2, 10, 2, 2, 10, 2, 100, 5, FALSE, 5, 20, 145, 0, 50, 100, 50, 955, 0, 0};
+
+/*Variable used for Erase procedure*/
+static FLASH_EraseInitTypeDef EraseInitStruct;
+
+uint32_t PageError = 0;
+
 /* USER CODE END Variables */
 
 /* Function prototypes -------------------------------------------------------*/
@@ -121,11 +129,104 @@ void aewin_dbg(char *fmt,...);
 
 void MX_FREERTOS_Init(void) {
   /* USER CODE BEGIN Init */
+	uint32_t Address = 0;
+	uint8_t data_counter = 0;
+
 	HAL_UART_Transmit(&huart3, SVA_1000_NL, sizeof(SVA_1000_NL) - 1, 4);
 
 	//HAL_UART_Abort(&huart3);
 	//HAL_UART_Abort(&huart2);
 	//HAL_UART_Abort(&huart1);
+
+
+	//read EEPROM
+	/* Check the correctness of written data */
+	Address = FLASH_USER_START_ADDR;
+
+	if((*(__IO uint32_t*) Address) != EEPROM_TAG)
+	{
+		/* Flash page erase */
+		EraseInitStruct.TypeErase   = FLASH_TYPEERASE_PAGES;
+		EraseInitStruct.PageAddress = FLASH_USER_START_ADDR;
+		EraseInitStruct.NbPages     = (FLASH_USER_END_ADDR - FLASH_USER_START_ADDR)/FLASH_PAGE_SIZE;
+
+		if (HAL_FLASHEx_Erase(&EraseInitStruct, &PageError) != HAL_OK)
+		{
+		  /*
+			Error occurred while page erase.
+			User can add here some code to deal with this error.
+			PageError will contain the faulty page and then to know the code error on this page,
+			user can call function 'HAL_FLASH_GetError()'
+		  */
+		}
+
+		/*Flash write initial data */
+		for(data_counter = 0; data_counter < PARA_TOTAL ; data_counter++)
+		{
+			if (HAL_FLASH_Program(FLASH_TYPEPROGRAM_WORD, Address + data_counter*4, gIG_Event_temp[data_counter]) != HAL_OK)
+			{
+			/* Error occurred while writing data in Flash memory.
+			   User can add here some code to deal with this error */
+			}
+
+		}
+
+		#if 0
+		while (Address < FLASH_USER_END_ADDR)
+		{
+		  if (HAL_FLASH_Program(FLASH_TYPEPROGRAM_WORD, Address, EEPROM_TAG) == HAL_OK)
+		  {
+			//Address = Address + 4;
+		  }
+		  else
+		  {
+			/* Error occurred while writing data in Flash memory.
+			   User can add here some code to deal with this error */
+		  }
+		}
+		#endif
+	}
+	else
+	{
+		/* Flash read data */
+		for(data_counter = 0; data_counter < PARA_TOTAL ; data_counter++)
+		{
+			gIG_Event_temp[data_counter] = (*(__IO uint32_t*) Address + data_counter*4);
+		}
+
+		#if 0
+		//gIG_Event = read value
+		// Address + 0 : EEPROM TAG
+		//gIG_Event.IG_States = IG_Recovery;
+		gIG_Event.pwron_delay = (*(__IO uint32_t*) Address + 8);
+		gIG_Event.wait_startup_time = (*(__IO uint32_t*) Address + 12);
+		gIG_Event.startup_timeout = (*(__IO uint32_t*) Address + 16);
+		gIG_Event.pwroff_delay = (*(__IO uint32_t*) Address + 20);
+		gIG_Event.shutdown_delay = (*(__IO uint32_t*) Address + 24);
+		gIG_Event.shutdown_timeout = (*(__IO uint32_t*) Address + 32);
+		gIG_Event.lowpwr_dealy = (*(__IO uint32_t*) Address + 36);
+		gIG_Event.wtdog_default = (*(__IO uint32_t*) Address + 40);
+		gIG_Event.pwroff_btn_cnt = (*(__IO uint32_t*) Address + 44);
+		gIG_Event.pwrbtn_pressed = (*(__IO uint32_t*) Address + 48);
+		gIG_Event.pwrgood_chk_time = (*(__IO uint32_t*) Address + 52);
+		gIG_Event.in_volt_min = (*(__IO uint32_t*) Address + 56);
+		gIG_Event.in_volt_max = (*(__IO uint32_t*) Address + 60);
+		gIG_Event.startup_volt = (*(__IO uint32_t*) Address + 64);
+		gIG_Event.in_temp_min = (*(__IO uint32_t*) Address + 68);
+		gIG_Event.in_temp_max = (*(__IO uint32_t*) Address + 72);
+		gIG_Event.startup_temp = (*(__IO uint32_t*) Address + 76);
+		gIG_Event.dc_lowpwr = (*(__IO uint32_t*) Address + 80);
+
+		//gIG_Event.fail_retry = 0;
+		//gIG_Event.fail_count = 0;
+		#endif
+	}
+
+
+
+
+
+
   /* USER CODE END Init */
 
   /* Create the mutex(es) */
@@ -554,6 +655,12 @@ void ignition_entry(void const * argument)
 					aewin_dbg("\n\rPower button off! IG_Start_Up --> IG_shutting_Down");
 				}
 
+				//DC voltage abnormal
+				if(adc_24v < ig_event.dc_lowpwr)
+				{
+					ig_event.IG_States = IG_LowPower_Delay;
+					aewin_dbg("\n\rDC voltage abnormal! IG_Start_Up --> IG_CloseUp");
+				}
 				break;
 
 			//-------------------------------------------------------------------------------------
@@ -570,6 +677,14 @@ void ignition_entry(void const * argument)
 					ig_event.pwroff_delay = gIG_Event.pwroff_delay;
 					aewin_dbg("\n\rPower off delay failed! IG_Shutdown_Delay --> IG_Start_Up");
 				}
+
+				//DC voltage abnormal
+				if(adc_24v < ig_event.dc_lowpwr)
+				{
+					ig_event.IG_States = IG_LowPower_Delay;
+					aewin_dbg("\n\rDC voltage abnormal! IG_Shutdown_Delay --> IG_CloseUp");
+				}
+
 				break;
 
 			//-------------------------------------------------------------------------------------
@@ -591,6 +706,12 @@ void ignition_entry(void const * argument)
 
 			//-------------------------------------------------------------------------------------
 			case IG_LowPower_Delay:
+				if (0 == (ig_event.lowpwr_dealy--)){
+					ig_event.IG_States = IG_CloseUp;
+					ig_event.lowpwr_dealy = gIG_Event.lowpwr_dealy;
+					//HAL_GPIO_WritePin(GPIOC, D2D_EN_Pin, GPIO_PIN_RESET);
+					aewin_dbg("\n\rLow Power delay pass! IG_LowPower_Delay --> IG_CloseUp");
+				}
 				break;
 
 		}

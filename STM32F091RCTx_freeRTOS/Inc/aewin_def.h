@@ -30,6 +30,15 @@
 	#define FALSE	(0)
 #endif
 
+#define ADDR_FLASH_PAGE_126      ((uint32_t)0x0803F000) /* Base @ of Page 126, 2 Kbytes */
+#define ADDR_FLASH_PAGE_127      ((uint32_t)0x0803F800) /* Base @ of Page 127, 2 Kbytes */
+
+#define FLASH_USER_START_ADDR    ADDR_FLASH_PAGE_127   /* Start @ of user Flash area */
+#define FLASH_USER_END_ADDR      ADDR_FLASH_PAGE_127   /* End @ of user Flash area */
+
+#define EEPROM_TAG               ((uint32_t)0x12345678)
+
+
 
  /** @defgroup AEWIN_DEBUG Aewin Debug Configuration
    * @{
@@ -75,6 +84,33 @@ typedef enum{
 	IG_End = 100
 }eIgnition_States;
 
+typedef enum{
+	PARA_eeprom_tag_init = 0,   /*!< EEPROM TAG for mark if this data saved to flash or not */
+	PARA_IG_States = 1,	        /*!< Ignition states. */
+	PARA_pwron_delay,			/*!< Delay time after ignition switch-on from "Close-Up" */
+	PARA_wait_startup_time,		/*!< /*!< The delay time to prepare entering "Start Up" state. */
+	PARA_startup_timeout,		/*!< Timeout value to accept the ignition signal. */
+	PARA_pwroff_delay,			/*!< Delay time after ignition switch-off from "Start-Up" */
+	PARA_shutdown_delay,		/*!< The delay time to prepare entering "Power Off" state. */
+	PARA_shutdown_timeout,		/*!< Timeout value to accept the ignition signal. */
+	PARA_lowpwr_dealy,			/*!< The delay time of low-power shutdown */
+	PARA_wtdog_default,
+	PARA_pwroff_btn_cnt,
+	PARA_pwrbtn_pressed,
+	PARA_pwrgood_chk_time,
+	PARA_in_volt_min,			/*!< Minimum input voltage */
+	PARA_in_volt_max,			/*!< Maximum input voltage */
+	PARA_startup_volt,			/*!< The lowest voltage that can be accepted to start up system */
+	PARA_in_temp_min,			/*!< The acceptable minimum temperature */
+	PARA_in_temp_max,			/*!< The acceptable maximum temperature */
+	PARA_startup_temp,			/*!< The highest temperature that can be accepted to start up system */
+	PARA_dc_lowpwr,             /*!< DC power abnormal */
+	PARA_fail_retry,			/*!< Record the re-power times in case of system failure */
+	PARA_fail_count,			/*!< Indicate that the system is in "start up" state */
+
+	PARA_TOTAL = 22
+}PARA_number;
+
 /* USER CODE END ENUM definitions  */
 
 
@@ -90,6 +126,7 @@ typedef struct{
 /* The structure that contains the ignition related parameters, along with an IG_States
 that is used to identify which power state is. */
 typedef struct{
+	uint32_t eeprom_tag_init;       /*!< EEPROM TAG for mark if this data saved to flash or not */
 	eIgnition_States IG_States;		/*!< Ignition states. */
 	uint8_t	 pwron_delay;			/*!< Delay time after ignition switch-on from "Close-Up" */
 	uint8_t  wait_startup_time;		/*!< /*!< The delay time to prepare entering "Start Up" state. */
@@ -108,6 +145,7 @@ typedef struct{
 	uint8_t  in_temp_min;			/*!< The acceptable minimum temperature */
 	uint8_t  in_temp_max;			/*!< The acceptable maximum temperature */
 	uint8_t  startup_temp;			/*!< The highest temperature that can be accepted to start up system */
+	uint16_t dc_lowpwr;             /*!< DC power abnormal */
 	uint16_t fail_retry;			/*!< Record the re-power times in case of system failure */
 	uint16_t fail_count;
 }sIG_EVENT;
