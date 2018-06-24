@@ -47,12 +47,12 @@
  /** @defgroup Aewin_Task_Entry_Time Tasks entry time configuration
    * @{
    */
-#define UART1_TASK_ENTRY_TIME		(100U)
+#define UART1_TASK_ENTRY_TIME		(1U)
 #define UART3_TASK_ENTRY_TIME		(1U)
 
 #define INGITION_TASK_ENTRY_TIME	(980U)
 #define GPIO_GET_TASK_TIME			(50)
-#define IWDG_TASK_ENTRY_TIME		(5U)
+#define IWDG_TASK_ENTRY_TIME		(10U)
 
 
  /** @defgroup STM32F0XX_ADC STM32F0XX ADC Configuration
@@ -69,12 +69,90 @@
    * @{
    */
 #define CMD_MAX_LEN					(32U)
-#define CMS_TAIL_SIZE				(3U)
+#define CMD_HEAD_SIZE				(3U)
+#define CMD_MS_SIZE					(2U)
+#define CMD_HEAD_MS_SIZE			(CMD_HEAD_SIZE + CMD_MS_SIZE)
+#define CMD_TAIL_SIZE				(3U)
+
 #define CMD_SYN_CODE				(0x16U)
 #define CMD_STX_CODE				(0x02U)
 #define CMD_ETX_CODE				(0x03U)
 #define CMD_EOT_CODE				(0x04U)
-#define CMD_MCU_ID					(0x91U)
+
+
+#define CMD_SYN_POS0				(0U)
+#define CMD_SYN_POS1				(1U)
+#define CMD_STX_POS					(2U)
+#define CMD_MCMD_POS				(3U)
+#define CMD_SCMD_POS 				(4U)
+
+#define MCU_REPO_HEAD_CMD_SIZE		(3)
+#define MCU_REPO_ID					(0x91U)
+#define MCU_ID_POS					(0U)
+#define MCU_REPO_MCMD_POS			(1U)
+
+#define CMD_ETX_POS(x) 				(x + 0U)
+#define CMD_CHKSUM_POS(x)			(x + 1U)
+#define CMD_EOT_POS(x)				(x + 2U)
+
+ /** MCU sub-commands length (Unit: byte). */
+#define MCU_SCMD10_LEN				(2U)
+#define MCU_SCMD20_LEN				(7U)
+#define MCU_SCMD21_LEN				(7U)
+#define MCU_SCMD22_LEN				(1U)
+#define MCU_SCMD23_LEN				(1U)
+#define MCU_SCMD26_LEN				(1U)
+#define MCU_SCMD27_LEN				(1U)
+#define MCU_SCMD28_LEN				(1U)
+#define MCU_SCMD29_LEN				(1U)
+#define MCU_SCMD30_LEN				(1U)
+#define MCU_SCMD31_LEN				(1U)
+#define MCU_SCMD32_LEN				(1U)
+#define MCU_SCMD33_LEN				(1U)
+#define MCU_SCMD34_LEN				(1U)
+#define MCU_SCMD36_LEN				(1U)
+#define MCU_SCMD37_LEN				(1U)
+#define MCU_SCMD3A_LEN				(1U)
+#define MCU_SCMD3B_LEN				(1U)
+#define MCU_SCMD40_LEN				(1U)
+#define MCU_SCMD41_LEN				(1U)
+#define MCU_SCMD44_LEN				(1U)
+#define MCU_SCMD45_LEN				(1U)
+#define MCU_SCMD50_LEN				(1U)
+#define MCU_SCMD51_LEN				(1U)
+#define MCU_SCMD52_LEN				(1U)
+#define MCU_SCMD53_LEN				(1U)
+#define MCU_SCMD54_LEN				(1U)
+#define MCU_SCMD55_LEN				(1U)
+#define MCU_SCMD56_LEN				(1U)
+#define MCU_SCMD57_LEN				(1U)
+#define MCU_SCMD70_LEN				(4U)
+#define MCU_SCMD80_LEN				(6U)
+#define MCU_SCMD90_LEN				(6U)
+#define MCU_SCMDA0_LEN				(2U)
+
+
+/** Ignition sub-commands length (Unit: byte). */
+#define IGN_SCMD10_LEN				(1U)
+#define IGN_SCMD14_LEN				(4U)
+#define IGN_SCMD15_LEN				(4U)
+#define IGN_SCMD16_LEN				(2U)
+#define IGN_SCMD17_LEN				(2U)
+#define IGN_SCMD18_LEN				(2U)
+#define IGN_SCMD19_LEN				(2U)
+#define IGN_SCMD20_LEN				(1U)
+#define IGN_SCMD21_LEN				(1U)
+#define IGN_SCMD22_LEN				(2U)
+#define IGN_SCMD23_LEN				(2U)
+#define IGN_SCMD24_LEN				(2U)
+#define IGN_SCMD25_LEN				(2U)
+#define IGN_SCMD26_LEN				(3U)
+#define IGN_SCMD27_LEN				(3U)
+#define IGN_SCMD40_LEN				(1U)
+#define IGN_SCMD41_LEN				(1U)
+
+ /** Ignition sub-commands length (Unit: byte). */
+ #define W4G_SCMD10_LEN				(22U)
 
 
 /** Main Commands */
@@ -87,6 +165,16 @@
 
 
 #define SUB_MCU_FW_VER_LEN			(2U)
+
+
+/** EEPROM accessing */
+#define ADDR_FLASH_PAGE_126      ((uint32_t)0x0803F000) /* Base @ of Page 126, 2 Kbytes */
+#define ADDR_FLASH_PAGE_127      ((uint32_t)0x0803F800) /* Base @ of Page 127, 2 Kbytes */
+
+#define FLASH_USER_START_ADDR    ADDR_FLASH_PAGE_127   /* Start @ of user Flash area */
+#define FLASH_USER_END_ADDR      ADDR_FLASH_PAGE_127   /* End @ of user Flash area */
+
+#define EEPROM_TAG               ((uint32_t)0x12345678)
 
  /* USER CODE END Definition */
 
@@ -192,6 +280,9 @@ typedef struct{
 /* The structure that contains the ignition related parameters, along with an IG_States
 that is used to identify which power state is. */
 typedef struct{
+	uint32_t eeprom_tag_init;       /*!< EEPROM TAG for mark if this data saved to flash or not */
+	uint8_t  major_ver;				/*!< MCU major version. */
+	uint8_t  minor_ver;				/*!< MCU minor version. */
 	eIgnition_States IG_States;		/*!< Ignition states. */
 	uint8_t	 pwron_delay;			/*!< Delay time after ignition switch-on from "Close-Up" */
 	uint8_t  wait_startup_time;		/*!< /*!< The delay time to prepare entering "Start Up" state. */
@@ -204,15 +295,19 @@ typedef struct{
 	uint8_t  pwroff_btn_cnt;
 	uint8_t	 pwrbtn_pressed;
 	uint8_t  pwrgood_chk_time;
+	uint8_t  in_sys_volt;			/*!< System voltage */
 	uint8_t  in_volt_min;			/*!< Minimum input voltage */
 	uint8_t  in_volt_max;			/*!< Maximum input voltage */
 	uint8_t  startup_volt;			/*!< The lowest voltage that can be accepted to start up system */
 	uint8_t  in_temp_min;			/*!< The acceptable minimum temperature */
 	uint8_t  in_temp_max;			/*!< The acceptable maximum temperature */
 	uint8_t  startup_temp;			/*!< The highest temperature that can be accepted to start up system */
+	uint8_t  wireless_state;		/*!< Wireless states, like 3G/4G, WiFi, LAN, WLAN... */
 	uint16_t fail_retry;			/*!< Record the re-power times in case of system failure */
 	uint16_t fail_count;
 }sIG_EVENT;
+
+
 
 
 
@@ -246,7 +341,8 @@ typedef void (*cmd_fun)(int argc, char **argv);
 
 
 /* USER CODE BEGIN Private defines */
-
+extern DMA_HandleTypeDef hdma_usart3_tx;
+extern DMA_HandleTypeDef hdma_usart3_rx;
 /* USER CODE END Private defines */
 
 

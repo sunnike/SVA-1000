@@ -44,6 +44,8 @@
 extern DMA_HandleTypeDef hdma_adc;
 extern CAN_HandleTypeDef hcan;
 extern SMBUS_HandleTypeDef hsmbus1;
+extern DMA_HandleTypeDef hdma_usart1_rx;
+extern DMA_HandleTypeDef hdma_usart1_tx;
 extern DMA_HandleTypeDef hdma_usart3_rx;
 extern DMA_HandleTypeDef hdma_usart3_tx;
 extern UART_HandleTypeDef huart1;
@@ -130,6 +132,8 @@ void DMA1_Ch2_3_DMA2_Ch1_2_IRQHandler(void)
   /* USER CODE BEGIN DMA1_Ch2_3_DMA2_Ch1_2_IRQn 0 */
 
   /* USER CODE END DMA1_Ch2_3_DMA2_Ch1_2_IRQn 0 */
+  HAL_DMA_IRQHandler(&hdma_usart1_tx);
+  HAL_DMA_IRQHandler(&hdma_usart1_rx);
   HAL_DMA_IRQHandler(&hdma_usart3_tx);
   HAL_DMA_IRQHandler(&hdma_usart3_rx);
   /* USER CODE BEGIN DMA1_Ch2_3_DMA2_Ch1_2_IRQn 1 */

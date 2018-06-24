@@ -96,7 +96,8 @@ sSVA_GPO_STATE 	sva_gpo={0};
 uint8_t cml_array[MAX_CML_CHAR] = {0};
 uint8_t cml_proc[MAX_CML_CHAR] = {0};
 
-sIG_EVENT gIG_Event ={ IG_Recovery, 2, 2, 10, 2, 2, 10, 2, 100, 5, FALSE, 5, 20, 145, 0, 50, 100, 50, 0, 0};
+
+sIG_EVENT gIG_Event ={ 0x12345678, 0, 1, IG_Recovery, 2, 2, 10, 2, 2, 10, 2, 100, 5, FALSE, 5, 12, 20, 145, 0, 50, 100, 50, 0, 0, 0};
 volatile sIG_EVENT ig_event;
 
 /** @defgroup STM32F0XX_RTC STM32F0XX RTC time, date and alarm.
@@ -137,8 +138,9 @@ void aewin_dbg(char *fmt,...);
 
 void MX_FREERTOS_Init(void) {
   /* USER CODE BEGIN Init */
-	HAL_UART_Transmit_DMA(&huart3, SVA_1000_NL, sizeof(SVA_1000_NL) - 1);
-
+	//HAL_UART_Transmit(&huart3, SVA_1000_NL, sizeof(SVA_1000_NL) - 1, sizeof(SVA_1000_NL));
+	HAL_RTC_GetTime(&hrtc, &sTime, RTC_FORMAT_BIN);
+	HAL_RTC_GetDate(&hrtc, &sDate, RTC_FORMAT_BIN);
   /* USER CODE END Init */
 
   /* Create the mutex(es) */
@@ -180,7 +182,7 @@ void MX_FREERTOS_Init(void) {
   USART2_TaskHandle = osThreadCreate(osThread(USART2_Task), NULL);
 
   /* definition and creation of USART3_Task */
-  osThreadDef(USART3_Task, usart3_entry, osPriorityAboveNormal, 0, 128);
+  osThreadDef(USART3_Task, usart3_entry, osPriorityNormal, 0, 128);
   USART3_TaskHandle = osThreadCreate(osThread(USART3_Task), NULL);
 
   /* definition and creation of IGNITION_Task */
@@ -247,78 +249,278 @@ void usart1_entry(void const * argument)
 {
   /* USER CODE BEGIN usart1_entry */
 	uint8_t recv1[CMD_MAX_LEN] = {0};
-	uint8_t test[] = {0x16, 0x16 ,0x02 ,0x10 ,0x10 ,0x03 , 0x00, 0x04};
-	uint8_t data_rec_index = 0, chk_index = 0;
+	uint8_t xFer[CMD_MAX_LEN] = {0};
+	uint8_t write_back = FALSE;
+	uint8_t send2host = FALSE;
+	uint8_t xFer_len = 0;
 	/* Infinite loop */
 
 	for(;;)
     {
-		#if 0
-		// Get SYN.
-		if(HAL_UART_Receive_DMA(&huart1, &recv1[chk_index++], UART1_TIMEOUT) == HAL_OK){
-			if(recv1[chk_index - 1] == CMD_SYN_CODE){
-				// GEt SYN.
-				if(HAL_UART_Receive_DMA(&huart1, &recv1[chk_index++], UART1_TIMEOUT)  == HAL_OK){
-					// GEt STX.
-					if(HAL_UART_Receive_DMA(&huart1, &recv1[chk_index++], UART1_TIMEOUT)  == HAL_OK){
-						// Get Main command.
-						if(HAL_UART_Receive_DMA(&huart1, &recv1[chk_index++], UART1_TIMEOUT)  == HAL_OK){
-							// Get sub-command.
-							if(HAL_UART_Receive_DMA(&huart1, &recv1[chk_index++], UART1_TIMEOUT) == HAL_OK){
-								if(*((uint32_t*)recv1) == CMD_MAIN_CHK(M_CMD_MCU_SETTING)){
-									switch(recv1[4]){
-										//-----------------------------------------------------
-										case Subcmd_MCU_FW_Ver:
-											data_rec_index = SUB_MCU_FW_VER_LEN + CMS_TAIL_SIZE;
-											do{
-												HAL_UART_Receive_DMA(&huart1, &recv1[chk_index++], 1);
-											}while(--data_rec_index);
+#if 1
+		// Wait until the first byte is coming
+		while((HAL_UART_Receive(&huart1, &recv1[CMD_SYN_POS0], 1, 1)) != HAL_OK );
+		// Get the SYN code.
+		HAL_UART_Receive_DMA(&huart1, &recv1[CMD_SYN_POS1] ,(CMD_MAX_LEN - 1));
+		// Give some time for DMA receiving data. Let this thread take a break.
+		osDelay(30);
+		// Abort UART processing.
+		HAL_UART_Abort_IT(&huart1);
+#else
 
-											if((recv1[chk_index - CMS_TAIL_SIZE] == CMD_ETX_CODE) && (recv1[chk_index - 1] == CMD_EOT_CODE) )
-												HAL_UART_Transmit_DMA(&huart1, test, sizeof(test));
-												//aewin_dbg("\r\nGet MCU version(0x10)");
-
-											break;
-									}
-								}
-							}
-						}
-					}
-				}
-			}
-			//HAL_UART_Transmit_DMA(&huart1, (uint8_t*)&recv1, 1);
-			/*osMutexWait(MUTEX_DebugHandle, osWaitForever);
-		    HAL_UART_Transmit_DMA(&huart3, (uint8_t*)&recv1, 1, 1);
-		    osMutexRelease(MUTEX_DebugHandle);*/
+		// Wait until the first byte is coming
+		if ((HAL_UART_Receive(&huart1, &recv1[CMD_SYN_POS0], 1, 1)) == HAL_OK ){
+			// Get the SYN code.
+			HAL_UART_Receive_DMA(&huart1, &recv1[CMD_SYN_POS1] ,(CMD_MAX_LEN - 1));
+			// Give some time for DMA receiving data. Let this thread take a break.
+			osDelay(30);
+			// Abort UART processing.
+			HAL_UART_Abort_IT(&huart1);
 		}
-		else if (u1_states == HAL_TIMEOUT){
-			//HAL_UART_Abort(&huart1);
+		else{
+			continue;
 		}
-		HAL_UART_Abort(&huart1);
-		chk_index = 0;
-		data_rec_index = 0;
-		memset(recv1, 0, CMD_MAX_LEN);
 #endif
-		//if(IG_Start_Up == ig_event.IG_States){
+		// Check command head.
+		if ((CMD_SYN_CODE == recv1[CMD_SYN_POS0]) && (CMD_SYN_CODE == recv1[CMD_SYN_POS1]) && (CMD_STX_CODE == recv1[CMD_STX_POS])){
+			switch(recv1[CMD_MCMD_POS]){
+				//-----------------------------------------------------
+				case M_CMD_MCU_SETTING:
+					switch(recv1[CMD_SCMD_POS]){
+						//-----------------------------------------------------
+						case Subcmd_MCU_FW_Ver:
+							// Check tail codes.
+							if((CMD_ETX_CODE != recv1[CMD_ETX_POS(CMD_HEAD_MS_SIZE)]) || \
+							   (CMD_EOT_CODE != recv1[CMD_EOT_POS(CMD_HEAD_MS_SIZE)])) break;
+							xFer[2] = Subcmd_MCU_FW_Ver;
+							xFer[3] = gIG_Event.major_ver;
+							xFer[4] = gIG_Event.minor_ver;
+							send2host = TRUE;
+							xFer_len = MCU_REPO_HEAD_CMD_SIZE + MCU_SCMD10_LEN;
+							aewin_dbg("\n\rHost get MCU version:%d.%d", xFer[3], xFer[4]);
+							break;
 
-		//}
-		/*data_rec_index = 1;
-		//HAL_UART_DMAResume(&huart1);
-		while(HAL_UART_Receive_DMA(&huart1, &recv1[0], 1) != HAL_OK){ //&& (CMD_SYN_CODE == recv1[0])
-			while((HAL_UART_Receive_DMA(&huart1, &recv1[data_rec_index++], (CMD_MAX_LEN - 1)) == HAL_OK) && (data_rec_index < CMD_MAX_LEN));
-		}
+						//-----------------------------------------------------
+						case Subcmd_MCU_Get_Date:
+							if((CMD_ETX_CODE != recv1[CMD_ETX_POS(CMD_HEAD_MS_SIZE)]) || \
+							   (CMD_EOT_CODE != recv1[CMD_EOT_POS(CMD_HEAD_MS_SIZE)])) break;
+							HAL_RTC_GetTime(&hrtc, &sTime, RTC_FORMAT_BIN);
+							HAL_RTC_GetDate(&hrtc, &sDate, RTC_FORMAT_BIN);
+							xFer[2] = Subcmd_MCU_Get_Date;
+							xFer[3] = sDate.Year; 		// Year low byte.
+							xFer[4] = 20; 				// Year high byte.
+							xFer[5] = sDate.Month;		// Month.
+							xFer[6] = sDate.Date;		// Date.
+							xFer[7] = sTime.Hours;		// Hours.
+							xFer[8] = sTime.Minutes;	// Minutes.
+							xFer[9] = sTime.Seconds;	// Seconds.
+							send2host = TRUE;
+							xFer_len = MCU_REPO_HEAD_CMD_SIZE + MCU_SCMD20_LEN;
+							aewin_dbg("\n\rGet Time: %2d:%2d:%2d",sTime.Hours ,sTime.Minutes, sTime.Seconds);
+							aewin_dbg("\n\rGet Date: 20%2d_%2d_%2d  Weekday:%d",sDate.Year ,sDate.Month, sDate.Date ,sDate.WeekDay);
+							break;
 
-		chk_index = 0;
-		if(data_rec_index > 1){
-			//HAL_UART_DMAResume(&huart1);
-			HAL_UART_Transmit_DMA(&huart1, recv1, (data_rec_index -1));
+
+						//-----------------------------------------------------
+						case Subcmd_MCU_Set_Date:
+							if((CMD_ETX_CODE != recv1[CMD_ETX_POS(CMD_HEAD_MS_SIZE + MCU_SCMD21_LEN)]) || \
+							   (CMD_EOT_CODE != recv1[CMD_EOT_POS(CMD_HEAD_MS_SIZE + MCU_SCMD21_LEN)])) break;
+							// recv1[6] = 20, no need to change
+							sDate.Year  = recv1[5]; 		// Year low byte.
+							sDate.Month	= recv1[7];			// Month.
+							sDate.Date  = recv1[8];			// Date.
+							sTime.Hours = recv1[9];			// Hours.
+							sTime.Minutes = recv1[10];;		// Minutes.
+							sTime.Seconds = recv1[11];;		// Seconds.
+							aewin_dbg("\n\rSet Time: %2d:%2d:%2d",sTime.Hours ,sTime.Minutes, sTime.Seconds);
+							aewin_dbg("\n\rSet Date: 20%2d_%2d_%2d  Weekday:%d",sDate.Year ,sDate.Month, sDate.Date ,sDate.WeekDay);
+							HAL_RTC_SetTime(&hrtc, &sTime, RTC_FORMAT_BIN);
+							HAL_RTC_SetDate(&hrtc, &sDate, RTC_FORMAT_BIN);
+							break;
+
+
+						//-----------------------------------------------------
+						case Subcmd_Get_Sys_InVOLT:
+							break;
+
+						//-----------------------------------------------------
+						case Subcmd_Set_Sys_InVOLT:
+							break;
+
+						//-----------------------------------------------------
+						case Subcmd_Get_RebootSrc:
+							break;
+
+						//-----------------------------------------------------
+						case Subcmd_Set_RebootSrc:
+							break;
+
+						//-----------------------------------------------------
+						case Subcmd_Get_BootMode:
+							break;
+
+						//-----------------------------------------------------
+						case Subcmd_Set_BootMode:
+							break;
+
+						//-----------------------------------------------------
+						case Subcmd_Get_WWAN_WKStat:
+							break;
+
+						//-----------------------------------------------------
+						case Subcmd_Set_WWAN_WKStat:
+							break;
+
+						//-----------------------------------------------------
+						case Subcmd_Get_WWAN_Stat:
+							break;
+
+						//-----------------------------------------------------
+						case Subcmd_Set_WWAN_Stat:
+							break;
+
+						//-----------------------------------------------------
+						case Subcmd_Get_DigiIn:
+							break;
+
+						//-----------------------------------------------------
+						case Subcmd_Get_DigiOut:
+							break;
+
+						//-----------------------------------------------------
+						case Subcmd_Set_DigiOut:
+							break;
+
+						//-----------------------------------------------------
+						case Subcmd_Get_SIM_Mode:
+							break;
+
+						//-----------------------------------------------------
+						case Subcmd_Set_SIM_Mode:
+							break;
+
+						//-----------------------------------------------------
+						case Subcmd_Get_WIFI_OnOff:
+							break;
+
+						//-----------------------------------------------------
+						case Subcmd_Set_WIFI_OnOff:
+							break;
+
+						//-----------------------------------------------------
+						case Subcmd_Get_LAN_WKStat:
+							break;
+
+						//-----------------------------------------------------
+						case Subcmd_Set_LAN_WKStat:
+							break;
+
+						//-----------------------------------------------------
+						case Subcmd_Get_DelayOffStat:
+							break;
+
+						//-----------------------------------------------------
+						case Subcmd_Set_DelayOffStat:
+							break;
+
+						//-----------------------------------------------------
+						case Subcmd_Get_DelayOnStat:
+							break;
+
+						//-----------------------------------------------------
+						case Subcmd_Set_DelayOnStat:
+							break;
+
+						//-----------------------------------------------------
+						case Subcmd_Get_DelayOffTime:
+							break;
+
+						//-----------------------------------------------------
+						case Subcmd_Set_DelayOffTime:
+							break;
+
+						//-----------------------------------------------------
+						case Subcmd_Get_DelayOnTime:
+							break;
+
+						//-----------------------------------------------------
+						case Subcmd_Set_DelayOnTime:
+							break;
+
+						//-----------------------------------------------------
+						case Subcmd_Get_ADC:
+							break;
+
+						//-----------------------------------------------------
+						case Subcmd_Get_GPS:
+							break;
+
+						//-----------------------------------------------------
+						case Subcmd_Get_Gsensor:
+							break;
+
+						//-----------------------------------------------------
+						case Subcmd_OS_Shutdown:
+							break;
+
+						//-----------------------------------------------------
+						default:
+							break;
+					}
+					break;
+				//-----------------------------------------------------
+				case M_CMD_IG_SETTING:
+					switch(recv1[CMD_SCMD_POS]){
+
+					}
+					break;
+
+				//-----------------------------------------------------
+				case M_CMD_4G_SETTING:
+					switch(recv1[CMD_SCMD_POS]){
+
+					}
+					break;
+
+				//-----------------------------------------------------
+				default:
+					break;
+
+			}
+
+			if(TRUE == send2host){
+				xFer[MCU_ID_POS] = MCU_REPO_ID;
+				switch(recv1[CMD_MCMD_POS]){
+					//-----------------------------------------------------
+					case M_CMD_MCU_SETTING:
+						xFer[1] = M_CMD_MCU_SETTING;
+						break;
+					//-----------------------------------------------------
+					case M_CMD_IG_SETTING:
+						xFer[1] = M_CMD_IG_SETTING;
+						break;
+
+					//-----------------------------------------------------
+					case M_CMD_4G_SETTING:
+						xFer[1] = M_CMD_4G_SETTING;
+						break;
+				}
+
+				xFer[xFer_len] = CMD_ETX_CODE; 		// ETX code.
+				xFer[xFer_len + 1] = 0x00; 			// Check sum.
+				xFer[xFer_len + 2] = CMD_EOT_CODE;	// EOT code.
+				xFer_len += CMD_TAIL_SIZE;
+				// Start to transmit to host.
+				HAL_UART_Transmit_DMA(&huart1, xFer, xFer_len);
+				send2host = FALSE;
+				xFer_len = 0;
+			}
 		}
-		recv1[0] = 0;*/
-		/*if(HAL_UART_Receive(&huart1, &recv1[0], 1, 1) == HAL_OK){
-			HAL_UART_Transmit(&huart1, &recv1[0], 1, 1);
-		}*/
+		memset(recv1, 0, CMD_MAX_LEN);
 		osDelay(UART1_TASK_ENTRY_TIME);
 	}
+
+
   /* USER CODE END usart1_entry */
 }
 
@@ -334,6 +536,9 @@ void usart2_entry(void const * argument)
 		/*if(HAL_UART_Receive_DMA(&huart2, (uint8_t*)&recv2, 1) == HAL_OK){
 			HAL_UART_Transmit_DMA(&huart2, (uint8_t*)&recv2, 1);
 		}*/
+    	HAL_UART_Transmit(&huart2, "AP+CM", 5, 5);
+    	HAL_Delay(5);
+    	HAL_UART_Receive();
 #if 0
 		if((u2_states = HAL_UART_Receive(&huart2, (uint8_t*)&recv2, 1, UART3_TIMEOUT)) == HAL_OK){
 			HAL_UART_Transmit(&huart2, (uint8_t*)&recv2, 1, UART3_TIMEOUT);
@@ -351,29 +556,28 @@ void usart2_entry(void const * argument)
 void usart3_entry(void const * argument)
 {
   /* USER CODE BEGIN usart3_entry */
+	uint8_t recv3[4] = {0};
 	int temp;
-	uint8_t recv3[3] = {0};
 	uint8_t *cml_head, *cml_limit, *cml_ptr = cml_array;
 	HAL_StatusTypeDef u3_states = HAL_OK;
 	cml_head = cml_limit = cml_ptr;
-
+	uint8_t cnt = 0;
 	/* Infinite loop */
 	for(;;)
 	{
-		recv3[0] = 0;
+#if (0)
+		//recv3[0] = recv3[1] = recv3[2] = 0;
 		osMutexWait(MUTEX_DebugHandle, osWaitForever);
-		if(HAL_UART_Receive_DMA(&huart3, (uint8_t*)&recv3[0], 1) == HAL_OK){
-			HAL_Delay(1);
-			recv3[1] = 0;
-			if (HAL_UART_Receive_DMA(&huart3, (uint8_t*)&recv3[1], 1) != HAL_OK){
+		if(HAL_UART_Receive(&huart3, (uint8_t*)&recv3[0], 1, 1) == HAL_OK){
+			if (HAL_UART_Receive(&huart3, (uint8_t*)&recv3[1], 1, 1) != HAL_OK){
 				switch(recv3[0]){
+					case '\0':
+						break;
 					//-----------------------------------------------------
 					case '\r':
 					case '\n':
-						HAL_UART_Transmit_DMA(&huart3, SVA_1000_NL, sizeof(SVA_1000_NL) - 1);
+						HAL_UART_Transmit(&huart3, SVA_1000_NL, sizeof(SVA_1000_NL) - 1, sizeof(SVA_1000_NL) - 1);
 						*cml_limit = '\0';
-						//osMutexRelease(MUTEX_DebugHandle);
-						//aewin_dbg("\n\rCommands Length = %d",(uint32_t)(cml_limit - cml_head));
 						osMutexWait(MUTEX_CMD_PROCHandle, osWaitForever);
 						memcpy(cml_proc, cml_array, (uint32_t)(cml_limit - cml_head + 1));
 						osMutexRelease(MUTEX_CMD_PROCHandle);
@@ -395,14 +599,14 @@ void usart3_entry(void const * argument)
 							temp = cml_limit - cml_ptr;
 							*(--cml_ptr) = 0;
 							strncpy(cml_ptr, (cml_ptr + 1), temp);
-							HAL_UART_Transmit_DMA(&huart3, (uint8_t*)&recv3[0], 1);
-							HAL_UART_Transmit_DMA(&huart3, cml_ptr, temp);
-							HAL_UART_Transmit_DMA(&huart3, " ", 1);
-							//HAL_UART_Transmit_DMA(&huart3, (uint8_t*)&recv3[0], 1, UART3_TIMEOUT);
+							HAL_UART_Transmit(&huart3, (uint8_t*)&recv3[0], 1, 1);
+							HAL_UART_Transmit(&huart3, cml_ptr, temp, temp);
+							HAL_UART_Transmit(&huart3, " ", 1, 1);
+							//HAL_UART_Transmit(&huart3, (uint8_t*)&recv3[0], 1, UART3_TIMEOUT);
 
 
 							for(temp = 0; temp < cml_limit - cml_ptr; temp++){
-								HAL_UART_Transmit_DMA(&huart3, (uint8_t*)&recv3[0], 1);
+								HAL_UART_Transmit(&huart3, (uint8_t*)&recv3[0], 1, 1);
 							}
 							*(--cml_limit) = 0;
 						}
@@ -421,15 +625,17 @@ void usart3_entry(void const * argument)
 							break;
 						}
 						*(cml_ptr++) = recv3[0];
-						cml_limit = cml_ptr;
-						HAL_UART_Transmit_DMA(&huart3, (uint8_t*)&recv3[0], 1);
+						//cml_limit = cml_ptr;
+						if(cml_limit < cml_ptr){
+							cml_limit = cml_ptr;
+						}
+						HAL_UART_Transmit(&huart3, (uint8_t*)&recv3[0], 1, 1);
 						break;
 				}
 
 			}
 			else{
-				recv3[2] = 0;
-				if (HAL_UART_Receive_DMA(&huart3, (uint8_t*)&recv3[2], 1) == HAL_OK){
+				if (HAL_UART_Receive(&huart3, (uint8_t*)&recv3[2], 1, 1) == HAL_OK){
 					if (recv3[0] =='\e'){
 						//recv3[0] = 0xE0;
 						switch(recv3[2]){
@@ -452,7 +658,7 @@ void usart3_entry(void const * argument)
 
 							if (cml_ptr < cml_limit){
 								cml_ptr++;
-								HAL_UART_Transmit_DMA(&huart3, (uint8_t*)&recv3[0], 3);
+								HAL_UART_Transmit(&huart3, (uint8_t*)&recv3[0], 3, 2);
 							}
 
 							break;
@@ -462,7 +668,7 @@ void usart3_entry(void const * argument)
 						case 'D':
 							if (cml_ptr > cml_head){
 								cml_ptr--;
-								HAL_UART_Transmit_DMA(&huart3, (uint8_t*)&recv3[0], 3);
+								HAL_UART_Transmit(&huart3, (uint8_t*)&recv3[0], 3, 2);
 							}
 							break;
 
@@ -479,9 +685,159 @@ void usart3_entry(void const * argument)
 			//HAL_UART_Abort(&huart3);
 		//}
 
+
+		osMutexRelease(MUTEX_DebugHandle);
+#else
+
 		//HAL_DMA_Abort(&hdma_usart3_tx);
 		//HAL_DMA_Abort(&hdma_usart3_rx);
+
+		//HAL_Delay(1);
+		osMutexWait(MUTEX_DebugHandle, osWaitForever);
+		cnt = 0;
+		if(HAL_UART_Receive_DMA(&huart3, &recv3[cnt], 1) == HAL_OK){
+			cnt++;
+			//HAL_Delay(1);
+			while(HAL_UART_Receive_DMA(&huart3, &recv3[cnt], 1) == HAL_OK){
+				cnt++;
+				if(cnt > 3) break;
+			}
+
+			osDelay(1);
+			//HAL_Delay(2);
+			// Abort UART processing.
+
+		}
+		//HAL_UART_Abort_IT(&huart3);
+
+
+
+
+		//}
+		/*if (cnt > 0){
+			HAL_UART_Transmit_DMA(&huart3, &recv3[0], cnt);
+		}*/
+
+		if(cnt == 3){
+			if (recv3[0] == '\e'){
+				//temp = recv3[0];
+				//recv3[0] = '\e';
+				//recv3[1] = '[';
+				//recv3[2] = (uint8_t)temp;
+				switch(recv3[2]){
+				//-----------------------------------------------------
+				// Up
+				case 'A':
+					//recv3[1] = 0x48;
+					break;
+
+				//-----------------------------------------------------
+				// Down
+				case 'B':
+					//recv3[1] = 0x50;
+					break;
+
+				//-----------------------------------------------------
+				// Right
+				case 'C':
+					//recv3[1] = 0x4D;
+
+					if (cml_ptr < cml_limit){
+						cml_ptr++;
+						HAL_UART_Transmit_DMA(&huart3, recv3, 3);
+					}
+
+					break;
+
+				//-----------------------------------------------------
+				// Left
+				case 'D':
+					if (cml_ptr > cml_head){
+						cml_ptr--;
+						HAL_UART_Transmit_DMA(&huart3, recv3, 3);
+					}
+					break;
+
+				//-----------------------------------------------------
+				default:
+					break;
+
+				}
+			}
+		}
+		else if(cnt == 1){
+			switch(recv3[0]){
+			case '\0':
+				break;
+			//-----------------------------------------------------
+			case '\r':
+			case '\n':
+				HAL_UART_Transmit_DMA(&huart3, SVA_1000_NL, sizeof(SVA_1000_NL) - 1);
+				*cml_limit = '\0';
+				//osMutexRelease(MUTEX_DebugHandle);
+				//aewin_dbg("\n\rCommands Length = %d",(uint32_t)(cml_limit - cml_head));
+				osMutexWait(MUTEX_CMD_PROCHandle, osWaitForever);
+				memcpy(cml_proc, cml_array, (uint32_t)(cml_limit - cml_head + 1));
+				osMutexRelease(MUTEX_CMD_PROCHandle);
+				cml_ptr = cml_limit = cml_head;
+
+				break;
+
+			//-----------------------------------------------------
+			/* Delete Key. */
+			case 0x7E:
+
+				break;
+			//-----------------------------------------------------
+			case 0x7F:
+				recv3[0] = '\b';
+
+			case '\b':
+				if ((cml_ptr > cml_head) && (cml_limit > cml_head)){
+					temp = cml_limit - cml_ptr;
+					*(--cml_ptr) = 0;
+					strncpy(cml_ptr, (cml_ptr + 1), temp);
+					HAL_Delay(1);
+					HAL_UART_Transmit_DMA(&huart3, recv3, 1);
+					HAL_Delay(2);
+					HAL_UART_Transmit_DMA(&huart3, cml_ptr, temp);
+					HAL_Delay(2);
+					HAL_UART_Transmit_DMA(&huart3, " ", 1);
+					//HAL_UART_Transmit_DMA(&huart3, (uint8_t*)&recv3[0], 1, UART3_TIMEOUT);
+
+
+					for(temp = 0; temp < cml_limit - cml_ptr; temp++){
+						HAL_Delay(1);
+						HAL_UART_Transmit_DMA(&huart3, recv3, 1);
+					}
+					*(--cml_limit) = 0;
+				}
+
+				//HAL_UART_Transmit_DMA(&huart3, " ", 1, 10);
+				//HAL_UART_Transmit_DMA(&huart3, (uint8_t*)&recv3[0], 1, 1);
+				break;
+
+			//-----------------------------------------------------
+			case '\e':
+				break;
+
+			//-----------------------------------------------------
+			default:
+				if (cml_ptr >= cml_head + MAX_CML_CHAR - 1){
+					break;
+				}
+				*(cml_ptr++) = recv3[0];
+				if (cml_ptr > cml_limit) cml_limit = cml_ptr;
+				HAL_UART_Transmit_DMA(&huart3, recv3, 1);
+				break;
+			}
+		}
+
+
+		memset(recv3, 0, 4);
 		osMutexRelease(MUTEX_DebugHandle);
+
+#endif
 		osDelay(UART3_TASK_ENTRY_TIME);
 	}
 
@@ -500,10 +856,10 @@ void ignition_entry(void const * argument)
     for(;;)
     {
 
-		HAL_RTC_GetTime(&hrtc, &sTime, RTC_FORMAT_BIN);
-		HAL_RTC_GetDate(&hrtc, &sDate, RTC_FORMAT_BIN);
-		aewin_dbg("\n\rMUC Time: %2d:%2d:%2d",sTime.Hours ,sTime.Minutes, sTime.Seconds);
-		aewin_dbg("\n\rMUC Date: 20%2d_%2d_%2d  Weekday:%d",sDate.Year ,sDate.Month, sDate.Date ,sDate.WeekDay);
+		//HAL_RTC_GetTime(&hrtc, &sTime, RTC_FORMAT_BIN);
+		//HAL_RTC_GetDate(&hrtc, &sDate, RTC_FORMAT_BIN);
+		//aewin_dbg("\n\rMUC Time: %2d:%2d:%2d",sTime.Hours ,sTime.Minutes, sTime.Seconds);
+		//aewin_dbg("\n\rMUC Date: 20%2d_%2d_%2d  Weekday:%d",sDate.Year ,sDate.Month, sDate.Date ,sDate.WeekDay);
 
     	/** Get ADC 24V from Q. */
     	evt = osMessageGet(ADC_VOLT_QHandle, osWaitForever);
