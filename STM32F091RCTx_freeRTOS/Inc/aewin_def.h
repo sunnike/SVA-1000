@@ -40,7 +40,13 @@
 
 
 #define UART1_TIMEOUT		1
+#define UART2_TIMEOUT		1
 #define UART3_TIMEOUT		1
+
+#define I2C_DEV_ID_ADXL345       0xE5
+#define I2C_DEV_ADDRESS_ADXL345  0x3A
+#define I2C_MEM_ADDRESS_ADXL345  0x32
+#define BUFFER_SIZE_ADXL345      6
 
 
 

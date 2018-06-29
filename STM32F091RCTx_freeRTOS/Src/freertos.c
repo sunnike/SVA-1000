@@ -61,6 +61,7 @@
 #include <iwdg.h>
 #include <gpio.h>
 #include <rtc.h>
+#include <i2c.h>
 /* USER CODE END Includes */
 
 /* Variables -----------------------------------------------------------------*/
@@ -99,6 +100,8 @@ uint8_t cml_proc[MAX_CML_CHAR] = {0};
 
 sIG_EVENT gIG_Event ={ 0x12345678, 0, 1, IG_Recovery, 2, 2, 10, 2, 2, 10, 2, 100, 5, FALSE, 5, 12, 20, 145, 0, 50, 100, 50, 0, 0, 0};
 volatile sIG_EVENT ig_event;
+
+__IO ITStatus UartReady = RESET;
 
 /** @defgroup STM32F0XX_RTC STM32F0XX RTC time, date and alarm.
   * @{
@@ -259,7 +262,7 @@ void usart1_entry(void const * argument)
     {
 #if 1
 		// Wait until the first byte is coming
-		while((HAL_UART_Receive(&huart1, &recv1[CMD_SYN_POS0], 1, 1)) != HAL_OK );
+		//while((HAL_UART_Receive(&huart1, &recv1[CMD_SYN_POS0], 1, 1)) != HAL_OK );
 		// Get the SYN code.
 		HAL_UART_Receive_DMA(&huart1, &recv1[CMD_SYN_POS1] ,(CMD_MAX_LEN - 1));
 		// Give some time for DMA receiving data. Let this thread take a break.
@@ -528,6 +531,7 @@ void usart1_entry(void const * argument)
 void usart2_entry(void const * argument)
 {
   /* USER CODE BEGIN usart2_entry */
+	uint8_t recv2[2] = {0};
 	//uint8_t recv2 = 0;
 	//HAL_StatusTypeDef u2_states = HAL_OK;
     /* Infinite loop */
@@ -536,9 +540,45 @@ void usart2_entry(void const * argument)
 		/*if(HAL_UART_Receive_DMA(&huart2, (uint8_t*)&recv2, 1) == HAL_OK){
 			HAL_UART_Transmit_DMA(&huart2, (uint8_t*)&recv2, 1);
 		}*/
-    	HAL_UART_Transmit(&huart2, "AP+CM", 5, 5);
-    	HAL_Delay(5);
-    	HAL_UART_Receive();
+
+
+    	/*##-2- Start the transmission process #####################################*/
+    	  /* While the UART in reception process, user can transmit data through
+    	     "aTxBuffer" buffer */
+    	#if 0
+    	if(HAL_UART_Transmit(&huart2, "+CSQ: 2,5", 10, 5000)!= HAL_OK)
+    	  {
+    	    Error_Handler();
+    	  }
+
+
+    	  /*##-3- Put UART peripheral in reception process ###########################*/
+    	  if(HAL_UART_Receive(&huart2, (uint8_t *)recv2, 10, 5000) != HAL_OK)
+    	  {
+    	    Error_Handler();
+    	  }
+
+
+
+    	  if(HAL_UART_Receive_IT(&huart2, (uint8_t*)&recv2, 10)!= HAL_OK)
+    	{
+    		Error_Handler();
+    	}
+
+    	while (UartReady != SET)
+		  {
+		  }
+#endif
+
+    	HAL_UART_Transmit(&huart2, "AT+CNMI=1,1", 11, 30);
+    	if(HAL_UART_Receive(&huart2, (uint8_t*)&recv2, 2, 3000)==HAL_OK)
+    	{
+    		HAL_UART_Transmit(&huart2, "AAAAAA", 6, 30);
+    	}
+
+
+
+
 #if 0
 		if((u2_states = HAL_UART_Receive(&huart2, (uint8_t*)&recv2, 1, UART3_TIMEOUT)) == HAL_OK){
 			HAL_UART_Transmit(&huart2, (uint8_t*)&recv2, 1, UART3_TIMEOUT);
@@ -1048,9 +1088,91 @@ void ignition_entry(void const * argument)
 void i2c1_entry(void const * argument)
 {
   /* USER CODE BEGIN i2c1_entry */
+
+	I2C_HandleTypeDef I2cHandle;
+	/* Buffer used for reception */
+	uint8_t ADXL345_RxBuffer[6];
+	//uint8_t regptr = I2C_MEM_ADDRESS_ADXL345;
+	uint8_t regptr = 0x00;
+
+	I2cHandle.Instance = I2C1;
+	I2cHandle.Init.Timing = 0x20303E5D;
+	I2cHandle.Init.OwnAddress1 = 0;
+	I2cHandle.Init.AddressingMode = I2C_ADDRESSINGMODE_7BIT;
+	I2cHandle.Init.DualAddressMode = I2C_DUALADDRESS_DISABLE;
+	I2cHandle.Init.OwnAddress2 = 0;
+	I2cHandle.Init.OwnAddress2Masks = I2C_OA2_NOMASK;
+	I2cHandle.Init.GeneralCallMode = I2C_GENERALCALL_DISABLE;
+	I2cHandle.Init.NoStretchMode = I2C_NOSTRETCH_DISABLE;
+	if (HAL_I2C_Init(&I2cHandle) != HAL_OK)
+	{
+	_Error_Handler(__FILE__, __LINE__);
+	}
+
+	/**Configure Analogue filter
+	*/
+	if (HAL_I2CEx_ConfigAnalogFilter(&I2cHandle, I2C_ANALOGFILTER_ENABLE) != HAL_OK)
+	{
+	_Error_Handler(__FILE__, __LINE__);
+	}
+
+	/**Configure Digital filter
+	*/
+	if (HAL_I2CEx_ConfigDigitalFilter(&I2cHandle, 0) != HAL_OK)
+	{
+	_Error_Handler(__FILE__, __LINE__);
+	}
+
     /* Infinite loop */
 	for(;;)
 	{
+		HAL_SMBUS_Master_Transmit_IT(&hsmbus1, I2C_DEV_ADDRESS_ADXL345, &regptr, 1, SMBUS_AUTOEND_MODE);
+		//HAL_Delay(10);
+		HAL_SMBUS_Master_Receive_IT(&hsmbus1, I2C_DEV_ADDRESS_ADXL345,  ADXL345_RxBuffer, 6, SMBUS_AUTOEND_MODE);
+
+
+#if 0
+		/* While the I2C in reception process, user can transmit data through
+			 "aTxBuffer" buffer */
+		  /* Timeout is set to 10S */
+		  while(HAL_I2C_Master_Transmit(&I2cHandle, (uint16_t)0xE5, &regptr, 1, 10)!= HAL_OK)
+		  {
+			/* Error_Handler() function is called when Timeout error occurs.
+			   When Acknowledge failure occurs (Slave don't acknowledge its address)
+			   Master restarts communication */
+			if (HAL_I2C_GetError(&I2cHandle) != HAL_I2C_ERROR_AF)
+			{
+			  Error_Handler();
+			}
+		  }
+
+		  while(HAL_I2C_Master_Receive(&I2cHandle, (uint16_t)0xE5, (uint8_t *)ADXL345_RxBuffer, 6, 10000) != HAL_OK)
+		  {
+			  /* Error_Handler() function is called when Timeout error occurs.
+				 When Acknowledge failure occurs (Slave don't acknowledge it's address)
+				 Master restarts communication */
+			  if (HAL_I2C_GetError(&I2cHandle) != HAL_I2C_ERROR_AF)
+			  {
+				Error_Handler();
+			  }
+		   }
+
+
+		  //if(HAL_I2C_Master_Receive_DMA(&I2cHandle, (uint16_t)I2C_DEV_ADDRESS_ADXL345, (uint8_t *)ADXL345_RxBuffer, BUFFER_SIZE_ADXL345) != HAL_OK)
+		if(HAL_I2C_Mem_Read_DMA( &I2cHandle,  0xE5,  0x32, I2C_MEMADD_SIZE_8BIT,  (uint8_t *)ADXL345_RxBuffer,  6) != HAL_OK)
+		{
+		  /* Error_Handler() function is called when error occurs. */
+		  Error_Handler();
+		}
+
+		/* Wait for the end of the transfer */
+		while (HAL_I2C_GetState(&I2cHandle) != HAL_I2C_STATE_READY)
+		{
+		}
+
+	#endif
+
+
 		//aewin_dbg("\n\rI2C Task");
         osDelay(50);
 	}
@@ -1162,6 +1284,13 @@ void aewin_dbg(char *fmt,...){
 	osMutexRelease(MUTEX_DebugHandle);
 }
 #endif
+
+void HAL_UART_RxCpltCallback(UART_HandleTypeDef *UartHandle)
+{
+  /* Set transmission flag: transfer complete */
+  UartReady = SET;
+}
+
 
 /* USER CODE END Application */
 
