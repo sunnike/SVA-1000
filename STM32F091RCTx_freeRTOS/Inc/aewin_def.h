@@ -43,12 +43,13 @@
 #define UART2_TIMEOUT		1
 #define UART3_TIMEOUT		1
 
-#define I2C_DEV_ID_ADXL345       0xE5
-#define I2C_DEV_ADDRESS_ADXL345  0x3A
-#define I2C_MEM_ADDRESS_ADXL345  0x32
-#define BUFFER_SIZE_ADXL345      6
+#define I2C_ADXL345_DEV_ADDRESS      0x3A
+#define I2C_ADXL345_CMD_DEV_ID       0x00
+#define I2C_ADXL345_DATA_DEV_ID      0xE5
+#define I2C_ADXL345_CMD_GPS_DATA     0x32
 
-
+#define I2C_ADXL345_CMD_GPS_SETTING  0x27
+#define I2C_ADXL345_DATA_GPS_ACT     0xE0
 
  /** @defgroup Aewin_Task_Entry_Time Tasks entry time configuration
    * @{

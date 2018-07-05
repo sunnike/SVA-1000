@@ -1,9 +1,9 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <Project>
-<ProjectName>C:\Users\Chenj\workspace\SVA-1000\STM32F091RCTx_freeRTOS\\STM32F091RCTx_freeRTOS</ProjectName>
+<ProjectName>D:\Git_workspace\SVA-1000\first_clone\STM32F091RCTx_freeRTOS\\STM32F091RCTx_freeRTOS</ProjectName>
 <ProjectNature>C</ProjectNature> 
 <CMSIS>..\Drivers\CMSIS</CMSIS>
-<HAL_Driver>C:\Users\Chenj\STM32Cube\Repository\STM32Cube_FW_F0_V1.9.0\Drivers\CMSIS</HAL_Driver>
+<HAL_Driver>D:\STM32 Library\STM32Cube_FW_F0_V1.9.0\Drivers\CMSIS</HAL_Driver>
 <Toolchain>SW4STM32</Toolchain>
 <Version>0</Version>
 
@@ -116,9 +116,6 @@
 						</file>
 						<file>
 							<name>../Drivers/STM32F0xx_HAL_Driver/Src/stm32f0xx_hal_can.c</name>
-						</file>
-						<file>
-							<name>../Drivers/STM32F0xx_HAL_Driver/Src/stm32f0xx_hal_smbus.c</name>
 						</file>
 						<file>
 							<name>../Drivers/STM32F0xx_HAL_Driver/Src/stm32f0xx_hal_i2c.c</name>

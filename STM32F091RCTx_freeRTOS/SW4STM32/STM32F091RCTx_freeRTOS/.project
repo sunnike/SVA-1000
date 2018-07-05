@@ -61,10 +61,6 @@
       <type>1</type>
       <location>PARENT-2-PROJECT_LOC/Drivers/STM32F0xx_HAL_Driver/Src/stm32f0xx_hal_rtc.c</location>
     </link><link>
-      <name>Drivers/STM32F0xx_HAL_Driver/stm32f0xx_hal_smbus.c</name>
-      <type>1</type>
-      <location>PARENT-2-PROJECT_LOC/Drivers/STM32F0xx_HAL_Driver/Src/stm32f0xx_hal_smbus.c</location>
-    </link><link>
       <name>Drivers/STM32F0xx_HAL_Driver/stm32f0xx_hal_spi.c</name>
       <type>1</type>
       <location>PARENT-2-PROJECT_LOC/Drivers/STM32F0xx_HAL_Driver/Src/stm32f0xx_hal_spi.c</location>

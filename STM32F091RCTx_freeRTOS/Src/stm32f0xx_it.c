@@ -43,7 +43,7 @@
 /* External variables --------------------------------------------------------*/
 extern DMA_HandleTypeDef hdma_adc;
 extern CAN_HandleTypeDef hcan;
-extern SMBUS_HandleTypeDef hsmbus1;
+extern I2C_HandleTypeDef hi2c1;
 extern DMA_HandleTypeDef hdma_usart1_rx;
 extern DMA_HandleTypeDef hdma_usart1_tx;
 extern DMA_HandleTypeDef hdma_usart3_rx;
@@ -163,10 +163,10 @@ void I2C1_IRQHandler(void)
   /* USER CODE BEGIN I2C1_IRQn 0 */
 
   /* USER CODE END I2C1_IRQn 0 */
-  if (hsmbus1.Instance->ISR & (SMBUS_FLAG_BERR | SMBUS_FLAG_ARLO | SMBUS_FLAG_OVR | SMBUS_FLAG_TIMEOUT | SMBUS_FLAG_ALERT | SMBUS_FLAG_PECERR)) {
-    HAL_SMBUS_ER_IRQHandler(&hsmbus1);
+  if (hi2c1.Instance->ISR & (I2C_FLAG_BERR | I2C_FLAG_ARLO | I2C_FLAG_OVR)) {
+    HAL_I2C_ER_IRQHandler(&hi2c1);
   } else {
-    HAL_SMBUS_EV_IRQHandler(&hsmbus1);
+    HAL_I2C_EV_IRQHandler(&hi2c1);
   }
   /* USER CODE BEGIN I2C1_IRQn 1 */
 

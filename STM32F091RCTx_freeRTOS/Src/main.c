@@ -117,7 +117,7 @@ int main(void)
   MX_DMA_Init();
   MX_ADC_Init();
   MX_CAN_Init();
-  MX_I2C1_SMBUS_Init();
+  MX_I2C1_Init();
   MX_I2C2_Init();
   MX_RTC_Init();
   MX_SPI1_Init();

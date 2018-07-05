@@ -62,6 +62,7 @@
 #include <gpio.h>
 #include <rtc.h>
 #include <i2c.h>
+#include <spi.h>
 /* USER CODE END Includes */
 
 /* Variables -----------------------------------------------------------------*/
@@ -75,6 +76,8 @@ osThreadId ADC_TaskHandle;
 osThreadId IWDG_TaskHandle;
 osThreadId CMD_PROC_TaskHandle;
 osThreadId GPIO_STATE_TaskHandle;
+osThreadId SPI1_TaskHandle;
+osThreadId CAN_TaskHandle;
 osMessageQId GPIO_MISC_QHandle;
 osMessageQId ADC_VOLT_QHandle;
 osMessageQId ADC_TEMP_QHandle;
@@ -98,7 +101,7 @@ uint8_t cml_array[MAX_CML_CHAR] = {0};
 uint8_t cml_proc[MAX_CML_CHAR] = {0};
 
 
-sIG_EVENT gIG_Event ={ 0x12345678, 0, 1, IG_Recovery, 2, 2, 10, 2, 2, 10, 2, 100, 5, FALSE, 5, 12, 20, 145, 0, 50, 100, 50, 0, 0, 0};
+sIG_EVENT gIG_Event ={ 0x12345678, 0, 1, IG_Recovery, 1, 1, 1, 2, 2, 10, 2, 100, 5, FALSE, 5, 12, 20, 145, 0, 50, 100, 50, 0, 0, 0};
 volatile sIG_EVENT ig_event;
 
 __IO ITStatus UartReady = RESET;
@@ -124,6 +127,8 @@ void adc_entry(void const * argument);
 void IWDG_entry(void const * argument);
 void cmd_proc_entry(void const * argument);
 void gpio_state_entry(void const * argument);
+void spi1_entry(void const * argument);
+void can_entry(void const * argument);
 
 void MX_FREERTOS_Init(void); /* (MISRA C 2004 rule 8.1) */
 
@@ -211,6 +216,14 @@ void MX_FREERTOS_Init(void) {
   /* definition and creation of GPIO_STATE_Task */
   osThreadDef(GPIO_STATE_Task, gpio_state_entry, osPriorityNormal, 0, 128);
   GPIO_STATE_TaskHandle = osThreadCreate(osThread(GPIO_STATE_Task), NULL);
+
+  /* definition and creation of SPI1_Task */
+  osThreadDef(SPI1_Task, spi1_entry, osPriorityNormal, 0, 128);
+  SPI1_TaskHandle = osThreadCreate(osThread(SPI1_Task), NULL);
+
+  /* definition and creation of CAN_Task */
+  osThreadDef(CAN_Task, can_entry, osPriorityNormal, 0, 128);
+  CAN_TaskHandle = osThreadCreate(osThread(CAN_Task), NULL);
 
   /* USER CODE BEGIN RTOS_THREADS */
 	/* add threads, ... */
@@ -570,11 +583,20 @@ void usart2_entry(void const * argument)
 		  }
 #endif
 
-    	HAL_UART_Transmit(&huart2, "AT+CNMI=1,1", 11, 30);
-    	if(HAL_UART_Receive(&huart2, (uint8_t*)&recv2, 2, 3000)==HAL_OK)
+    	 if(HAL_UART_Receive_IT(&huart2, (uint8_t*)&recv2, 2) != HAL_OK)
+    	  {
+    	    //Error_Handler();
+    	  }
+    	HAL_UART_Transmit(&huart2, "AT\n\r", sizeof("AT\n\r"), 30);
+
+
+    	/*
+    	HAL_UART_Transmit(&huart2, "AT+cind?", 11, 30);
+    	if(HAL_UART_Receive_IT(&huart2, (uint8_t*)&recv2, 2)==HAL_OK)
     	{
     		HAL_UART_Transmit(&huart2, "AAAAAA", 6, 30);
     	}
+    	*/
 
 
 
@@ -1089,69 +1111,66 @@ void i2c1_entry(void const * argument)
 {
   /* USER CODE BEGIN i2c1_entry */
 
-	I2C_HandleTypeDef I2cHandle;
+	//I2C_HandleTypeDef I2cHandle;
 	/* Buffer used for reception */
 	uint8_t ADXL345_RxBuffer[6];
+	uint8_t ADXL345_DEVID[1];
+	uint8_t ASXL345_sensorSetting[1];
 	//uint8_t regptr = I2C_MEM_ADDRESS_ADXL345;
-	uint8_t regptr = 0x00;
+	uint8_t regptr[] = {I2C_ADXL345_CMD_DEV_ID, I2C_ADXL345_CMD_GPS_SETTING, I2C_ADXL345_DATA_GPS_ACT, I2C_ADXL345_CMD_GPS_DATA};
 
-	I2cHandle.Instance = I2C1;
-	I2cHandle.Init.Timing = 0x20303E5D;
-	I2cHandle.Init.OwnAddress1 = 0;
-	I2cHandle.Init.AddressingMode = I2C_ADDRESSINGMODE_7BIT;
-	I2cHandle.Init.DualAddressMode = I2C_DUALADDRESS_DISABLE;
-	I2cHandle.Init.OwnAddress2 = 0;
-	I2cHandle.Init.OwnAddress2Masks = I2C_OA2_NOMASK;
-	I2cHandle.Init.GeneralCallMode = I2C_GENERALCALL_DISABLE;
-	I2cHandle.Init.NoStretchMode = I2C_NOSTRETCH_DISABLE;
-	if (HAL_I2C_Init(&I2cHandle) != HAL_OK)
-	{
-	_Error_Handler(__FILE__, __LINE__);
-	}
+	//read ADXL345 device ID (0xE5)
+	//HAL_I2C_Master_Transmit(&hi2c1, I2C_ADXL345_DEV_ADDRESS, &regptr[0], 1, 1000);
+	//HAL_I2C_Master_Receive(&hi2c1, I2C_ADXL345_DEV_ADDRESS, (uint8_t *)ADXL345_DEVID, 1, 10000);
 
-	/**Configure Analogue filter
-	*/
-	if (HAL_I2CEx_ConfigAnalogFilter(&I2cHandle, I2C_ANALOGFILTER_ENABLE) != HAL_OK)
-	{
-	_Error_Handler(__FILE__, __LINE__);
-	}
+	//enable ADXL345 x,y,z-axis G-sensor
+	//HAL_I2C_Master_Transmit(&hi2c1, I2C_ADXL345_DEV_ADDRESS, &regptr[1], 2, 1000);
 
-	/**Configure Digital filter
-	*/
-	if (HAL_I2CEx_ConfigDigitalFilter(&I2cHandle, 0) != HAL_OK)
-	{
-	_Error_Handler(__FILE__, __LINE__);
-	}
+	//Check G-sensor setting
+	//HAL_I2C_Master_Transmit(&hi2c1, I2C_ADXL345_DEV_ADDRESS, &regptr[1], 1, 1000);
+	//HAL_I2C_Master_Receive(&hi2c1, I2C_ADXL345_DEV_ADDRESS, (uint8_t *)ASXL345_sensorSetting, 1, 10000);
 
     /* Infinite loop */
 	for(;;)
 	{
-		HAL_SMBUS_Master_Transmit_IT(&hsmbus1, I2C_DEV_ADDRESS_ADXL345, &regptr, 1, SMBUS_AUTOEND_MODE);
+		//HAL_SMBUS_Master_Transmit_IT(&hsmbus1, I2C_DEV_ADDRESS_ADXL345, &regptr, 1, SMBUS_AUTOEND_MODE);
 		//HAL_Delay(10);
-		HAL_SMBUS_Master_Receive_IT(&hsmbus1, I2C_DEV_ADDRESS_ADXL345,  ADXL345_RxBuffer, 6, SMBUS_AUTOEND_MODE);
+		//HAL_SMBUS_Master_Receive_IT(&hsmbus1, I2C_DEV_ADDRESS_ADXL345,  ADXL345_RxBuffer, 6, SMBUS_AUTOEND_MODE);
+		HAL_GPIO_WritePin(GPIOC, D2D_EN_Pin, GPIO_PIN_SET);
+		if((sva_gpi.dc2dc_pwrok == GPIO_PIN_SET) && (sva_gpi.sys_pwron == GPIO_PIN_SET)){
+			//HAL_I2C_Master_Transmit(&hi2c1, I2C_ADXL345_DEV_ADDRESS, (uint8_t*)regptr, sizeof(regptr), 1000);
+			//HAL_I2C_Master_Receive(&hi2c1, I2C_ADXL345_DEV_ADDRESS, (uint8_t *)ADXL345_DEVID, 1, 10000);
+
+			//enable ADXL345 x,y,z-axis G-sensor
+			HAL_I2C_Master_Transmit(&hi2c1, I2C_ADXL345_DEV_ADDRESS, &regptr[1], 2, 1000);
+
+			HAL_I2C_Master_Transmit(&hi2c1, I2C_ADXL345_DEV_ADDRESS, &regptr[3], 1, 1000);
+			HAL_I2C_Master_Receive(&hi2c1, I2C_ADXL345_DEV_ADDRESS, (uint8_t *)ADXL345_RxBuffer, 6, 10000);
+		}
+
 
 
 #if 0
 		/* While the I2C in reception process, user can transmit data through
 			 "aTxBuffer" buffer */
 		  /* Timeout is set to 10S */
-		  while(HAL_I2C_Master_Transmit(&I2cHandle, (uint16_t)0xE5, &regptr, 1, 10)!= HAL_OK)
+		  while(HAL_I2C_Master_Transmit(&hi2c1, (uint16_t)0xE5, &regptr, 1, 10)!= HAL_OK)
 		  {
 			/* Error_Handler() function is called when Timeout error occurs.
 			   When Acknowledge failure occurs (Slave don't acknowledge its address)
 			   Master restarts communication */
-			if (HAL_I2C_GetError(&I2cHandle) != HAL_I2C_ERROR_AF)
+			if (HAL_I2C_GetError(&hi2c1) != HAL_I2C_ERROR_AF)
 			{
 			  Error_Handler();
 			}
 		  }
 
-		  while(HAL_I2C_Master_Receive(&I2cHandle, (uint16_t)0xE5, (uint8_t *)ADXL345_RxBuffer, 6, 10000) != HAL_OK)
+		  while(HAL_I2C_Master_Receive(&hi2c1, (uint16_t)0xE5, (uint8_t *)ADXL345_RxBuffer, 6, 10000) != HAL_OK)
 		  {
 			  /* Error_Handler() function is called when Timeout error occurs.
 				 When Acknowledge failure occurs (Slave don't acknowledge it's address)
 				 Master restarts communication */
-			  if (HAL_I2C_GetError(&I2cHandle) != HAL_I2C_ERROR_AF)
+			  if (HAL_I2C_GetError(&hi2c1) != HAL_I2C_ERROR_AF)
 			  {
 				Error_Handler();
 			  }
@@ -1265,6 +1284,30 @@ void gpio_state_entry(void const * argument)
 		osDelay(GPIO_GET_TASK_TIME);
     }
   /* USER CODE END gpio_state_entry */
+}
+
+/* spi1_entry function */
+void spi1_entry(void const * argument)
+{
+  /* USER CODE BEGIN spi1_entry */
+  /* Infinite loop */
+  for(;;)
+  {
+    osDelay(1);
+  }
+  /* USER CODE END spi1_entry */
+}
+
+/* can_entry function */
+void can_entry(void const * argument)
+{
+  /* USER CODE BEGIN can_entry */
+  /* Infinite loop */
+  for(;;)
+  {
+    osDelay(1);
+  }
+  /* USER CODE END can_entry */
 }
 
 /* USER CODE BEGIN Application */
