@@ -63,6 +63,7 @@
 #include <rtc.h>
 #include <i2c.h>
 #include <spi.h>
+#include <can.h>
 /* USER CODE END Includes */
 
 /* Variables -----------------------------------------------------------------*/
@@ -102,6 +103,9 @@ uint8_t cml_proc[MAX_CML_CHAR] = {0};
 
 
 sIG_EVENT gIG_Event ={ 0x12345678, 0, 1, IG_Recovery, 1, 1, 1, 2, 2, 10, 2, 100, 5, FALSE, 5, 12, 20, 145, 0, 50, 100, 50, 0, 0, 0};
+//sIG_EVENT gIG_Event ={ 0x12345678, 0, 1, IG_Recovery, 4, 1, 60, 10, 4, 60, 30, 300, 5, FALSE, 5, 12, 9, 54, 0, 50, 100, 50, 0, 0, 0}; //ignition mode
+//sIG_EVENT gIG_Event ={ 0x12345678, 0, 1, IG_Recovery, 4, 1, 60, 10, 4, 90, 30, 300, 5, FALSE, 5, 12, 20, 145, 0, 50, 100, 50, 0, 0, 0}; //power adapter mode
+
 volatile sIG_EVENT ig_event;
 
 __IO ITStatus UartReady = RESET;
@@ -149,6 +153,8 @@ void MX_FREERTOS_Init(void) {
 	//HAL_UART_Transmit(&huart3, SVA_1000_NL, sizeof(SVA_1000_NL) - 1, sizeof(SVA_1000_NL));
 	HAL_RTC_GetTime(&hrtc, &sTime, RTC_FORMAT_BIN);
 	HAL_RTC_GetDate(&hrtc, &sDate, RTC_FORMAT_BIN);
+
+	HAL_GPIO_WritePin(SPI1_CS_GPIO_Port, SPI1_CS_Pin, GPIO_PIN_SET);
   /* USER CODE END Init */
 
   /* Create the mutex(es) */
@@ -545,6 +551,8 @@ void usart2_entry(void const * argument)
 {
   /* USER CODE BEGIN usart2_entry */
 	uint8_t recv2[2] = {0};
+	uint8_t uart_Tx[2] = {'A', 'T'};
+	int i;
 	//uint8_t recv2 = 0;
 	//HAL_StatusTypeDef u2_states = HAL_OK;
     /* Infinite loop */
@@ -583,11 +591,14 @@ void usart2_entry(void const * argument)
 		  }
 #endif
 
-    	 if(HAL_UART_Receive_IT(&huart2, (uint8_t*)&recv2, 2) != HAL_OK)
+
+    	if(HAL_UART_Receive_IT(&huart2, (uint8_t*)&recv2, 2) != HAL_OK)
     	  {
     	    //Error_Handler();
     	  }
-    	HAL_UART_Transmit(&huart2, "AT\n\r", sizeof("AT\n\r"), 30);
+    	HAL_UART_Transmit(&huart2, uart_Tx, 2/*sizeof("AT")*/, 30);
+    	for(i = 0; i < 300; i++);
+    	HAL_UART_Transmit(&huart2, "\r", 1/*sizeof("AT")*/, 30);
 
 
     	/*
@@ -1117,7 +1128,7 @@ void i2c1_entry(void const * argument)
 	uint8_t ADXL345_DEVID[1];
 	uint8_t ASXL345_sensorSetting[1];
 	//uint8_t regptr = I2C_MEM_ADDRESS_ADXL345;
-	uint8_t regptr[] = {I2C_ADXL345_CMD_DEV_ID, I2C_ADXL345_CMD_GPS_SETTING, I2C_ADXL345_DATA_GPS_ACT, I2C_ADXL345_CMD_GPS_DATA};
+	uint8_t regptr[] = {I2C_ADXL345_CMD_DEV_ID, I2C_ADXL345_CMD_PWR_CTL, I2C_ADXL345_DATA_MEASURE, I2C_ADXL345_CMD_GPS_DATA};
 
 	//read ADXL345 device ID (0xE5)
 	//HAL_I2C_Master_Transmit(&hi2c1, I2C_ADXL345_DEV_ADDRESS, &regptr[0], 1, 1000);
@@ -1136,12 +1147,17 @@ void i2c1_entry(void const * argument)
 		//HAL_SMBUS_Master_Transmit_IT(&hsmbus1, I2C_DEV_ADDRESS_ADXL345, &regptr, 1, SMBUS_AUTOEND_MODE);
 		//HAL_Delay(10);
 		//HAL_SMBUS_Master_Receive_IT(&hsmbus1, I2C_DEV_ADDRESS_ADXL345,  ADXL345_RxBuffer, 6, SMBUS_AUTOEND_MODE);
-		HAL_GPIO_WritePin(GPIOC, D2D_EN_Pin, GPIO_PIN_SET);
+
+		//HAL_GPIO_WritePin(GPIOC, D2D_EN_Pin, GPIO_PIN_SET);
 		if((sva_gpi.dc2dc_pwrok == GPIO_PIN_SET) && (sva_gpi.sys_pwron == GPIO_PIN_SET)){
 			//HAL_I2C_Master_Transmit(&hi2c1, I2C_ADXL345_DEV_ADDRESS, (uint8_t*)regptr, sizeof(regptr), 1000);
 			//HAL_I2C_Master_Receive(&hi2c1, I2C_ADXL345_DEV_ADDRESS, (uint8_t *)ADXL345_DEVID, 1, 10000);
 
-			//enable ADXL345 x,y,z-axis G-sensor
+			//read ADXL345 device ID (0xE5)
+			HAL_I2C_Master_Transmit(&hi2c1, I2C_ADXL345_DEV_ADDRESS, &regptr[0], 1, 1000);
+			HAL_I2C_Master_Receive(&hi2c1, I2C_ADXL345_DEV_ADDRESS, (uint8_t *)ADXL345_DEVID, 1, 10000);
+
+			//enable ADXL345 measure
 			HAL_I2C_Master_Transmit(&hi2c1, I2C_ADXL345_DEV_ADDRESS, &regptr[1], 2, 1000);
 
 			HAL_I2C_Master_Transmit(&hi2c1, I2C_ADXL345_DEV_ADDRESS, &regptr[3], 1, 1000);
@@ -1290,10 +1306,161 @@ void gpio_state_entry(void const * argument)
 void spi1_entry(void const * argument)
 {
   /* USER CODE BEGIN spi1_entry */
+	uint8_t cmd_rdsr[] = {0x05};
+	uint8_t cmd_devID[] = {0x90, 0x00, 0x00, 0X01};
+	uint8_t aTxBuffer0[] = {0x06};
+	uint8_t aTxBuffer1[] = {0x20, 0x00, 0x00, 0x00};                   //erase
+	uint8_t aTxBuffer2[] = {0x02, 0x00, 0x00, 0x00, 0x55, 0x5A, 0xA5, 0xAA}; //program
+	uint8_t aTxBuffer3[] = {0x03, 0x00, 0x00, 0x00};                   //read
+	uint8_t cmd_erase[] = {0xC7};
+
+	/* Buffer used for reception */
+	uint8_t aRxBuffer[6];
+	uint8_t data_rdsr[1];
+	uint8_t data_devID[2];
+
+	//read deviceID
+	HAL_GPIO_WritePin(SPI1_CS_GPIO_Port, SPI1_CS_Pin, GPIO_PIN_RESET);
+	HAL_SPI_Transmit(&hspi1, (uint8_t*)cmd_devID, sizeof(cmd_devID), 5000);
+
+	HAL_SPI_Receive(&hspi1, (uint8_t*)data_devID, 2, 5000);
+	HAL_GPIO_WritePin(SPI1_CS_GPIO_Port, SPI1_CS_Pin, GPIO_PIN_SET);
+
+	//WREN
+	HAL_GPIO_WritePin(SPI1_CS_GPIO_Port, SPI1_CS_Pin, GPIO_PIN_RESET);
+	HAL_SPI_Transmit(&hspi1, (uint8_t*)aTxBuffer0, sizeof(aTxBuffer0), 5000);
+	HAL_GPIO_WritePin(SPI1_CS_GPIO_Port, SPI1_CS_Pin, GPIO_PIN_SET);
+
+	//RDSR
+	HAL_GPIO_WritePin(SPI1_CS_GPIO_Port, SPI1_CS_Pin, GPIO_PIN_RESET);
+	HAL_SPI_Transmit(&hspi1, (uint8_t*)cmd_rdsr, sizeof(cmd_rdsr), 5000);
+
+	HAL_SPI_Receive(&hspi1, (uint8_t*)data_rdsr, 1, 5000);
+	HAL_GPIO_WritePin(SPI1_CS_GPIO_Port, SPI1_CS_Pin, GPIO_PIN_SET);
+
+	//Check WEL
+	while((data_rdsr[0] & (1<<1)) == 0)
+	{
+		//WREN
+		HAL_GPIO_WritePin(SPI1_CS_GPIO_Port, SPI1_CS_Pin, GPIO_PIN_RESET);
+		HAL_SPI_Transmit(&hspi1, (uint8_t*)aTxBuffer0, sizeof(aTxBuffer0), 5000);
+		HAL_GPIO_WritePin(SPI1_CS_GPIO_Port, SPI1_CS_Pin, GPIO_PIN_SET);
+
+		//RDSR
+		HAL_GPIO_WritePin(SPI1_CS_GPIO_Port, SPI1_CS_Pin, GPIO_PIN_RESET);
+		HAL_SPI_Transmit(&hspi1, (uint8_t*)cmd_rdsr, sizeof(cmd_rdsr), 5000);
+
+		HAL_SPI_Receive(&hspi1, (uint8_t*)data_rdsr, 1, 5000);
+		HAL_GPIO_WritePin(SPI1_CS_GPIO_Port, SPI1_CS_Pin, GPIO_PIN_SET);
+	}
+
+	//Erase
+	HAL_GPIO_WritePin(SPI1_CS_GPIO_Port, SPI1_CS_Pin, GPIO_PIN_RESET);
+	HAL_SPI_Transmit(&hspi1, (uint8_t*)aTxBuffer1, sizeof(aTxBuffer1), 5000);
+	HAL_GPIO_WritePin(SPI1_CS_GPIO_Port, SPI1_CS_Pin, GPIO_PIN_SET);
+
+
+	//Erase 0xC7
+	//HAL_GPIO_WritePin(SPI1_CS_GPIO_Port, SPI1_CS_Pin, GPIO_PIN_RESET);
+	//HAL_SPI_Transmit(&hspi1, (uint8_t*)cmd_erase, sizeof(cmd_erase), 5000);
+	//HAL_GPIO_WritePin(SPI1_CS_GPIO_Port, SPI1_CS_Pin, GPIO_PIN_SET);
+
+	//Check WIP
+	while((data_rdsr[0] & (1<<0)) != 0)
+	{
+		//RDSR
+		HAL_GPIO_WritePin(SPI1_CS_GPIO_Port, SPI1_CS_Pin, GPIO_PIN_RESET);
+		HAL_SPI_Transmit(&hspi1, (uint8_t*)cmd_rdsr, sizeof(cmd_rdsr), 5000);
+
+		HAL_SPI_Receive(&hspi1, (uint8_t*)data_rdsr, 1, 5000);
+		HAL_GPIO_WritePin(SPI1_CS_GPIO_Port, SPI1_CS_Pin, GPIO_PIN_SET);
+	}
+
+	//WREN
+	HAL_GPIO_WritePin(SPI1_CS_GPIO_Port, SPI1_CS_Pin, GPIO_PIN_RESET);
+	HAL_SPI_Transmit(&hspi1, (uint8_t*)aTxBuffer0, sizeof(aTxBuffer0), 5000);
+	HAL_GPIO_WritePin(SPI1_CS_GPIO_Port, SPI1_CS_Pin, GPIO_PIN_SET);
+
+
+	//RDSR
+	HAL_GPIO_WritePin(SPI1_CS_GPIO_Port, SPI1_CS_Pin, GPIO_PIN_RESET);
+	HAL_SPI_Transmit(&hspi1, (uint8_t*)cmd_rdsr, sizeof(cmd_rdsr), 5000);
+
+	HAL_SPI_Receive(&hspi1, (uint8_t*)data_rdsr, 1, 5000);
+	HAL_GPIO_WritePin(SPI1_CS_GPIO_Port, SPI1_CS_Pin, GPIO_PIN_SET);
+
+	//Check WEL
+	while((data_rdsr[0] & (1<<1)) == 0)
+	{
+		//WREN
+		HAL_GPIO_WritePin(SPI1_CS_GPIO_Port, SPI1_CS_Pin, GPIO_PIN_RESET);
+		HAL_SPI_Transmit(&hspi1, (uint8_t*)aTxBuffer0, sizeof(aTxBuffer0), 5000);
+		HAL_GPIO_WritePin(SPI1_CS_GPIO_Port, SPI1_CS_Pin, GPIO_PIN_SET);
+
+		//RDSR
+		HAL_GPIO_WritePin(SPI1_CS_GPIO_Port, SPI1_CS_Pin, GPIO_PIN_RESET);
+		HAL_SPI_Transmit(&hspi1, (uint8_t*)cmd_rdsr, sizeof(cmd_rdsr), 5000);
+
+		HAL_SPI_Receive(&hspi1, (uint8_t*)data_rdsr, 1, 5000);
+		HAL_GPIO_WritePin(SPI1_CS_GPIO_Port, SPI1_CS_Pin, GPIO_PIN_SET);
+	}
+
+	//Program
+	HAL_GPIO_WritePin(SPI1_CS_GPIO_Port, SPI1_CS_Pin, GPIO_PIN_RESET);
+	HAL_SPI_Transmit(&hspi1, (uint8_t*)aTxBuffer2, sizeof(aTxBuffer2), 5000);
+	HAL_GPIO_WritePin(SPI1_CS_GPIO_Port, SPI1_CS_Pin, GPIO_PIN_SET);
+
+	//RDSR
+	HAL_GPIO_WritePin(SPI1_CS_GPIO_Port, SPI1_CS_Pin, GPIO_PIN_RESET);
+	HAL_SPI_Transmit(&hspi1, (uint8_t*)cmd_rdsr, sizeof(cmd_rdsr), 5000);
+
+	HAL_SPI_Receive(&hspi1, (uint8_t*)data_rdsr, 1, 5000);
+	HAL_GPIO_WritePin(SPI1_CS_GPIO_Port, SPI1_CS_Pin, GPIO_PIN_SET);
+
+	//Check WIP
+	while((data_rdsr[0] & (1<<0)) != 0)
+	{
+		//RDSR
+		HAL_GPIO_WritePin(SPI1_CS_GPIO_Port, SPI1_CS_Pin, GPIO_PIN_RESET);
+		HAL_SPI_Transmit(&hspi1, (uint8_t*)cmd_rdsr, sizeof(cmd_rdsr), 5000);
+
+		HAL_SPI_Receive(&hspi1, (uint8_t*)data_rdsr, 1, 5000);
+		HAL_GPIO_WritePin(SPI1_CS_GPIO_Port, SPI1_CS_Pin, GPIO_PIN_SET);
+	}
+
+	//RDSR
+	HAL_GPIO_WritePin(SPI1_CS_GPIO_Port, SPI1_CS_Pin, GPIO_PIN_RESET);
+	HAL_SPI_Transmit(&hspi1, (uint8_t*)cmd_rdsr, sizeof(cmd_rdsr), 5000);
+
+	HAL_SPI_Receive(&hspi1, (uint8_t*)data_rdsr, 1, 5000);
+	HAL_GPIO_WritePin(SPI1_CS_GPIO_Port, SPI1_CS_Pin, GPIO_PIN_SET);
+
+	//Check WEL
+	/*
+	while((data_rdsr[0] & (1<<1)) != 0)
+	{
+		//RDSR
+		HAL_GPIO_WritePin(SPI1_CS_GPIO_Port, SPI1_CS_Pin, GPIO_PIN_RESET);
+		HAL_SPI_Transmit(&hspi1, (uint8_t*)cmd_rdsr, sizeof(cmd_rdsr), 5000);
+
+		HAL_SPI_Receive(&hspi1, (uint8_t*)data_rdsr, 1, 5000);
+		HAL_GPIO_WritePin(SPI1_CS_GPIO_Port, SPI1_CS_Pin, GPIO_PIN_SET);
+	}
+	*/
+
+	//Read
+	HAL_GPIO_WritePin(SPI1_CS_GPIO_Port, SPI1_CS_Pin, GPIO_PIN_RESET);
+	HAL_SPI_Transmit(&hspi1, (uint8_t*)aTxBuffer3, sizeof(aTxBuffer3), 5000);
+
+	HAL_SPI_Receive(&hspi1, (uint8_t*)aRxBuffer,6, 5000);
+	HAL_GPIO_WritePin(SPI1_CS_GPIO_Port, SPI1_CS_Pin, GPIO_PIN_SET);
+
+
+
   /* Infinite loop */
   for(;;)
   {
-    osDelay(1);
+	  osDelay(1);
   }
   /* USER CODE END spi1_entry */
 }
@@ -1302,10 +1469,72 @@ void spi1_entry(void const * argument)
 void can_entry(void const * argument)
 {
   /* USER CODE BEGIN can_entry */
+	//uint8_t canTx[8] = {0x01, 0x02, 0x03, 0x04, 0x05, 0x06, 0x07};
+	uint8_t ubKeyNumber = 0x0;
+	CAN_FilterConfTypeDef  sFilterConfig;
+	CanTxMsgTypeDef  TxMessage;
+ 	CanRxMsgTypeDef  RxMessage;
+
+ 	hcan.pTxMsg = &TxMessage;
+ 	hcan.pRxMsg = &RxMessage;
+
+
+ 	/*##-2- Configure the CAN Filter ###########################################*/
+	  sFilterConfig.FilterNumber = 0;
+	  sFilterConfig.FilterMode = CAN_FILTERMODE_IDMASK;
+	  sFilterConfig.FilterScale = CAN_FILTERSCALE_32BIT;
+	  sFilterConfig.FilterIdHigh = 0x0000;
+	  sFilterConfig.FilterIdLow = 0x0000;
+	  sFilterConfig.FilterMaskIdHigh = 0x0000;
+	  sFilterConfig.FilterMaskIdLow = 0x0000;
+	  sFilterConfig.FilterFIFOAssignment = 0;
+	  sFilterConfig.FilterActivation = ENABLE;
+	  sFilterConfig.BankNumber = 14;
+
+	  if (HAL_CAN_ConfigFilter(&hcan, &sFilterConfig) != HAL_OK)
+	  {
+		/* Filter configuration Error */
+		Error_Handler();
+	  }
+
+	  /*##-3- Configure Transmission process #####################################*/
+	  hcan.pTxMsg->StdId = 0x321;
+	  hcan.pTxMsg->ExtId = 0x01;
+	  hcan.pTxMsg->RTR = CAN_RTR_DATA;
+	  hcan.pTxMsg->IDE = CAN_ID_STD;
+	  hcan.pTxMsg->DLC = 4;
+
+	  //hcan.pTxMsg->Data[0] = 0xA5;
+	  //hcan.pTxMsg->Data[1] = 0x63;
+
+
   /* Infinite loop */
   for(;;)
   {
-    osDelay(1);
+	  /*##-2- Start the Reception process and enable reception interrupt #########*/
+		if (HAL_CAN_Receive_IT(&hcan, CAN_FIFO0) != HAL_OK)
+		{
+			/* Reception Error */
+			Error_Handler();
+		}
+
+	  /* Set the data to be transmitted */
+			ubKeyNumber++;
+			hcan.pTxMsg->Data[0] = ubKeyNumber;
+			hcan.pTxMsg->Data[1] = 0x55;
+			hcan.pTxMsg->Data[2] = 0xaa;
+			hcan.pTxMsg->Data[3] = 0xaa;
+
+	  /*##-3- Start the Transmission process ###############################*/
+	  if (HAL_CAN_Transmit(&hcan, 10) != HAL_OK)
+	  {
+		/* Transmission Error */
+		Error_Handler();
+	  }
+
+	  //HAL_CAN_Transmit_IT(&hcan);
+	  //HAL_CAN_Receive(&hcan,  CAN_FIFO0, 1000);
+	  osDelay(1);
   }
   /* USER CODE END can_entry */
 }

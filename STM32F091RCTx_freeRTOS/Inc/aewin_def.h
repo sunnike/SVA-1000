@@ -48,8 +48,8 @@
 #define I2C_ADXL345_DATA_DEV_ID      0xE5
 #define I2C_ADXL345_CMD_GPS_DATA     0x32
 
-#define I2C_ADXL345_CMD_GPS_SETTING  0x27
-#define I2C_ADXL345_DATA_GPS_ACT     0xE0
+#define I2C_ADXL345_CMD_PWR_CTL      0x2D
+#define I2C_ADXL345_DATA_MEASURE     0x08
 
  /** @defgroup Aewin_Task_Entry_Time Tasks entry time configuration
    * @{
