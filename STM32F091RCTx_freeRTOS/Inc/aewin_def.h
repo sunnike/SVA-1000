@@ -43,6 +43,10 @@
 #define UART2_TIMEOUT		1
 #define UART3_TIMEOUT		1
 
+
+ /** @defgroup STM32F0XX_I2C STM32F0XX I2C Configuration
+   * @{
+   */
 #define I2C_ADXL345_DEV_ADDRESS      0x3A
 #define I2C_ADXL345_CMD_DEV_ID       0x00
 #define I2C_ADXL345_DATA_DEV_ID      0xE5
@@ -50,6 +54,26 @@
 
 #define I2C_ADXL345_CMD_PWR_CTL      0x2D
 #define I2C_ADXL345_DATA_MEASURE     0x08
+
+
+ /** @defgroup STM32F0XX_SPI STM32F0XX SPI Configuration
+   * @{
+   */
+#define SPI_FLASH_RDSR           0x05
+#define SPI_FLASH_WREN           0x06
+#define SPI_FLASH_ERASE_SECTOR   0x20
+#define SPI_FLASH_PROGRAM_PAGE   0x02
+#define SPI_FLASH_READ           0x03
+
+#define SPI_FLASH_ADD_Byte0      0x00
+#define SPI_FLASH_ADD_Byte1      0x00
+#define SPI_FLASH_ADD_Byte2      0x00
+
+#define SPI_FLASH_DATA_DEV_ID    0x18
+#define SPI_FLASH_CMD_DEV_ID     {0x90, 0x00, 0x00, 0x01}
+
+#define SPI_FLASH_DATA_TAG       0xAA
+
 
  /** @defgroup Aewin_Task_Entry_Time Tasks entry time configuration
    * @{
@@ -241,9 +265,6 @@ typedef enum{
 	Subcmd_OS_Shutdown		= 0xA0
 }eMCU_Setting_SubCMDs;
 
-
-
-
 /******  SVA-1000 Ignition setting/Information sub-commands ******************************************************************/
 typedef enum{
 	Subcmd_IG_Get_OnOff 	= 0x10,
@@ -266,6 +287,18 @@ typedef enum{
 }eIG_Setting_SubCMDs;
 
 
+/******  SVA-1000 Ignition setting/Information sub-commands ******************************************************************/
+typedef enum{
+	ATCMD_AT 	       = 0,  //AT
+	ATCMD_Check_Status = 1,  //AT+cind?
+	ATCMD_Check_APNIP  = 2,  //at+cgdcont?
+	ATCMD_Get_IP       = 3,  //AT+CGACT=1,1
+	ATCMD_Check_Reg    = 4,  //AT+COPS?
+	ATCMD_Check_Signal = 5,  //AT+CSQ
+	ATCMD_Enable_GPS   = 6,  //at+ugps=1,0
+	ATCMD_Disable_GPS  = 7,  //at+ugps=0
+}eATCMD;
+
 /******  SVA-1000  Event/Log information sub-commands ******************************************************************/
 typedef enum{
 	Subcmd_TeleComm_Event	= 0x10
@@ -283,6 +316,11 @@ typedef struct{
 	uint32_t mcu_temp;
 }sADC_DATA;
 
+typedef struct{
+	uint16_t x_axis;
+	uint16_t y_axis;
+	uint16_t z_axis;
+}sI2C1_DATA;
 
 /* The structure that contains the ignition related parameters, along with an IG_States
 that is used to identify which power state is. */
@@ -315,7 +353,24 @@ typedef struct{
 }sIG_EVENT;
 
 
-
+/* The structure that contains the setting of MCU and system.
+ * Host can set or get these configuration via UART */
+typedef struct{
+	uint8_t  syspowr_Input_Type;   /*!< System Power Input Type */
+	uint8_t  reboot_source;		   /*!< System reboot control source */
+	uint8_t  boot_mode;			   /*!< MCU boot mode */
+	uint8_t	 WWAN_wakeup;		   /*!< WWAN wake up status*/
+	uint8_t  WWAN_status;		   /*!< WWAN status */
+	uint8_t  digital_input;        /*!< GPI status of three pins */
+	uint8_t  digital_output;       /*!< GPO status of three pins */
+	uint8_t  sim_card_mode;        /*!< Dual SIM Card Select */
+	uint8_t  wifi_status;          /*!< WIFI on/off */
+	uint8_t  LAN_wakeup;           /*!< LAN wake up enable/disable */
+	uint8_t  delay_off_setting;    /*!< Delay off enable/disable */
+	uint8_t  delay_on_setting;     /*!< Delay on enable/disable */
+	uint8_t  power_off_time;       /*!< Delay time of power off */
+	uint8_t  power_on_time;        /*!< Delay time of power on */
+}sIG_SYS_CONFIG;
 
 
 

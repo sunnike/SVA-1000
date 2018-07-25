@@ -85,6 +85,7 @@ osMessageQId ADC_TEMP_QHandle;
 osMutexId MUTEX_DebugHandle;
 osMutexId MUTEX_ADC_QHandle;
 osMutexId MUTEX_CMD_PROCHandle;
+osMutexId MUTEX_SPI1Handle;
 
 /* USER CODE BEGIN Variables */
 #define SVA_1000			"SVA-1000:\\>"
@@ -101,10 +102,17 @@ sSVA_GPO_STATE 	sva_gpo={0};
 uint8_t cml_array[MAX_CML_CHAR] = {0};
 uint8_t cml_proc[MAX_CML_CHAR] = {0};
 
+uint8_t uart_Tx[][13] = {"AT", "AT+cind?", "at+cgdcont?", "AT+CGACT=1,1", "AT+COPS?", "AT+CSQ", "at+ugps=1,0", "at+ugps=0"};
+
 
 sIG_EVENT gIG_Event ={ 0x12345678, 0, 1, IG_Recovery, 1, 1, 1, 2, 2, 10, 2, 100, 5, FALSE, 5, 12, 20, 145, 0, 50, 100, 50, 0, 0, 0};
 //sIG_EVENT gIG_Event ={ 0x12345678, 0, 1, IG_Recovery, 4, 1, 60, 10, 4, 60, 30, 300, 5, FALSE, 5, 12, 9, 54, 0, 50, 100, 50, 0, 0, 0}; //ignition mode
 //sIG_EVENT gIG_Event ={ 0x12345678, 0, 1, IG_Recovery, 4, 1, 60, 10, 4, 90, 30, 300, 5, FALSE, 5, 12, 20, 145, 0, 50, 100, 50, 0, 0, 0}; //power adapter mode
+//uint8_t flash_IgEvent[29] = {SPI_FLASH_PROGRAM_PAGE, SPI_FLASH_ADD_Byte0, SPI_FLASH_ADD_Byte1, SPI_FLASH_ADD_Byte2, SPI_FLASH_DATA_TAG, 0, 1, IG_Recovery, 1, 1, 1, 2, 2, 10, 2, 100, 5, FALSE, 5, 12, 20, 145, 0, 50, 100, 50, 0, 0, 0};
+
+uint8_t flash_IgEvent[43] = {SPI_FLASH_PROGRAM_PAGE, SPI_FLASH_ADD_Byte0, SPI_FLASH_ADD_Byte1, SPI_FLASH_ADD_Byte2, SPI_FLASH_DATA_TAG, 0, 1, IG_Recovery, 1, 1, 1, 2, 2, 10, 2, 100, 5, FALSE, 5, 12, 20, 145, 0, 50, 100, 50, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 10, 10};
+
+//sIG_SYS_CONFIG sys_config = {0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 10, 10};
 
 volatile sIG_EVENT ig_event;
 
@@ -170,6 +178,10 @@ void MX_FREERTOS_Init(void) {
   osMutexDef(MUTEX_CMD_PROC);
   MUTEX_CMD_PROCHandle = osMutexCreate(osMutex(MUTEX_CMD_PROC));
 
+  /* definition and creation of MUTEX_SPI1 */
+  osMutexDef(MUTEX_SPI1);
+  MUTEX_SPI1Handle = osMutexCreate(osMutex(MUTEX_SPI1));
+
   /* USER CODE BEGIN RTOS_MUTEX */
 	/* add mutexes, ... */
   /* USER CODE END RTOS_MUTEX */
@@ -188,7 +200,7 @@ void MX_FREERTOS_Init(void) {
   defaultTaskHandle = osThreadCreate(osThread(defaultTask), NULL);
 
   /* definition and creation of USART1_Task */
-  osThreadDef(USART1_Task, usart1_entry, osPriorityNormal, 0, 128);
+  osThreadDef(USART1_Task, usart1_entry, osPriorityAboveNormal, 0, 128);
   USART1_TaskHandle = osThreadCreate(osThread(USART1_Task), NULL);
 
   /* definition and creation of USART2_Task */
@@ -224,7 +236,7 @@ void MX_FREERTOS_Init(void) {
   GPIO_STATE_TaskHandle = osThreadCreate(osThread(GPIO_STATE_Task), NULL);
 
   /* definition and creation of SPI1_Task */
-  osThreadDef(SPI1_Task, spi1_entry, osPriorityNormal, 0, 128);
+  osThreadDef(SPI1_Task, spi1_entry, osPriorityHigh, 0, 128);
   SPI1_TaskHandle = osThreadCreate(osThread(SPI1_Task), NULL);
 
   /* definition and creation of CAN_Task */
@@ -275,6 +287,9 @@ void usart1_entry(void const * argument)
 	uint8_t write_back = FALSE;
 	uint8_t send2host = FALSE;
 	uint8_t xFer_len = 0;
+
+	osEvent  	evt_vol;
+	osEvent     evt_temp;
 	/* Infinite loop */
 
 	for(;;)
@@ -283,7 +298,10 @@ void usart1_entry(void const * argument)
 		// Wait until the first byte is coming
 		//while((HAL_UART_Receive(&huart1, &recv1[CMD_SYN_POS0], 1, 1)) != HAL_OK );
 		// Get the SYN code.
-		HAL_UART_Receive_DMA(&huart1, &recv1[CMD_SYN_POS1] ,(CMD_MAX_LEN - 1));
+		//taskENTER_CRITICAL();
+		while(HAL_UART_Receive_DMA(&huart1, &recv1[CMD_SYN_POS0] ,(CMD_MAX_LEN - 1)) != HAL_OK);
+		//HAL_UART_Receive(&huart1, &recv1[CMD_SYN_POS1] ,(CMD_MAX_LEN - 1), 100);
+		//taskEXIT_CRITICAL();
 		// Give some time for DMA receiving data. Let this thread take a break.
 		osDelay(30);
 		// Abort UART processing.
@@ -363,46 +381,110 @@ void usart1_entry(void const * argument)
 
 						//-----------------------------------------------------
 						case Subcmd_Get_Sys_InVOLT:
+							if((CMD_ETX_CODE != recv1[CMD_ETX_POS(CMD_HEAD_MS_SIZE)]) || \
+							   (CMD_EOT_CODE != recv1[CMD_EOT_POS(CMD_HEAD_MS_SIZE)])) break;
+							evt_vol = osMessageGet(ADC_VOLT_QHandle,osWaitForever);
+							xFer[2] = Subcmd_Get_Sys_InVOLT;
+							xFer[3] = evt_vol.value.v;         //Input voltage
+							send2host = TRUE;
+							xFer_len = MCU_REPO_HEAD_CMD_SIZE + MCU_SCMD22_LEN;
+							aewin_dbg("\n\rGet system input voltage: %2d", xFer[3]);
 							break;
 
 						//-----------------------------------------------------
 						case Subcmd_Set_Sys_InVOLT:
+							//Get power type? 9~36V(default)
 							break;
 
 						//-----------------------------------------------------
 						case Subcmd_Get_RebootSrc:
+							if((CMD_ETX_CODE != recv1[CMD_ETX_POS(CMD_HEAD_MS_SIZE)]) || \
+							   (CMD_EOT_CODE != recv1[CMD_EOT_POS(CMD_HEAD_MS_SIZE)])) break;
+							xFer[2] = Subcmd_Get_RebootSrc;
+							xFer[3] = flash_IgEvent[30];
+							send2host = TRUE;
+							xFer_len = MCU_REPO_HEAD_CMD_SIZE + MCU_SCMD26_LEN;
+							aewin_dbg("\n\rGet reboot source: %d", xFer[3]);
 							break;
 
 						//-----------------------------------------------------
 						case Subcmd_Set_RebootSrc:
+							if((CMD_ETX_CODE != recv1[CMD_ETX_POS(CMD_HEAD_MS_SIZE + MCU_SCMD27_LEN)]) || \
+							   (CMD_EOT_CODE != recv1[CMD_EOT_POS(CMD_HEAD_MS_SIZE + MCU_SCMD27_LEN)])) break;
+							flash_IgEvent[30]=recv1[5];
+							aewin_dbg("\n\rSet reboot source: %d", flash_IgEvent[30]);
+							//Write flash
 							break;
 
 						//-----------------------------------------------------
 						case Subcmd_Get_BootMode:
+							if((CMD_ETX_CODE != recv1[CMD_ETX_POS(CMD_HEAD_MS_SIZE)]) || \
+							   (CMD_EOT_CODE != recv1[CMD_EOT_POS(CMD_HEAD_MS_SIZE)])) break;
+							xFer[2] = Subcmd_Get_BootMode;
+							xFer[3] = flash_IgEvent[31];
+							send2host = TRUE;
+							xFer_len = MCU_REPO_HEAD_CMD_SIZE + MCU_SCMD28_LEN;
+							aewin_dbg("\n\rGet boot mode: %d", xFer[3]);
 							break;
 
 						//-----------------------------------------------------
 						case Subcmd_Set_BootMode:
+							if((CMD_ETX_CODE != recv1[CMD_ETX_POS(CMD_HEAD_MS_SIZE + MCU_SCMD29_LEN)]) || \
+							   (CMD_EOT_CODE != recv1[CMD_EOT_POS(CMD_HEAD_MS_SIZE + MCU_SCMD29_LEN)])) break;
+							flash_IgEvent[31]=recv1[5];
+							aewin_dbg("\n\rSet boot mode: %d", flash_IgEvent[31]);
+							//Write flash
 							break;
 
 						//-----------------------------------------------------
 						case Subcmd_Get_WWAN_WKStat:
+							if((CMD_ETX_CODE != recv1[CMD_ETX_POS(CMD_HEAD_MS_SIZE)]) || \
+							   (CMD_EOT_CODE != recv1[CMD_EOT_POS(CMD_HEAD_MS_SIZE)])) break;
+							xFer[2] = Subcmd_Get_WWAN_WKStat;
+							xFer[3] = flash_IgEvent[32];
+							send2host = TRUE;
+							xFer_len = MCU_REPO_HEAD_CMD_SIZE + MCU_SCMD28_LEN;
+							aewin_dbg("\n\rGet WWAN wake up status: %d", xFer[3]);
 							break;
 
 						//-----------------------------------------------------
 						case Subcmd_Set_WWAN_WKStat:
+							if((CMD_ETX_CODE != recv1[CMD_ETX_POS(CMD_HEAD_MS_SIZE + MCU_SCMD31_LEN)]) || \
+							   (CMD_EOT_CODE != recv1[CMD_EOT_POS(CMD_HEAD_MS_SIZE + MCU_SCMD31_LEN)])) break;
+							flash_IgEvent[32]=recv1[5];
+							aewin_dbg("\n\rGet WWAN wake up status: %d", flash_IgEvent[32]);
+							//Write flash
 							break;
 
 						//-----------------------------------------------------
 						case Subcmd_Get_WWAN_Stat:
+							if((CMD_ETX_CODE != recv1[CMD_ETX_POS(CMD_HEAD_MS_SIZE)]) || \
+							   (CMD_EOT_CODE != recv1[CMD_EOT_POS(CMD_HEAD_MS_SIZE)])) break;
+							xFer[2] = Subcmd_Get_WWAN_Stat;
+							xFer[3] = flash_IgEvent[33];
+							send2host = TRUE;
+							xFer_len = MCU_REPO_HEAD_CMD_SIZE + MCU_SCMD32_LEN;
+							aewin_dbg("\n\rGet WWAN status: %d", xFer[3]);
 							break;
 
 						//-----------------------------------------------------
 						case Subcmd_Set_WWAN_Stat:
+							if((CMD_ETX_CODE != recv1[CMD_ETX_POS(CMD_HEAD_MS_SIZE + MCU_SCMD33_LEN)]) || \
+							   (CMD_EOT_CODE != recv1[CMD_EOT_POS(CMD_HEAD_MS_SIZE + MCU_SCMD33_LEN)])) break;
+							flash_IgEvent[33]=recv1[5];
+							aewin_dbg("\n\rGet WWAN status: %d", flash_IgEvent[33]);
+							//Write flash
 							break;
 
 						//-----------------------------------------------------
 						case Subcmd_Get_DigiIn:
+							if((CMD_ETX_CODE != recv1[CMD_ETX_POS(CMD_HEAD_MS_SIZE)]) || \
+							   (CMD_EOT_CODE != recv1[CMD_EOT_POS(CMD_HEAD_MS_SIZE)])) break;
+							xFer[2] = Subcmd_Get_DigiIn;
+							xFer[3] = ((sva_gpi.ig_sw) || (sva_gpi.pwr_btn<<1) || (sva_gpi.sys_pwron<<2));
+							send2host = TRUE;
+							xFer_len = MCU_REPO_HEAD_CMD_SIZE + MCU_SCMD32_LEN;
+							aewin_dbg("\n\rGet GPIO digital input : %x", xFer[3]);
 							break;
 
 						//-----------------------------------------------------
@@ -415,62 +497,157 @@ void usart1_entry(void const * argument)
 
 						//-----------------------------------------------------
 						case Subcmd_Get_SIM_Mode:
+							if((CMD_ETX_CODE != recv1[CMD_ETX_POS(CMD_HEAD_MS_SIZE)]) || \
+							   (CMD_EOT_CODE != recv1[CMD_EOT_POS(CMD_HEAD_MS_SIZE)])) break;
+							xFer[2] = Subcmd_Get_SIM_Mode;
+							xFer[3] = flash_IgEvent[36];
+							send2host = TRUE;
+							xFer_len = MCU_REPO_HEAD_CMD_SIZE + MCU_SCMD3A_LEN;
+							aewin_dbg("\n\rGet SIM card select: %d", xFer[3]);
 							break;
 
 						//-----------------------------------------------------
 						case Subcmd_Set_SIM_Mode:
+							if((CMD_ETX_CODE != recv1[CMD_ETX_POS(CMD_HEAD_MS_SIZE + MCU_SCMD3B_LEN)]) || \
+							   (CMD_EOT_CODE != recv1[CMD_EOT_POS(CMD_HEAD_MS_SIZE + MCU_SCMD3B_LEN)])) break;
+							flash_IgEvent[36]=recv1[5];
+							aewin_dbg("\n\rSet SIM card select: %d", flash_IgEvent[36]);
+							//Write flash
 							break;
 
 						//-----------------------------------------------------
 						case Subcmd_Get_WIFI_OnOff:
+							if((CMD_ETX_CODE != recv1[CMD_ETX_POS(CMD_HEAD_MS_SIZE)]) || \
+							   (CMD_EOT_CODE != recv1[CMD_EOT_POS(CMD_HEAD_MS_SIZE)])) break;
+							xFer[2] = Subcmd_Get_WIFI_OnOff;
+							xFer[3] = flash_IgEvent[37];
+							send2host = TRUE;
+							xFer_len = MCU_REPO_HEAD_CMD_SIZE + MCU_SCMD40_LEN;
+							aewin_dbg("\n\rGet WIFI status: %d", xFer[3]);
 							break;
 
 						//-----------------------------------------------------
 						case Subcmd_Set_WIFI_OnOff:
+							if((CMD_ETX_CODE != recv1[CMD_ETX_POS(CMD_HEAD_MS_SIZE + MCU_SCMD41_LEN)]) || \
+							   (CMD_EOT_CODE != recv1[CMD_EOT_POS(CMD_HEAD_MS_SIZE + MCU_SCMD41_LEN)])) break;
+							flash_IgEvent[37]=recv1[5];
+							aewin_dbg("\n\rSet WIFI status: %d", flash_IgEvent[37]);
+							//Write flash
 							break;
 
 						//-----------------------------------------------------
 						case Subcmd_Get_LAN_WKStat:
+							if((CMD_ETX_CODE != recv1[CMD_ETX_POS(CMD_HEAD_MS_SIZE)]) || \
+							   (CMD_EOT_CODE != recv1[CMD_EOT_POS(CMD_HEAD_MS_SIZE)])) break;
+							xFer[2] = Subcmd_Get_LAN_WKStat;
+							xFer[3] = flash_IgEvent[38];
+							send2host = TRUE;
+							xFer_len = MCU_REPO_HEAD_CMD_SIZE + MCU_SCMD44_LEN;
+							aewin_dbg("\n\rGet LAN wake up enable/disable: %d", xFer[3]);
 							break;
 
 						//-----------------------------------------------------
 						case Subcmd_Set_LAN_WKStat:
+							if((CMD_ETX_CODE != recv1[CMD_ETX_POS(CMD_HEAD_MS_SIZE + MCU_SCMD45_LEN)]) || \
+							   (CMD_EOT_CODE != recv1[CMD_EOT_POS(CMD_HEAD_MS_SIZE + MCU_SCMD45_LEN)])) break;
+							flash_IgEvent[38]=recv1[5];
+							aewin_dbg("\n\rSet LAN wake up enable/disable: %d", flash_IgEvent[38]);
+							//Write flash
 							break;
 
 						//-----------------------------------------------------
 						case Subcmd_Get_DelayOffStat:
+							if((CMD_ETX_CODE != recv1[CMD_ETX_POS(CMD_HEAD_MS_SIZE)]) || \
+							   (CMD_EOT_CODE != recv1[CMD_EOT_POS(CMD_HEAD_MS_SIZE)])) break;
+							xFer[2] = Subcmd_Get_DelayOffStat;
+							xFer[3] = flash_IgEvent[39];
+							send2host = TRUE;
+							xFer_len = MCU_REPO_HEAD_CMD_SIZE + MCU_SCMD50_LEN;
+							aewin_dbg("\n\rGet delay off enable/disable: %d", xFer[3]);
 							break;
 
 						//-----------------------------------------------------
 						case Subcmd_Set_DelayOffStat:
+							if((CMD_ETX_CODE != recv1[CMD_ETX_POS(CMD_HEAD_MS_SIZE + MCU_SCMD51_LEN)]) || \
+							   (CMD_EOT_CODE != recv1[CMD_EOT_POS(CMD_HEAD_MS_SIZE + MCU_SCMD51_LEN)])) break;
+							flash_IgEvent[39]=recv1[5];
+							aewin_dbg("\n\rSet delay off enable/disable: %d", flash_IgEvent[39]);
+							//Write flash
 							break;
 
 						//-----------------------------------------------------
 						case Subcmd_Get_DelayOnStat:
+							if((CMD_ETX_CODE != recv1[CMD_ETX_POS(CMD_HEAD_MS_SIZE)]) || \
+							   (CMD_EOT_CODE != recv1[CMD_EOT_POS(CMD_HEAD_MS_SIZE)])) break;
+							xFer[2] = Subcmd_Get_DelayOnStat;
+							xFer[3] = flash_IgEvent[40];
+							send2host = TRUE;
+							xFer_len = MCU_REPO_HEAD_CMD_SIZE + MCU_SCMD52_LEN;
+							aewin_dbg("\n\rGet delay on enable/disable: %d", xFer[3]);
 							break;
 
 						//-----------------------------------------------------
 						case Subcmd_Set_DelayOnStat:
+							if((CMD_ETX_CODE != recv1[CMD_ETX_POS(CMD_HEAD_MS_SIZE + MCU_SCMD53_LEN)]) || \
+							   (CMD_EOT_CODE != recv1[CMD_EOT_POS(CMD_HEAD_MS_SIZE + MCU_SCMD53_LEN)])) break;
+							flash_IgEvent[40]=recv1[5];
+							aewin_dbg("\n\rSet delay on enable/disable: %d", flash_IgEvent[40]);
+							//Write flash
 							break;
 
 						//-----------------------------------------------------
 						case Subcmd_Get_DelayOffTime:
+							if((CMD_ETX_CODE != recv1[CMD_ETX_POS(CMD_HEAD_MS_SIZE)]) || \
+							   (CMD_EOT_CODE != recv1[CMD_EOT_POS(CMD_HEAD_MS_SIZE)])) break;
+							xFer[2] = Subcmd_Get_DelayOffTime;
+							xFer[3] = flash_IgEvent[41];
+							send2host = TRUE;
+							xFer_len = MCU_REPO_HEAD_CMD_SIZE + MCU_SCMD54_LEN;
+							aewin_dbg("\n\rGet delay time of power off: %d", xFer[3]);
 							break;
 
 						//-----------------------------------------------------
 						case Subcmd_Set_DelayOffTime:
+							if((CMD_ETX_CODE != recv1[CMD_ETX_POS(CMD_HEAD_MS_SIZE + MCU_SCMD55_LEN)]) || \
+							   (CMD_EOT_CODE != recv1[CMD_EOT_POS(CMD_HEAD_MS_SIZE + MCU_SCMD55_LEN)])) break;
+							flash_IgEvent[41]=recv1[5];
+							aewin_dbg("\n\rSet delay time of power off: %d", flash_IgEvent[41]);
+							//Write flash
 							break;
 
 						//-----------------------------------------------------
 						case Subcmd_Get_DelayOnTime:
+							if((CMD_ETX_CODE != recv1[CMD_ETX_POS(CMD_HEAD_MS_SIZE)]) || \
+							   (CMD_EOT_CODE != recv1[CMD_EOT_POS(CMD_HEAD_MS_SIZE)])) break;
+							xFer[2] = Subcmd_Get_DelayOnTime;
+							xFer[3] = flash_IgEvent[42];
+							send2host = TRUE;
+							xFer_len = MCU_REPO_HEAD_CMD_SIZE + MCU_SCMD56_LEN;
+							aewin_dbg("\n\rGet delay time of power on: %d", xFer[3]);
 							break;
 
 						//-----------------------------------------------------
 						case Subcmd_Set_DelayOnTime:
+							if((CMD_ETX_CODE != recv1[CMD_ETX_POS(CMD_HEAD_MS_SIZE + MCU_SCMD57_LEN)]) || \
+							   (CMD_EOT_CODE != recv1[CMD_EOT_POS(CMD_HEAD_MS_SIZE + MCU_SCMD57_LEN)])) break;
+							flash_IgEvent[42]=recv1[5];
+							aewin_dbg("\n\rSet delay time of power on: %d", flash_IgEvent[42]);
+							//Write flash
 							break;
 
 						//-----------------------------------------------------
 						case Subcmd_Get_ADC:
+							if((CMD_ETX_CODE != recv1[CMD_ETX_POS(CMD_HEAD_MS_SIZE)]) || \
+							   (CMD_EOT_CODE != recv1[CMD_EOT_POS(CMD_HEAD_MS_SIZE)])) break;
+							evt_vol = osMessageGet(ADC_VOLT_QHandle,osWaitForever);
+							evt_temp = osMessageGet(ADC_TEMP_QHandle, osWaitForever);
+							xFer[2] = Subcmd_Get_ADC;
+							xFer[3] = evt_vol.value.v;         //Input voltage
+							xFer[4] = evt_temp.value.v;        //MCU temperature
+							send2host = TRUE;
+							xFer_len = MCU_REPO_HEAD_CMD_SIZE + MCU_SCMD70_LEN;
+							aewin_dbg("\n\rGet system input voltage: %2d", xFer[3]);
+							aewin_dbg("\n\rGet MCU temperature: %2d", xFer[4]);
 							break;
 
 						//-----------------------------------------------------
@@ -550,9 +727,45 @@ void usart1_entry(void const * argument)
 void usart2_entry(void const * argument)
 {
   /* USER CODE BEGIN usart2_entry */
-	uint8_t recv2[2] = {0};
-	uint8_t uart_Tx[2] = {'A', 'T'};
+	uint8_t recv2[64] = {0};
+
+
 	int i;
+
+	// Check register
+	HAL_UART_Transmit(&huart2, uart_Tx[ATCMD_Check_Status], sizeof(uart_Tx[ATCMD_Check_Status])-1, 30);
+	HAL_UART_Transmit(&huart2, "\r", 1, 30);
+
+	if(HAL_UART_Receive_DMA(&huart2, recv2, 64) != HAL_OK)
+	  {
+	    //Error_Handler();
+	  }
+	HAL_Delay(50);
+	HAL_UART_Abort_IT(&huart2);
+
+	// Enable GPS
+	HAL_UART_Transmit(&huart2, uart_Tx[ATCMD_Enable_GPS], sizeof(uart_Tx[ATCMD_Enable_GPS])-1, 30);
+	HAL_UART_Transmit(&huart2, "\r", 1, 30);
+
+	if(HAL_UART_Receive_DMA(&huart2, recv2, 64) != HAL_OK)
+	  {
+		//Error_Handler();
+	  }
+	HAL_Delay(50);
+	HAL_UART_Abort_IT(&huart2);
+
+
+	// Get IP
+	HAL_UART_Transmit(&huart2, uart_Tx[ATCMD_Get_IP], sizeof(uart_Tx[ATCMD_Get_IP])-1, 30);
+	HAL_UART_Transmit(&huart2, "\r", 1, 30);
+
+	if(HAL_UART_Receive_DMA(&huart2, recv2, 64) != HAL_OK)
+	  {
+		//Error_Handler();
+	  }
+	HAL_Delay(50);
+	HAL_UART_Abort_IT(&huart2);
+
 	//uint8_t recv2 = 0;
 	//HAL_StatusTypeDef u2_states = HAL_OK;
     /* Infinite loop */
@@ -592,13 +805,20 @@ void usart2_entry(void const * argument)
 #endif
 
 
-    	if(HAL_UART_Receive_IT(&huart2, (uint8_t*)&recv2, 2) != HAL_OK)
+    	if(HAL_UART_Receive_IT(&huart2, (uint8_t*)&recv2, 64) != HAL_OK)
     	  {
     	    //Error_Handler();
     	  }
-    	HAL_UART_Transmit(&huart2, uart_Tx, 2/*sizeof("AT")*/, 30);
+    	// Let this thread take a break.
+		osDelay(30);
+		// Abort UART processing.
+		//HAL_UART_Abort_IT(&huart2);   //if add this line, UART can not get rx data
+
+
+    	HAL_UART_Transmit(&huart2, uart_Tx[ATCMD_Enable_GPS], sizeof(uart_Tx[ATCMD_Enable_GPS])-1, 30);
+    	//HAL_UART_Transmit(&huart2, "AT", 2, 30);
     	for(i = 0; i < 300; i++);
-    	HAL_UART_Transmit(&huart2, "\r", 1/*sizeof("AT")*/, 30);
+    	HAL_UART_Transmit(&huart2, "\r", 1, 30);
 
 
     	/*
@@ -1122,12 +1342,11 @@ void i2c1_entry(void const * argument)
 {
   /* USER CODE BEGIN i2c1_entry */
 
-	//I2C_HandleTypeDef I2cHandle;
+	sI2C1_DATA i2c1_data;
 	/* Buffer used for reception */
 	uint8_t ADXL345_RxBuffer[6];
 	uint8_t ADXL345_DEVID[1];
-	uint8_t ASXL345_sensorSetting[1];
-	//uint8_t regptr = I2C_MEM_ADDRESS_ADXL345;
+	//uint8_t ASXL345_sensorSetting[1];
 	uint8_t regptr[] = {I2C_ADXL345_CMD_DEV_ID, I2C_ADXL345_CMD_PWR_CTL, I2C_ADXL345_DATA_MEASURE, I2C_ADXL345_CMD_GPS_DATA};
 
 	//read ADXL345 device ID (0xE5)
@@ -1162,6 +1381,10 @@ void i2c1_entry(void const * argument)
 
 			HAL_I2C_Master_Transmit(&hi2c1, I2C_ADXL345_DEV_ADDRESS, &regptr[3], 1, 1000);
 			HAL_I2C_Master_Receive(&hi2c1, I2C_ADXL345_DEV_ADDRESS, (uint8_t *)ADXL345_RxBuffer, 6, 10000);
+
+			i2c1_data.x_axis = ((ADXL345_RxBuffer[1]<<8)|ADXL345_RxBuffer[0]);
+			i2c1_data.y_axis = ((ADXL345_RxBuffer[3]<<8)|ADXL345_RxBuffer[2]);
+			i2c1_data.z_axis = ((ADXL345_RxBuffer[5]<<8)|ADXL345_RxBuffer[4]);
 		}
 
 
@@ -1318,6 +1541,7 @@ void spi1_entry(void const * argument)
 	uint8_t aRxBuffer[6];
 	uint8_t data_rdsr[1];
 	uint8_t data_devID[2];
+	uint8_t flash_RxBuffer[25];
 
 	//read deviceID
 	HAL_GPIO_WritePin(SPI1_CS_GPIO_Port, SPI1_CS_Pin, GPIO_PIN_RESET);
@@ -1407,7 +1631,7 @@ void spi1_entry(void const * argument)
 
 	//Program
 	HAL_GPIO_WritePin(SPI1_CS_GPIO_Port, SPI1_CS_Pin, GPIO_PIN_RESET);
-	HAL_SPI_Transmit(&hspi1, (uint8_t*)aTxBuffer2, sizeof(aTxBuffer2), 5000);
+	HAL_SPI_Transmit(&hspi1, (uint8_t*)flash_IgEvent, sizeof(flash_IgEvent), 5000);
 	HAL_GPIO_WritePin(SPI1_CS_GPIO_Port, SPI1_CS_Pin, GPIO_PIN_SET);
 
 	//RDSR
@@ -1452,7 +1676,7 @@ void spi1_entry(void const * argument)
 	HAL_GPIO_WritePin(SPI1_CS_GPIO_Port, SPI1_CS_Pin, GPIO_PIN_RESET);
 	HAL_SPI_Transmit(&hspi1, (uint8_t*)aTxBuffer3, sizeof(aTxBuffer3), 5000);
 
-	HAL_SPI_Receive(&hspi1, (uint8_t*)aRxBuffer,6, 5000);
+	HAL_SPI_Receive(&hspi1, (uint8_t*)flash_RxBuffer, sizeof(flash_RxBuffer), 10000);
 	HAL_GPIO_WritePin(SPI1_CS_GPIO_Port, SPI1_CS_Pin, GPIO_PIN_SET);
 
 
