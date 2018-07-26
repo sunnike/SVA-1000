@@ -82,6 +82,7 @@ osThreadId CAN_TaskHandle;
 osMessageQId GPIO_MISC_QHandle;
 osMessageQId ADC_VOLT_QHandle;
 osMessageQId ADC_TEMP_QHandle;
+osMessageQId I2C1_GSENSOR_QHandle;
 osMutexId MUTEX_DebugHandle;
 osMutexId MUTEX_ADC_QHandle;
 osMutexId MUTEX_CMD_PROCHandle;
@@ -200,7 +201,7 @@ void MX_FREERTOS_Init(void) {
   defaultTaskHandle = osThreadCreate(osThread(defaultTask), NULL);
 
   /* definition and creation of USART1_Task */
-  osThreadDef(USART1_Task, usart1_entry, osPriorityAboveNormal, 0, 128);
+  osThreadDef(USART1_Task, usart1_entry, osPriorityAboveNormal, 0, 256);
   USART1_TaskHandle = osThreadCreate(osThread(USART1_Task), NULL);
 
   /* definition and creation of USART2_Task */
@@ -260,6 +261,10 @@ void MX_FREERTOS_Init(void) {
   osMessageQDef(ADC_TEMP_Q, 1, uint32_t);
   ADC_TEMP_QHandle = osMessageCreate(osMessageQ(ADC_TEMP_Q), NULL);
 
+  /* definition and creation of I2C1_GSENSOR_Q */
+  osMessageQDef(I2C1_GSENSOR_Q, 16, uint16_t);
+  I2C1_GSENSOR_QHandle = osMessageCreate(osMessageQ(I2C1_GSENSOR_Q), NULL);
+
   /* USER CODE BEGIN RTOS_QUEUES */
 	/* add queues, ... */
   /* USER CODE END RTOS_QUEUES */
@@ -290,6 +295,7 @@ void usart1_entry(void const * argument)
 
 	osEvent  	evt_vol;
 	osEvent     evt_temp;
+	osEvent     evt_gsensor;
 	/* Infinite loop */
 
 	for(;;)
@@ -656,6 +662,16 @@ void usart1_entry(void const * argument)
 
 						//-----------------------------------------------------
 						case Subcmd_Get_Gsensor:
+							if((CMD_ETX_CODE != recv1[CMD_ETX_POS(CMD_HEAD_MS_SIZE)]) || \
+							   (CMD_EOT_CODE != recv1[CMD_EOT_POS(CMD_HEAD_MS_SIZE)])) break;
+							evt_gsensor = osMessageGet(I2C1_GSENSOR_QHandle,osWaitForever);
+							xFer[2] = Subcmd_Get_ADC;
+							//if (evt_gsensor.status == osEventMessage)
+							{
+								//xFer[3] = evt_gsensor.value.v;
+								//xFer[4] = evt_gsensor.value.v;
+								//xFer[5] = evt_gsensor.value.v;
+							}
 							break;
 
 						//-----------------------------------------------------
@@ -732,13 +748,46 @@ void usart2_entry(void const * argument)
 
 	int i;
 
-	// Check register
+	// Check register status
 	HAL_UART_Transmit(&huart2, uart_Tx[ATCMD_Check_Status], sizeof(uart_Tx[ATCMD_Check_Status])-1, 30);
 	HAL_UART_Transmit(&huart2, "\r", 1, 30);
 
 	if(HAL_UART_Receive_DMA(&huart2, recv2, 64) != HAL_OK)
 	  {
 	    //Error_Handler();
+	  }
+	HAL_Delay(50);
+	HAL_UART_Abort_IT(&huart2);
+
+	// Get IP
+	HAL_UART_Transmit(&huart2, uart_Tx[ATCMD_Get_IP], sizeof(uart_Tx[ATCMD_Get_IP])-1, 30);
+	HAL_UART_Transmit(&huart2, "\r", 1, 30);
+
+	if(HAL_UART_Receive_DMA(&huart2, recv2, 64) != HAL_OK)
+	  {
+		//Error_Handler();
+	  }
+	HAL_Delay(50);
+	HAL_UART_Abort_IT(&huart2);
+
+	// Check IP
+	HAL_UART_Transmit(&huart2, uart_Tx[ATCMD_Check_APNIP], sizeof(uart_Tx[ATCMD_Check_APNIP])-1, 30);
+	HAL_UART_Transmit(&huart2, "\r", 1, 30);
+
+	if(HAL_UART_Receive_DMA(&huart2, recv2, 64) != HAL_OK)
+	  {
+		//Error_Handler();
+	  }
+	HAL_Delay(50);
+	HAL_UART_Abort_IT(&huart2);
+
+	// Check signal
+	HAL_UART_Transmit(&huart2, uart_Tx[ATCMD_Check_Signal], sizeof(uart_Tx[ATCMD_Check_Signal])-1, 30);
+	HAL_UART_Transmit(&huart2, "\r", 1, 30);
+
+	if(HAL_UART_Receive_DMA(&huart2, recv2, 64) != HAL_OK)
+	  {
+		//Error_Handler();
 	  }
 	HAL_Delay(50);
 	HAL_UART_Abort_IT(&huart2);
@@ -755,16 +804,7 @@ void usart2_entry(void const * argument)
 	HAL_UART_Abort_IT(&huart2);
 
 
-	// Get IP
-	HAL_UART_Transmit(&huart2, uart_Tx[ATCMD_Get_IP], sizeof(uart_Tx[ATCMD_Get_IP])-1, 30);
-	HAL_UART_Transmit(&huart2, "\r", 1, 30);
 
-	if(HAL_UART_Receive_DMA(&huart2, recv2, 64) != HAL_OK)
-	  {
-		//Error_Handler();
-	  }
-	HAL_Delay(50);
-	HAL_UART_Abort_IT(&huart2);
 
 	//uint8_t recv2 = 0;
 	//HAL_StatusTypeDef u2_states = HAL_OK;
@@ -1175,7 +1215,7 @@ void ignition_entry(void const * argument)
 
 		switch(ig_event.IG_States){
 			case IG_Recovery:
-				// Recovery all of IG states and paremeters.
+				// Recovery all of IG states and parameters.
 				ig_event = gIG_Event;
 				ig_event.IG_States = IG_CloseUp;
 				break;
@@ -1382,9 +1422,14 @@ void i2c1_entry(void const * argument)
 			HAL_I2C_Master_Transmit(&hi2c1, I2C_ADXL345_DEV_ADDRESS, &regptr[3], 1, 1000);
 			HAL_I2C_Master_Receive(&hi2c1, I2C_ADXL345_DEV_ADDRESS, (uint8_t *)ADXL345_RxBuffer, 6, 10000);
 
-			i2c1_data.x_axis = ((ADXL345_RxBuffer[1]<<8)|ADXL345_RxBuffer[0]);
-			i2c1_data.y_axis = ((ADXL345_RxBuffer[3]<<8)|ADXL345_RxBuffer[2]);
-			i2c1_data.z_axis = ((ADXL345_RxBuffer[5]<<8)|ADXL345_RxBuffer[4]);
+			i2c1_data.x_axis = ((ADXL345_RxBuffer[1]<<8)|(ADXL345_RxBuffer[0]));
+			i2c1_data.y_axis = ((ADXL345_RxBuffer[3]<<8)|(ADXL345_RxBuffer[2]));
+			i2c1_data.z_axis = ((ADXL345_RxBuffer[5]<<8)|(ADXL345_RxBuffer[4]));
+
+			if( osMessagePut(I2C1_GSENSOR_QHandle, *(uint32_t *)&(i2c1_data), osWaitForever) != osOK )
+			{
+				aewin_dbg("\n\rI2C1 G-sensor put Q failed. \r\n");
+			}
 		}
 
 
