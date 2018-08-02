@@ -73,6 +73,8 @@
 #define SPI_FLASH_CMD_DEV_ID     {0x90, 0x00, 0x00, 0x01}
 
 #define SPI_FLASH_DATA_TAG       0xAA
+#define SPI_FLASH_LEN_CMDADD     4
+
 
 
  /** @defgroup Aewin_Task_Entry_Time Tasks entry time configuration
@@ -173,10 +175,10 @@
 #define IGN_SCMD19_LEN				(2U)
 #define IGN_SCMD20_LEN				(1U)
 #define IGN_SCMD21_LEN				(1U)
-#define IGN_SCMD22_LEN				(2U)
-#define IGN_SCMD23_LEN				(2U)
-#define IGN_SCMD24_LEN				(2U)
-#define IGN_SCMD25_LEN				(2U)
+#define IGN_SCMD22_LEN				(3U)
+#define IGN_SCMD23_LEN				(3U)
+#define IGN_SCMD24_LEN				(3U)
+#define IGN_SCMD25_LEN				(3U)
 #define IGN_SCMD26_LEN				(3U)
 #define IGN_SCMD27_LEN				(3U)
 #define IGN_SCMD40_LEN				(1U)
@@ -303,6 +305,70 @@ typedef enum{
 typedef enum{
 	Subcmd_TeleComm_Event	= 0x10
 }eEvent_Log_SubCMDs;
+
+
+/******  SVA-1000 specific Ignition States ******************************************************************/
+typedef enum{
+
+	NUM_eeprom_tag_init       = SPI_FLASH_LEN_CMDADD,
+	NUM_major_ver             = SPI_FLASH_LEN_CMDADD + 1,
+	NUM_minor_ver,
+	NUM_ig_states,
+	NUM_pwron_delay,
+	NUM_wait_startup_time,
+	NUM_startup_timeout,
+	NUM_pwroff_delay,
+	NUM_shutdown_delay,
+	NUM_shutdown_timeout,
+	NUM_lowpwr_dealy,
+	NUM_wtdog_default,
+	NUM_pwroff_btn_cnt,
+	NUM_pwrbtn_pressed,
+	NUM_pwrgood_chk_time,
+	NUM_in_sys_volt,
+	NUM_in_volt_min,
+	NUM_in_volt_max,
+	NUM_startup_volt,
+	NUM_in_temp_min,
+	NUM_in_temp_max,
+	NUM_startup_temp,
+	NUM_dc_lowpwr,
+	NUM_fail_retry,
+	NUM_fail_count,
+
+	NUM_syspowr_input_type,
+	NUM_reboot_source,
+	NUM_boot_mode,
+	NUM_WWAN_wakeup,
+	NUM_WWAN_status,
+	NUM_digital_input,
+	NUM_digital_output,
+	NUM_sim_card_mode,
+	NUM_wifi_status,
+	NUM_LAN_wakeup,
+	NUM_delay_off_setting,
+	NUM_delay_on_setting,
+	NUM_power_off_time,
+	NUM_power_on_time,
+
+	NUM_alarm_status,
+	NUM_InVol_limit_min,
+	NUM_InVol_limit_max,
+	NUM_RTC_AlarmT_hour,
+	NUM_RTC_AlarmT_min,
+	NUM_RTC_AlarmT_sec,
+	NUM_RTC_WakeT_hour,
+	NUM_RTC_WakeT_min,
+	NUM_RTC_WakeT_sec,
+	NUM_Host_WTGT,
+
+	NUM_12V_startup,
+	NUM_12V_shutdown,
+	NUM_24V_startup,
+	NUM_24V_shutdown,
+
+	NUM_total,
+}eData_Num;
 
 
 /* USER CODE END ENUM definitions  */
