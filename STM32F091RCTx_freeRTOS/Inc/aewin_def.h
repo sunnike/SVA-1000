@@ -299,6 +299,8 @@ typedef enum{
 	ATCMD_Check_Signal = 5,  //AT+CSQ
 	ATCMD_Enable_GPS   = 6,  //at+ugps=1,0
 	ATCMD_Disable_GPS  = 7,  //at+ugps=0
+	ATCMD_Enable_RMC   = 8,  //AT+UGRMC=1
+	ATCMD_Get_GPS_DATA = 9, //AT+UGRMC?
 }eATCMD;
 
 /******  SVA-1000  Event/Log information sub-commands ******************************************************************/

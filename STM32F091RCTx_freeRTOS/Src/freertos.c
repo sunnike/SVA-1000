@@ -83,6 +83,9 @@ osMessageQId GPIO_MISC_QHandle;
 osMessageQId ADC_VOLT_QHandle;
 osMessageQId ADC_TEMP_QHandle;
 osMessageQId I2C1_GSENSOR_QHandle;
+osMessageQId I2C1_XAXIS_QHandle;
+osMessageQId I2C1_YAXIS_QHandle;
+osMessageQId I2C1_ZAXIS_QHandle;
 osMutexId MUTEX_DebugHandle;
 osMutexId MUTEX_ADC_QHandle;
 osMutexId MUTEX_CMD_PROCHandle;
@@ -103,7 +106,7 @@ sSVA_GPO_STATE 	sva_gpo={0};
 uint8_t cml_array[MAX_CML_CHAR] = {0};
 uint8_t cml_proc[MAX_CML_CHAR] = {0};
 
-uint8_t uart_Tx[][13] = {"AT", "AT+cind?", "at+cgdcont?", "AT+CGACT=1,1", "AT+COPS?", "AT+CSQ", "at+ugps=1,0", "at+ugps=0"};
+uint8_t uart_Tx[][13] = {"AT", "AT+cind?", "at+cgdcont?", "AT+CGACT=1,1", "AT+COPS?", "AT+CSQ", "at+ugps=1,0", "at+ugps=0", "AT+UGRMC=1", "AT+UGRMC?"};
 
 
 sIG_EVENT gIG_Event ={ 0x12345678, 0, 1, IG_Recovery, 1, 1, 1, 2, 2, 10, 2, 100, 5, FALSE, 5, 12, 20, 145, 0, 50, 100, 50, 0, 0, 0};
@@ -271,6 +274,18 @@ void MX_FREERTOS_Init(void) {
   osMessageQDef(I2C1_GSENSOR_Q, 16, uint16_t);
   I2C1_GSENSOR_QHandle = osMessageCreate(osMessageQ(I2C1_GSENSOR_Q), NULL);
 
+  /* definition and creation of I2C1_XAXIS_Q */
+  osMessageQDef(I2C1_XAXIS_Q, 2, uint16_t);
+  I2C1_XAXIS_QHandle = osMessageCreate(osMessageQ(I2C1_XAXIS_Q), NULL);
+
+  /* definition and creation of I2C1_YAXIS_Q */
+  osMessageQDef(I2C1_YAXIS_Q, 2, uint16_t);
+  I2C1_YAXIS_QHandle = osMessageCreate(osMessageQ(I2C1_YAXIS_Q), NULL);
+
+  /* definition and creation of I2C1_ZAXIS_Q */
+  osMessageQDef(I2C1_ZAXIS_Q, 2, uint16_t);
+  I2C1_ZAXIS_QHandle = osMessageCreate(osMessageQ(I2C1_ZAXIS_Q), NULL);
+
   /* USER CODE BEGIN RTOS_QUEUES */
 	/* add queues, ... */
   /* USER CODE END RTOS_QUEUES */
@@ -303,7 +318,10 @@ void usart1_entry(void const * argument)
 
 	osEvent  	evt_vol;
 	osEvent     evt_temp;
-	osEvent     evt_gsensor;
+	osEvent     evt_xaxis;
+	osEvent     evt_yaxis;
+	osEvent     evt_zaxis;
+	//osEvent     evt_gsensor;
 	/* Infinite loop */
 
 	for(;;)
@@ -347,8 +365,8 @@ void usart1_entry(void const * argument)
 							if((CMD_ETX_CODE != recv1[CMD_ETX_POS(CMD_HEAD_MS_SIZE)]) || \
 							   (CMD_EOT_CODE != recv1[CMD_EOT_POS(CMD_HEAD_MS_SIZE)])) break;
 							xFer[2] = Subcmd_MCU_FW_Ver;
-							xFer[3] = gIG_Event.major_ver;
-							xFer[4] = gIG_Event.minor_ver;
+							xFer[3] = flash_IgEvent[NUM_major_ver];
+							xFer[4] = flash_IgEvent[NUM_minor_ver];
 							send2host = TRUE;
 							xFer_len = MCU_REPO_HEAD_CMD_SIZE + MCU_SCMD10_LEN;
 							aewin_dbg("\n\rHost get MCU version:%d.%d", xFer[3], xFer[4]);
@@ -672,15 +690,24 @@ void usart1_entry(void const * argument)
 						case Subcmd_Get_Gsensor:
 							if((CMD_ETX_CODE != recv1[CMD_ETX_POS(CMD_HEAD_MS_SIZE)]) || \
 							   (CMD_EOT_CODE != recv1[CMD_EOT_POS(CMD_HEAD_MS_SIZE)])) break;
-							evt_gsensor = osMessageGet(I2C1_GSENSOR_QHandle,osWaitForever);
+							evt_xaxis = osMessageGet(I2C1_XAXIS_QHandle,osWaitForever);
+							evt_yaxis = osMessageGet(I2C1_YAXIS_QHandle,osWaitForever);
+							evt_zaxis = osMessageGet(I2C1_ZAXIS_QHandle,osWaitForever);
 							xFer[2] = Subcmd_Get_Gsensor;
-							if (evt_gsensor.status == osEventMessage)
+							//if (evt_xaxis.status == osEventMessage)
 							{
-								gsensor_data = evt_gsensor.value.p;
-								xFer[3] = gsensor_data->x_axis;
-								xFer[4] = gsensor_data->y_axis;
-								xFer[5] = gsensor_data->z_axis;
+								xFer[3] = ((evt_xaxis.value.v)>>8);
+								xFer[4] = ((evt_xaxis.value.v) & 0x00FF);
+
+								xFer[5] = ((evt_yaxis.value.v)>>8);
+								xFer[6] = ((evt_yaxis.value.v) & 0x00FF);
+
+								xFer[7] = ((evt_zaxis.value.v)>>8);
+								xFer[8] = ((evt_zaxis.value.v) & 0x00FF);
 							}
+							send2host = TRUE;
+							xFer_len = MCU_REPO_HEAD_CMD_SIZE + MCU_SCMD90_LEN;
+							aewin_dbg("\n\rGet G-sensor data: %x %x %x %x", xFer[3], xFer[4], xFer[5], xFer[6], xFer[7], xFer[8]);
 							break;
 
 						//-----------------------------------------------------
@@ -717,9 +744,9 @@ void usart1_entry(void const * argument)
 							   (CMD_EOT_CODE != recv1[CMD_EOT_POS(CMD_HEAD_MS_SIZE)])) break;
 							xFer[2] = Subcmd_Get_LowBat_Data;
 							xFer[3] = flash_IgEvent[NUM_12V_startup];
-							xFer[4] = flash_IgEvent[NUM_12V_shutdown];;
-							xFer[5] = flash_IgEvent[NUM_24V_startup];;
-							xFer[6] = flash_IgEvent[NUM_24V_shutdown];;
+							xFer[4] = flash_IgEvent[NUM_12V_shutdown];
+							xFer[5] = flash_IgEvent[NUM_24V_startup];
+							xFer[6] = flash_IgEvent[NUM_24V_shutdown];
 							send2host = TRUE;
 							xFer_len = MCU_REPO_HEAD_CMD_SIZE + IGN_SCMD14_LEN;
 							aewin_dbg("\n\rGet low battery data: %x %x %x %x", xFer[3], xFer[4], xFer[5], xFer[6]);
@@ -889,7 +916,29 @@ void usart1_entry(void const * argument)
 				//-----------------------------------------------------
 				case M_CMD_4G_SETTING:
 					switch(recv1[CMD_SCMD_POS]){
+						case Subcmd_TeleComm_Event:
+							if((CMD_ETX_CODE != recv1[CMD_ETX_POS(CMD_HEAD_MS_SIZE)]) || \
+							   (CMD_EOT_CODE != recv1[CMD_EOT_POS(CMD_HEAD_MS_SIZE)])) break;
+							HAL_RTC_GetTime(&hrtc, &sTime, RTC_FORMAT_BIN);
+							HAL_RTC_GetDate(&hrtc, &sDate, RTC_FORMAT_BIN);
+							xFer[2] = Subcmd_TeleComm_Event;
+							xFer[3] = sDate.Year; 		// Year low byte.
+							xFer[4] = 20; 				// Year high byte.
+							xFer[5] = sDate.Month;		// Month.
+							xFer[6] = sDate.Date;		// Date.
+							xFer[7] = sTime.Hours;		// Hours.
+							xFer[8] = sTime.Minutes;	// Minutes.
+							xFer[9] = sTime.Seconds;	// Seconds.
+							xFer[10] = flash_IgEvent[NUM_ig_states];	    // Ignition status.
+							xFer[11] = flash_IgEvent[NUM_shutdown_delay];	// Ignition Shutdown Count.
 
+							send2host = TRUE;
+							xFer_len = MCU_REPO_HEAD_CMD_SIZE +  W4G_SCMD10_LEN;
+							aewin_dbg("\n\rGet Telecommunication Event.");
+							break;
+						//-----------------------------------------------------
+						default:
+							break;
 					}
 					break;
 
@@ -1000,7 +1049,16 @@ void usart2_entry(void const * argument)
 	HAL_UART_Abort_IT(&huart2);
 
 
+	// Enable the NMEA $RMC messages
+	HAL_UART_Transmit(&huart2, uart_Tx[ATCMD_Enable_RMC], sizeof(uart_Tx[ATCMD_Enable_RMC])-1, 30);
+	HAL_UART_Transmit(&huart2, "\r", 1, 30);
 
+	if(HAL_UART_Receive_DMA(&huart2, recv2, 64) != HAL_OK)
+	  {
+		//Error_Handler();
+	  }
+	HAL_Delay(50);
+	HAL_UART_Abort_IT(&huart2);
 
 	//uint8_t recv2 = 0;
 	//HAL_StatusTypeDef u2_states = HAL_OK;
@@ -1051,7 +1109,7 @@ void usart2_entry(void const * argument)
 		//HAL_UART_Abort_IT(&huart2);   //if add this line, UART can not get rx data
 
 
-    	HAL_UART_Transmit(&huart2, uart_Tx[ATCMD_Enable_GPS], sizeof(uart_Tx[ATCMD_Enable_GPS])-1, 30);
+    	HAL_UART_Transmit(&huart2, uart_Tx[ATCMD_Get_GPS_DATA], sizeof(uart_Tx[ATCMD_Get_GPS_DATA])-1, 30);
     	//HAL_UART_Transmit(&huart2, "AT", 2, 30);
     	for(i = 0; i < 300; i++);
     	HAL_UART_Transmit(&huart2, "\r", 1, 30);
@@ -1623,19 +1681,20 @@ void i2c1_entry(void const * argument)
 			i2c1_data.y_axis = ((ADXL345_RxBuffer[3]<<8)|(ADXL345_RxBuffer[2]));
 			i2c1_data.z_axis = ((ADXL345_RxBuffer[5]<<8)|(ADXL345_RxBuffer[4]));
 
-			if( osMessagePut(I2C1_GSENSOR_QHandle, *(uint32_t *)&(i2c1_data), osWaitForever) != osOK )
+			if( osMessagePut(I2C1_XAXIS_QHandle, i2c1_data.x_axis, osWaitForever) != osOK )
 			{
-				aewin_dbg("\n\rI2C1 G-sensor put Q failed. \r\n");
-			}
+				aewin_dbg("\n\rI2C1 G-sensor x-axis put Q failed. \r\n");
 		}
 
-		i2c1_data.x_axis = 0x12;
-		i2c1_data.y_axis = 0x56;
-		i2c1_data.z_axis = 0x9A;
+			if( osMessagePut(I2C1_YAXIS_QHandle, i2c1_data.y_axis, osWaitForever) != osOK )
+			{
+				aewin_dbg("\n\rI2C1 G-sensor y-axis put Q failed. \r\n");
+			}
 
-		if( osMessagePut(I2C1_GSENSOR_QHandle, *(uint32_t *)&(i2c1_data), osWaitForever) != osOK )
+			if( osMessagePut(I2C1_ZAXIS_QHandle, i2c1_data.z_axis, osWaitForever) != osOK )
 		{
-			aewin_dbg("\n\rI2C1 G-sensor put Q failed. \r\n");
+				aewin_dbg("\n\rI2C1 G-sensor put z-axis Q failed. \r\n");
+			}
 		}
 
 
