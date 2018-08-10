@@ -63,6 +63,10 @@
 #define SPI1_CS_GPIO_Port GPIOC
 #define D2D_EN_Pin GPIO_PIN_1
 #define D2D_EN_GPIO_Port GPIOC
+#define SYS_SHUTDOWN_Pin GPIO_PIN_2
+#define SYS_SHUTDOWN_GPIO_Port GPIOC
+#define ENABLE_4G_Pin GPIO_PIN_3
+#define ENABLE_4G_GPIO_Port GPIOC
 #define V24_BAT_Pin GPIO_PIN_5
 #define V24_BAT_GPIO_Port GPIOA
 #define MCU_TEMP_Pin GPIO_PIN_6

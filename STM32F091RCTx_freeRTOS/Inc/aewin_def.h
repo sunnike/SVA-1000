@@ -85,7 +85,7 @@
 
 #define INGITION_TASK_ENTRY_TIME	(980U)
 #define GPIO_GET_TASK_TIME			(50)
-#define IWDG_TASK_ENTRY_TIME		(10U)
+#define IWDG_TASK_ENTRY_TIME		(20U)
 
 
  /** @defgroup STM32F0XX_ADC STM32F0XX ADC Configuration

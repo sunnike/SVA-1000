@@ -49,7 +49,7 @@ all: STM32F091RCTx_freeRTOS.elf secondary-outputs
 STM32F091RCTx_freeRTOS.elf: $(OBJS) $(USER_OBJS)
 	@echo 'Building target: $@'
 	@echo 'Invoking: GNU ARM Cross C Linker'
-	arm-none-eabi-gcc -mcpu=cortex-m0 -mthumb -Os -fmessage-length=0 -fsigned-char -ffunction-sections -fdata-sections -Werror -Wuninitialized -Wextra -Wmissing-declarations -Wpointer-arith -Wshadow -Wlogical-op -Wfloat-equal  -g -T "C:/Users/Chenj/workspace/SVA-1000/STM32F091RCTx_freeRTOS\SW4STM32\STM32F091RCTx_freeRTOS\STM32F091RCTx_FLASH.ld" -Xlinker --gc-sections -Wl,-Map,"STM32F091RCTx_freeRTOS.map" --specs=nano.specs --specs=nosys.specs -o "STM32F091RCTx_freeRTOS.elf" $(OBJS) $(USER_OBJS) $(LIBS)
+	arm-none-eabi-gcc -mcpu=cortex-m0 -mthumb -Os -fmessage-length=0 -fsigned-char -ffunction-sections -fdata-sections -Werror -Wuninitialized -Wextra -Wmissing-declarations -Wpointer-arith -Wshadow -Wlogical-op -Wfloat-equal  -g -T "D:/Git_workspace/SVA-1000/first_clone/STM32F091RCTx_freeRTOS\SW4STM32\STM32F091RCTx_freeRTOS\STM32F091RCTx_FLASH.ld" -Xlinker --gc-sections -Wl,-Map,"STM32F091RCTx_freeRTOS.map" --specs=nano.specs --specs=nosys.specs -o "STM32F091RCTx_freeRTOS.elf" $(OBJS) $(USER_OBJS) $(LIBS)
 	@echo 'Finished building target: $@'
 	@echo ' '
 

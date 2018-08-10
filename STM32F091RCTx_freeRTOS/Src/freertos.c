@@ -157,6 +157,8 @@ void MX_FREERTOS_Init(void); /* (MISRA C 2004 rule 8.1) */
 /* USER CODE BEGIN FunctionPrototypes */
 #if (AEWIN_DBUG)
 void aewin_dbg(char *fmt,...);
+uint8_t adc_voltageConversion_int(uint32_t adc_value);
+uint8_t adc_voltageConversion_float(uint32_t adc_value);
 #endif
 
 
@@ -336,6 +338,8 @@ void usart1_entry(void const * argument)
 		//taskEXIT_CRITICAL();
 		// Give some time for DMA receiving data. Let this thread take a break.
 		osDelay(30);
+		//HAL_Delay(20);
+		//taskENTER_CRITICAL();
 		// Abort UART processing.
 		HAL_UART_Abort_IT(&huart1);
 #else
@@ -353,6 +357,7 @@ void usart1_entry(void const * argument)
 			continue;
 		}
 #endif
+		//
 		// Check command head.
 		if ((CMD_SYN_CODE == recv1[CMD_SYN_POS0]) && (CMD_SYN_CODE == recv1[CMD_SYN_POS1]) && (CMD_STX_CODE == recv1[CMD_STX_POS])){
 			switch(recv1[CMD_MCMD_POS]){
@@ -417,7 +422,7 @@ void usart1_entry(void const * argument)
 							   (CMD_EOT_CODE != recv1[CMD_EOT_POS(CMD_HEAD_MS_SIZE)])) break;
 							evt_vol = osMessageGet(ADC_VOLT_QHandle,osWaitForever);
 							xFer[2] = Subcmd_Get_Sys_InVOLT;
-							xFer[3] = evt_vol.value.v;         //Input voltage
+							xFer[3] = flash_IgEvent[NUM_in_sys_volt];         //Input voltage
 							send2host = TRUE;
 							xFer_len = MCU_REPO_HEAD_CMD_SIZE + MCU_SCMD22_LEN;
 							aewin_dbg("\n\rGet system input voltage: %2d", xFer[3]);
@@ -425,7 +430,10 @@ void usart1_entry(void const * argument)
 
 						//-----------------------------------------------------
 						case Subcmd_Set_Sys_InVOLT:
-							//Get power type? 9~36V(default)
+							if((CMD_ETX_CODE != recv1[CMD_ETX_POS(CMD_HEAD_MS_SIZE + MCU_SCMD23_LEN)]) || \
+							   (CMD_EOT_CODE != recv1[CMD_EOT_POS(CMD_HEAD_MS_SIZE + MCU_SCMD23_LEN)])) break;
+							flash_IgEvent[NUM_in_sys_volt]=recv1[5];
+							aewin_dbg("\n\rSet  system input voltage: %2d", flash_IgEvent[NUM_in_sys_volt]);
 							break;
 
 						//-----------------------------------------------------
@@ -433,7 +441,7 @@ void usart1_entry(void const * argument)
 							if((CMD_ETX_CODE != recv1[CMD_ETX_POS(CMD_HEAD_MS_SIZE)]) || \
 							   (CMD_EOT_CODE != recv1[CMD_EOT_POS(CMD_HEAD_MS_SIZE)])) break;
 							xFer[2] = Subcmd_Get_RebootSrc;
-							xFer[3] = flash_IgEvent[30];
+							xFer[3] = flash_IgEvent[NUM_reboot_source];
 							send2host = TRUE;
 							xFer_len = MCU_REPO_HEAD_CMD_SIZE + MCU_SCMD26_LEN;
 							aewin_dbg("\n\rGet reboot source: %d", xFer[3]);
@@ -475,7 +483,7 @@ void usart1_entry(void const * argument)
 							xFer[2] = Subcmd_Get_WWAN_WKStat;
 							xFer[3] = flash_IgEvent[NUM_WWAN_wakeup];
 							send2host = TRUE;
-							xFer_len = MCU_REPO_HEAD_CMD_SIZE + MCU_SCMD28_LEN;
+							xFer_len = MCU_REPO_HEAD_CMD_SIZE + MCU_SCMD30_LEN;
 							aewin_dbg("\n\rGet WWAN wake up status: %d", xFer[3]);
 							break;
 
@@ -674,8 +682,11 @@ void usart1_entry(void const * argument)
 							evt_vol = osMessageGet(ADC_VOLT_QHandle,osWaitForever);
 							evt_temp = osMessageGet(ADC_TEMP_QHandle, osWaitForever);
 							xFer[2] = Subcmd_Get_ADC;
-							xFer[3] = evt_vol.value.v;         //Input voltage
-							xFer[4] = evt_temp.value.v;        //MCU temperature
+							//xFer[3] = evt_vol.value.v;         //Input voltage
+							xFer[3] = adc_voltageConversion_float(evt_vol.value.v);
+							xFer[4] = adc_voltageConversion_int(evt_vol.value.v);
+							xFer[5] = evt_temp.value.v;        //MCU temperature
+							xFer[6] = evt_temp.value.v;        //MCU temperature
 							send2host = TRUE;
 							xFer_len = MCU_REPO_HEAD_CMD_SIZE + MCU_SCMD70_LEN;
 							aewin_dbg("\n\rGet system input voltage: %2d", xFer[3]);
@@ -976,6 +987,7 @@ void usart1_entry(void const * argument)
 				xFer_len = 0;
 			}
 		}
+		//taskEXIT_CRITICAL();
 		memset(recv1, 0, CMD_MAX_LEN);
 		osDelay(UART1_TASK_ENTRY_TIME);
 	}
@@ -1809,7 +1821,7 @@ void cmd_proc_entry(void const * argument)
   /* Infinite loop */
   for(;;)
   {
-    osDelay(2);
+    osDelay(30);
   }
   /* USER CODE END cmd_proc_entry */
 }
@@ -1994,7 +2006,7 @@ void spi1_entry(void const * argument)
   /* Infinite loop */
   for(;;)
   {
-	  osDelay(1);
+	  osDelay(20);
   }
   /* USER CODE END spi1_entry */
 }
@@ -2068,7 +2080,7 @@ void can_entry(void const * argument)
 
 	  //HAL_CAN_Transmit_IT(&hcan);
 	  //HAL_CAN_Receive(&hcan,  CAN_FIFO0, 1000);
-	  osDelay(1);
+	  osDelay(30);
   }
   /* USER CODE END can_entry */
 }
@@ -2097,7 +2109,16 @@ void HAL_UART_RxCpltCallback(UART_HandleTypeDef *UartHandle)
   UartReady = SET;
 }
 
+uint8_t adc_voltageConversion_int(uint32_t adc_value)
+{
+	//return ((((adc_value & 0xfffU) * 330) ) * 11700) / 1000 / 409600;
+	return ((((adc_value & 0xfffU) * 330) ) * 117) / 1000 / 4096;
+}
 
+uint8_t adc_voltageConversion_float(uint32_t adc_value)
+{
+	return (((((adc_value & 0xfffU) * 330) ) * 11700) / 10 / 409600) % 100;
+}
 /* USER CODE END Application */
 
 /************************ (C) COPYRIGHT STMicroelectronics *****END OF FILE****/

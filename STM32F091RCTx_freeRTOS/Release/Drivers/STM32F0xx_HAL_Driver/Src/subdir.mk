@@ -22,7 +22,6 @@ C_SRCS += \
 ../Drivers/STM32F0xx_HAL_Driver/Src/stm32f0xx_hal_rcc_ex.c \
 ../Drivers/STM32F0xx_HAL_Driver/Src/stm32f0xx_hal_rtc.c \
 ../Drivers/STM32F0xx_HAL_Driver/Src/stm32f0xx_hal_rtc_ex.c \
-../Drivers/STM32F0xx_HAL_Driver/Src/stm32f0xx_hal_smbus.c \
 ../Drivers/STM32F0xx_HAL_Driver/Src/stm32f0xx_hal_spi.c \
 ../Drivers/STM32F0xx_HAL_Driver/Src/stm32f0xx_hal_spi_ex.c \
 ../Drivers/STM32F0xx_HAL_Driver/Src/stm32f0xx_hal_tim.c \
@@ -49,7 +48,6 @@ OBJS += \
 ./Drivers/STM32F0xx_HAL_Driver/Src/stm32f0xx_hal_rcc_ex.o \
 ./Drivers/STM32F0xx_HAL_Driver/Src/stm32f0xx_hal_rtc.o \
 ./Drivers/STM32F0xx_HAL_Driver/Src/stm32f0xx_hal_rtc_ex.o \
-./Drivers/STM32F0xx_HAL_Driver/Src/stm32f0xx_hal_smbus.o \
 ./Drivers/STM32F0xx_HAL_Driver/Src/stm32f0xx_hal_spi.o \
 ./Drivers/STM32F0xx_HAL_Driver/Src/stm32f0xx_hal_spi_ex.o \
 ./Drivers/STM32F0xx_HAL_Driver/Src/stm32f0xx_hal_tim.o \
@@ -76,7 +74,6 @@ C_DEPS += \
 ./Drivers/STM32F0xx_HAL_Driver/Src/stm32f0xx_hal_rcc_ex.d \
 ./Drivers/STM32F0xx_HAL_Driver/Src/stm32f0xx_hal_rtc.d \
 ./Drivers/STM32F0xx_HAL_Driver/Src/stm32f0xx_hal_rtc_ex.d \
-./Drivers/STM32F0xx_HAL_Driver/Src/stm32f0xx_hal_smbus.d \
 ./Drivers/STM32F0xx_HAL_Driver/Src/stm32f0xx_hal_spi.d \
 ./Drivers/STM32F0xx_HAL_Driver/Src/stm32f0xx_hal_spi_ex.d \
 ./Drivers/STM32F0xx_HAL_Driver/Src/stm32f0xx_hal_tim.d \
@@ -89,7 +86,7 @@ C_DEPS += \
 Drivers/STM32F0xx_HAL_Driver/Src/%.o: ../Drivers/STM32F0xx_HAL_Driver/Src/%.c
 	@echo 'Building file: $<'
 	@echo 'Invoking: GNU ARM Cross C Compiler'
-	arm-none-eabi-gcc -mcpu=cortex-m0 -mthumb -Os -fmessage-length=0 -fsigned-char -ffunction-sections -fdata-sections -Werror -Wuninitialized -Wextra -Wmissing-declarations -Wpointer-arith -Wshadow -Wlogical-op -Wfloat-equal  -g -DUSE_HAL_DRIVER -D__weak="__attribute__((weak))" -D__packed="__attribute__((__packed__))" -DSTM32F091xC -DARM_MATH_CM0 -I"C:/Users/Chenj/workspace/SVA-1000/STM32F091RCTx_freeRTOS/Inc" -I"C:/Users/Chenj/workspace/SVA-1000/STM32F091RCTx_freeRTOS/Drivers/STM32F0xx_HAL_Driver/Inc" -I"C:/Users/Chenj/workspace/SVA-1000/STM32F091RCTx_freeRTOS/Drivers/STM32F0xx_HAL_Driver/Inc/Legacy" -I"C:/Users/Chenj/workspace/SVA-1000/STM32F091RCTx_freeRTOS/Middlewares/Third_Party/FreeRTOS/Source/portable/GCC/ARM_CM0" -I"C:/Users/Chenj/workspace/SVA-1000/STM32F091RCTx_freeRTOS/Drivers/CMSIS/Device/ST/STM32F0xx/Include" -I"C:/Users/Chenj/workspace/SVA-1000/STM32F091RCTx_freeRTOS/Middlewares/Third_Party/FreeRTOS/Source/include" -I"C:/Users/Chenj/workspace/SVA-1000/STM32F091RCTx_freeRTOS/Drivers/CMSIS/Include" -I"C:/Users/Chenj/workspace/SVA-1000/STM32F091RCTx_freeRTOS/Middlewares/Third_Party/FreeRTOS/Source/CMSIS_RTOS" -std=gnu11 -fsanitize=float-divide-by-zero -fsanitize=float-cast-overflow -fno-sanitize-recover -MMD -MP -MF"$(@:%.o=%.d)" -MT"$(@)" -c -o "$@" "$<"
+	arm-none-eabi-gcc -mcpu=cortex-m0 -mthumb -Os -fmessage-length=0 -fsigned-char -ffunction-sections -fdata-sections -Werror -Wuninitialized -Wextra -Wmissing-declarations -Wpointer-arith -Wshadow -Wlogical-op -Wfloat-equal  -g -DUSE_HAL_DRIVER -D__weak="__attribute__((weak))" -D__packed="__attribute__((__packed__))" -DSTM32F091xC -DARM_MATH_CM0 -I"D:/Git_workspace/SVA-1000/first_clone/STM32F091RCTx_freeRTOS/Inc" -I"D:/Git_workspace/SVA-1000/first_clone/STM32F091RCTx_freeRTOS/Drivers/STM32F0xx_HAL_Driver/Inc" -I"D:/Git_workspace/SVA-1000/first_clone/STM32F091RCTx_freeRTOS/Drivers/STM32F0xx_HAL_Driver/Inc/Legacy" -I"D:/Git_workspace/SVA-1000/first_clone/STM32F091RCTx_freeRTOS/Middlewares/Third_Party/FreeRTOS/Source/portable/GCC/ARM_CM0" -I"D:/Git_workspace/SVA-1000/first_clone/STM32F091RCTx_freeRTOS/Drivers/CMSIS/Device/ST/STM32F0xx/Include" -I"D:/Git_workspace/SVA-1000/first_clone/STM32F091RCTx_freeRTOS/Middlewares/Third_Party/FreeRTOS/Source/include" -I"D:/Git_workspace/SVA-1000/first_clone/STM32F091RCTx_freeRTOS/Drivers/CMSIS/Include" -I"D:/Git_workspace/SVA-1000/first_clone/STM32F091RCTx_freeRTOS/Middlewares/Third_Party/FreeRTOS/Source/CMSIS_RTOS" -std=gnu11 -fsanitize=float-divide-by-zero -fsanitize=float-cast-overflow -fno-sanitize-recover -MMD -MP -MF"$(@:%.o=%.d)" -MT"$(@)" -c -o "$@" "$<"
 	@echo 'Finished building: $<'
 	@echo ' '
 
