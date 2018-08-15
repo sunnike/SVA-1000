@@ -86,6 +86,8 @@ osMessageQId I2C1_GSENSOR_QHandle;
 osMessageQId I2C1_XAXIS_QHandle;
 osMessageQId I2C1_YAXIS_QHandle;
 osMessageQId I2C1_ZAXIS_QHandle;
+osMessageQId UART2_LAT_QHandle;
+osMessageQId UART2_LONG_QHandle;
 osMutexId MUTEX_DebugHandle;
 osMutexId MUTEX_ADC_QHandle;
 osMutexId MUTEX_CMD_PROCHandle;
@@ -107,6 +109,7 @@ uint8_t cml_array[MAX_CML_CHAR] = {0};
 uint8_t cml_proc[MAX_CML_CHAR] = {0};
 
 uint8_t uart_Tx[][13] = {"AT", "AT+cind?", "at+cgdcont?", "AT+CGACT=1,1", "AT+COPS?", "AT+CSQ", "at+ugps=1,0", "at+ugps=0", "AT+UGRMC=1", "AT+UGRMC?"};
+//uint8_t uart_Tx[][13] = {"AT", "AT+CSQ", "AT+COPS?", "at+cgdcont?", "AT+CGACT=1,1", "AT+UGPRF=1", "AT+UGRMC=1", "at+ugps=1,0", "AT+UGRMC?"};
 
 
 sIG_EVENT gIG_Event ={ 0x12345678, 0, 1, IG_Recovery, 1, 1, 1, 2, 2, 10, 2, 100, 5, FALSE, 5, 12, 20, 145, 0, 50, 100, 50, 0, 0, 0};
@@ -159,6 +162,7 @@ void MX_FREERTOS_Init(void); /* (MISRA C 2004 rule 8.1) */
 void aewin_dbg(char *fmt,...);
 uint8_t adc_voltageConversion_int(uint32_t adc_value);
 uint8_t adc_voltageConversion_float(uint32_t adc_value);
+uint8_t adc_tempConversion_int(uint32_t adc_value);
 #endif
 
 
@@ -175,6 +179,11 @@ void MX_FREERTOS_Init(void) {
 	HAL_RTC_GetDate(&hrtc, &sDate, RTC_FORMAT_BIN);
 
 	HAL_GPIO_WritePin(SPI1_CS_GPIO_Port, SPI1_CS_Pin, GPIO_PIN_SET);
+
+
+	HAL_GPIO_WritePin(GPIOC, TEST_4G_Pin, GPIO_PIN_RESET);
+	HAL_Delay(50);
+	HAL_GPIO_WritePin(GPIOC, TEST_4G_Pin, GPIO_PIN_SET);
   /* USER CODE END Init */
 
   /* Create the mutex(es) */
@@ -288,6 +297,14 @@ void MX_FREERTOS_Init(void) {
   osMessageQDef(I2C1_ZAXIS_Q, 2, uint16_t);
   I2C1_ZAXIS_QHandle = osMessageCreate(osMessageQ(I2C1_ZAXIS_Q), NULL);
 
+  /* definition and creation of UART2_LAT_Q */
+  osMessageQDef(UART2_LAT_Q, 1, uint16_t);
+  UART2_LAT_QHandle = osMessageCreate(osMessageQ(UART2_LAT_Q), NULL);
+
+  /* definition and creation of UART2_LONG_Q */
+  osMessageQDef(UART2_LONG_Q, 1, uint16_t);
+  UART2_LONG_QHandle = osMessageCreate(osMessageQ(UART2_LONG_Q), NULL);
+
   /* USER CODE BEGIN RTOS_QUEUES */
 	/* add queues, ... */
   /* USER CODE END RTOS_QUEUES */
@@ -335,11 +352,12 @@ void usart1_entry(void const * argument)
 		//taskENTER_CRITICAL();
 		while(HAL_UART_Receive_DMA(&huart1, &recv1[CMD_SYN_POS0] ,(CMD_MAX_LEN - 1)) != HAL_OK);
 		//HAL_UART_Receive(&huart1, &recv1[CMD_SYN_POS1] ,(CMD_MAX_LEN - 1), 100);
-		//taskEXIT_CRITICAL();
+
 		// Give some time for DMA receiving data. Let this thread take a break.
-		osDelay(30);
-		//HAL_Delay(20);
+		osDelay(20);
 		//taskENTER_CRITICAL();
+		//HAL_Delay(20);
+
 		// Abort UART processing.
 		HAL_UART_Abort_IT(&huart1);
 #else
@@ -943,6 +961,18 @@ void usart1_entry(void const * argument)
 							xFer[10] = flash_IgEvent[NUM_ig_states];	    // Ignition status.
 							xFer[11] = flash_IgEvent[NUM_shutdown_delay];	// Ignition Shutdown Count.
 
+							if(ig_event.IG_States == IG_Start_Up)           //Ignition On/Off Status
+							{
+								xFer[12] = 0x01;
+							}
+							else
+							{
+								xFer[12] = 0x00;
+							}
+
+							xFer[13] = 0x00;                                // Restart Failed &  Retry Times
+
+
 							send2host = TRUE;
 							xFer_len = MCU_REPO_HEAD_CMD_SIZE +  W4G_SCMD10_LEN;
 							aewin_dbg("\n\rGet Telecommunication Event.");
@@ -1000,7 +1030,10 @@ void usart1_entry(void const * argument)
 void usart2_entry(void const * argument)
 {
   /* USER CODE BEGIN usart2_entry */
-	uint8_t recv2[64] = {0};
+	uint8_t recv2[UART2_RX_LENGTH] = {0};
+	char split_count;
+	uint16_t latitude, longitude;
+	uint8_t latitude_index, longitude_index;
 
 
 	int i;
@@ -1013,7 +1046,7 @@ void usart2_entry(void const * argument)
 	  {
 	    //Error_Handler();
 	  }
-	HAL_Delay(50);
+	osDelay(50);
 	HAL_UART_Abort_IT(&huart2);
 
 	// Get IP
@@ -1024,7 +1057,7 @@ void usart2_entry(void const * argument)
 	  {
 		//Error_Handler();
 	  }
-	HAL_Delay(50);
+	osDelay(50);
 	HAL_UART_Abort_IT(&huart2);
 
 	// Check IP
@@ -1035,7 +1068,7 @@ void usart2_entry(void const * argument)
 	  {
 		//Error_Handler();
 	  }
-	HAL_Delay(50);
+	osDelay(50);
 	HAL_UART_Abort_IT(&huart2);
 
 	// Check signal
@@ -1046,7 +1079,7 @@ void usart2_entry(void const * argument)
 	  {
 		//Error_Handler();
 	  }
-	HAL_Delay(50);
+	osDelay(50);
 	HAL_UART_Abort_IT(&huart2);
 
 	// Enable GPS
@@ -1057,7 +1090,7 @@ void usart2_entry(void const * argument)
 	  {
 		//Error_Handler();
 	  }
-	HAL_Delay(50);
+	osDelay(50);
 	HAL_UART_Abort_IT(&huart2);
 
 
@@ -1069,7 +1102,7 @@ void usart2_entry(void const * argument)
 	  {
 		//Error_Handler();
 	  }
-	HAL_Delay(50);
+	osDelay(50);
 	HAL_UART_Abort_IT(&huart2);
 
 	//uint8_t recv2 = 0;
@@ -1115,6 +1148,74 @@ void usart2_entry(void const * argument)
     	  {
     	    //Error_Handler();
     	  }
+    	else
+    	{
+    		// find index of latitude and longitude
+    		split_count = 0;
+    		for(i = 0; i<UART2_RX_LENGTH; i++)
+    		{
+    			if(recv2[i] == ',')
+    			{
+    				split_count++;
+    			}
+
+    			if(split_count == 4)
+    			{
+    				latitude_index = i+1;
+    			}
+
+    			if(split_count == 6)
+    			{
+    				longitude_index = i+1;
+    				break;
+    			}
+    		}
+
+    		// Get latitude and longitude data
+    		latitude = 0;   //24
+    		longitude = 0;  //121
+    		if(recv2[latitude_index] != ',')
+    		{
+    			// latitude
+    			for( i = 0; i < 9; i++)
+    			{
+    				if(i < 4)
+    				{
+    					latitude = 10*latitude + recv2[latitude_index+i];
+    				}
+    				else if(i > 4)
+    				{
+    					latitude = 10*latitude + recv2[latitude_index+i-1];
+    				}
+    			}
+
+    			// longitude
+    			for( i = 0; i < 10; i++)
+				{
+					if(i < 4)
+					{
+						longitude = 10*longitude + recv2[longitude_index+i];
+					}
+					else if(i > 4)
+					{
+						longitude = 10*longitude + recv2[longitude_index+i-1];
+					}
+				}
+    		}
+
+    		// send data to queue
+    		if( osMessagePut(UART2_LAT_QHandle, latitude, osWaitForever) != osOK )
+			{
+				aewin_dbg("\n\rUART2 GPS latitude put Q failed. \r\n");
+			}
+
+			if( osMessagePut(UART2_LONG_QHandle, longitude, osWaitForever) != osOK )
+			{
+				aewin_dbg("\n\rUART2 GPS longitude put Q failed. \r\n");
+			}
+
+
+    	}
     	// Let this thread take a break.
 		osDelay(30);
 		// Abort UART processing.
@@ -1696,7 +1797,7 @@ void i2c1_entry(void const * argument)
 			if( osMessagePut(I2C1_XAXIS_QHandle, i2c1_data.x_axis, osWaitForever) != osOK )
 			{
 				aewin_dbg("\n\rI2C1 G-sensor x-axis put Q failed. \r\n");
-		}
+			}
 
 			if( osMessagePut(I2C1_YAXIS_QHandle, i2c1_data.y_axis, osWaitForever) != osOK )
 			{
@@ -1704,7 +1805,7 @@ void i2c1_entry(void const * argument)
 			}
 
 			if( osMessagePut(I2C1_ZAXIS_QHandle, i2c1_data.z_axis, osWaitForever) != osOK )
-		{
+			{
 				aewin_dbg("\n\rI2C1 G-sensor put z-axis Q failed. \r\n");
 			}
 		}
@@ -2111,13 +2212,24 @@ void HAL_UART_RxCpltCallback(UART_HandleTypeDef *UartHandle)
 
 uint8_t adc_voltageConversion_int(uint32_t adc_value)
 {
+	// (((adc_24v & 0xfffU) * 330) / 409600) * 117 / 10
 	//return ((((adc_value & 0xfffU) * 330) ) * 11700) / 1000 / 409600;
 	return ((((adc_value & 0xfffU) * 330) ) * 117) / 1000 / 4096;
 }
 
 uint8_t adc_voltageConversion_float(uint32_t adc_value)
 {
+	// (((((adc_24v & 0xfffU) * 330) / 409600) * 117 / 10  * 100)% 100)
 	return (((((adc_value & 0xfffU) * 330) ) * 11700) / 10 / 409600) % 100;
+}
+
+uint8_t adc_tempConversion_int(uint32_t adc_value)
+{
+	uint32_t mcu_adc;
+	mcu_adc = (((adc_value & 0xfffU) * 330) / 409600);
+	// R = (10*MCU_ADC) / (3.3-MCU_ADC)
+
+	return (100*mcu_adc)/(33 - 10*mcu_adc);
 }
 /* USER CODE END Application */
 

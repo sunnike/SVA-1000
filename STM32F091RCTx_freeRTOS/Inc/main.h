@@ -71,6 +71,8 @@
 #define V24_BAT_GPIO_Port GPIOA
 #define MCU_TEMP_Pin GPIO_PIN_6
 #define MCU_TEMP_GPIO_Port GPIOA
+#define TEST_4G_Pin GPIO_PIN_4
+#define TEST_4G_GPIO_Port GPIOC
 #define IGNITION_SW_Pin GPIO_PIN_6
 #define IGNITION_SW_GPIO_Port GPIOC
 #define PWR_BTN_IGN_R_Pin GPIO_PIN_7

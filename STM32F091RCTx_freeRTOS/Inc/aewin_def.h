@@ -43,6 +43,8 @@
 #define UART2_TIMEOUT		1
 #define UART3_TIMEOUT		1
 
+#define UART2_RX_LENGTH     64
+
 
  /** @defgroup STM32F0XX_I2C STM32F0XX I2C Configuration
    * @{
@@ -291,6 +293,19 @@ typedef enum{
 
 /******  SVA-1000 Ignition setting/Information sub-commands ******************************************************************/
 typedef enum{
+	/*
+	ATCMD_AT 	       = 0,  //AT
+	ATCMD_Check_Signal = 1,  //AT+CSQ
+	ATCMD_Check_Reg    = 2,  //AT+COPS?
+	ATCMD_Check_APNIP  = 3,  //at+cgdcont?
+	ATCMD_Get_IP       = 4,  //AT+CGACT=1,1
+	ATCMD_Config_GPS   = 5,  //AT+UGPRF=1
+	ATCMD_Enable_RMC   = 6,  //AT+UGRMC=1
+	ATCMD_Enable_GPS   = 7,  //at+ugps=1,0
+	ATCMD_Get_GPS_DATA = 8,  //AT+UGRMC?
+	*/
+
+
 	ATCMD_AT 	       = 0,  //AT
 	ATCMD_Check_Status = 1,  //AT+cind?
 	ATCMD_Check_APNIP  = 2,  //at+cgdcont?
@@ -300,7 +315,8 @@ typedef enum{
 	ATCMD_Enable_GPS   = 6,  //at+ugps=1,0
 	ATCMD_Disable_GPS  = 7,  //at+ugps=0
 	ATCMD_Enable_RMC   = 8,  //AT+UGRMC=1
-	ATCMD_Get_GPS_DATA = 9, //AT+UGRMC?
+	ATCMD_Get_GPS_DATA = 9,  //AT+UGRMC?
+
 }eATCMD;
 
 /******  SVA-1000  Event/Log information sub-commands ******************************************************************/
