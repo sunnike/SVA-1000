@@ -43,7 +43,8 @@
 #define UART2_TIMEOUT		1
 #define UART3_TIMEOUT		1
 
-#define UART2_RX_LENGTH     64
+#define UART2_RX_LENGTH     128
+#define UART2_ATCMD_DELAY   100
 
 
  /** @defgroup STM32F0XX_I2C STM32F0XX I2C Configuration
@@ -97,7 +98,8 @@
 #define ADC_CAP_TIME				(450U)
 #define ADC_RESET_TIME				(450U)
 
-
+#define THERMISTOR_B_CONSTANT       (3380U)
+#define THERMISTOR_R25              (10)
 
 
  /** @defgroup Aewin_SVA-1000_Command_Protocol Aewin SVA-1000 Command Protocol
@@ -463,13 +465,15 @@ typedef struct{
 	uint8_t  pwr_btn		: 1;
 	uint8_t  sys_pwron		: 1;
 	uint8_t  dc2dc_pwrok	: 1;
-	uint8_t  reserved		: 4;
+	uint8_t  ebtn_in        : 1;
+	uint8_t  reserved		: 3;
 }sSVA_GPI_STATE;
 
 
 typedef struct{
 	uint8_t	 spi1_cs 		: 1;
 	uint8_t	 dc2dc_en 		: 1;
+	uint8_t  ebtn_out       : 1;
 	uint8_t	 reseved 		: 6;
 }sSVA_GPO_STATE;
 
