@@ -40,14 +40,17 @@
 
 
 #define UART1_TIMEOUT		1
-#define UART2_TIMEOUT		1
+#define UART2_TIMEOUT		500
 #define UART3_TIMEOUT		1
 
 #define UART1_TX_DELAY      10
 
 #define UART2_RX_LENGTH     128
-#define UART2_ATCMD_DELAY   100
-#define UART2_WAIT_READY    500
+#define UART2_ATCMD_DELAY   30
+#define UART2_WAIT_READY    900
+
+#define UART2_MSG_PRINT_ON  1
+#define UART2_MSG_PRINT_OFF 0
 
 
  /** @defgroup STM32F0XX_I2C STM32F0XX I2C Configuration
@@ -60,6 +63,8 @@
 
 #define I2C_ADXL345_CMD_PWR_CTL      0x2D
 #define I2C_ADXL345_DATA_MEASURE     0x08
+
+#define I2C_ADXL345_DELAY            500
 
 
  /** @defgroup STM32F0XX_SPI STM32F0XX SPI Configuration
@@ -223,15 +228,15 @@
 
  /******  SVA-1000 specific Ignition States ******************************************************************/
 typedef enum{
-	IG_Reserved = 0,			 	/*!< Reserved */
-	IG_Recovery = 1,				/*!< Recovery all of states and parameters */
-	IG_PowerOn_Delay,				/*!< Indicate that the system is ready to "power on" */
-	IG_Wait_StartUp,				/*!< Indicate that the system is ready to "start up" */
-	IG_Start_Up,					/*!< Indicate that the system is in "start up" state */
-	IG_Shutdown_Delay,
-	IG_shutting_Down,
-	IG_LowPower_Delay,
-	IG_CloseUp,
+	IG_Reserved       = 0,			 	/*!< Reserved */
+	IG_Recovery       = 8,				/*!< Recovery all of states and parameters */
+	IG_PowerOn_Delay  = 1,				/*!< Indicate that the system is ready to "power on" */
+	IG_Wait_StartUp   = 2,				/*!< Indicate that the system is ready to "start up" */
+	IG_Start_Up       = 3,		    	/*!< Indicate that the system is in "start up" state */
+	IG_Shutdown_Delay = 6,
+	IG_shutting_Down  = 7,
+	IG_LowPower_Delay = 10,
+	IG_CloseUp        = 20,
 	IG_End = 100
 }eIgnition_States;
 

@@ -103,6 +103,9 @@ osMutexId MUTEX_SPI1Handle;
 #if (AEWIN_DBUG)
 char dbg_buff[PRINT_BUFF];
 #endif
+
+uint8_t uart2_msg_print_switch = 1;
+
 sSVA_GPI_STATE 	sva_gpi={0};
 sSVA_GPO_STATE 	sva_gpo={0};
 
@@ -170,6 +173,10 @@ uint8_t adc_voltageConversion_float(uint32_t adc_value);
 uint8_t adc_tempConversion_int(uint32_t adc_value);
 uint8_t adc_tempConversion_float(uint32_t adc_value);
 uint8_t uart2_findCommaIndexNext(uint8_t uart_msg[], uint8_t target_comma);
+uint8_t uart2_isFindString(uint8_t uart_msg[], uint8_t target_string[], uint8_t length);
+void enable_4GModule(void);
+uint8_t uart_findDataIndex(uint8_t uart_msg[], uint8_t target_data);
+void print_atCommand(uint8_t rx_msg[], uint8_t onOff);
 #endif
 
 
@@ -188,9 +195,7 @@ void MX_FREERTOS_Init(void) {
 	HAL_GPIO_WritePin(SPI1_CS_GPIO_Port, SPI1_CS_Pin, GPIO_PIN_SET);
 
 
-	HAL_GPIO_WritePin(GPIOC, TEST_4G_Pin, GPIO_PIN_RESET);
-	HAL_Delay(50);
-	HAL_GPIO_WritePin(GPIOC, TEST_4G_Pin, GPIO_PIN_SET);
+	enable_4GModule();
   /* USER CODE END Init */
 
   /* Create the mutex(es) */
@@ -1092,10 +1097,12 @@ void usart2_entry(void const * argument)
 	uint8_t recv2[UART2_RX_LENGTH] = {0};
 	char split_count;
 	uint16_t latitude, longitude;
-	uint8_t latitude_index=0, longitude_index=0, reg_index, ip_index;
+	uint8_t latitude_index=0, longitude_index=0, reg_index, ip_index, strength_index;
 	uint8_t ip_counter;
+	uint8_t string_OK[2] = {'O','K'};
+	uint8_t string_Not[3] = {'N', 'o', 't'};
 
-	uint8_t test;
+	uint8_t uart2_test;
 
 
 	int i;
@@ -1113,13 +1120,7 @@ void usart2_entry(void const * argument)
 	osDelay(UART2_ATCMD_DELAY);
 	HAL_UART_Abort_IT(&huart2);
 
-
-	aewin_dbg("=====AT command=====\r\n");
-	for(i=0;i<UART2_RX_LENGTH;i++)
-	{
-		aewin_dbg("%c",recv2[i]);
-	}
-	aewin_dbg("\r\n===================\r\n");
+	print_atCommand(recv2, uart2_msg_print_switch);
 	memset(recv2, 0, UART2_RX_LENGTH);
 
 
@@ -1134,12 +1135,7 @@ void usart2_entry(void const * argument)
 	osDelay(UART2_ATCMD_DELAY);
 	HAL_UART_Abort_IT(&huart2);
 
-	aewin_dbg("=====AT command=====\r\n");
-	for(i=0;i<UART2_RX_LENGTH;i++)
-	{
-		aewin_dbg("%c",recv2[i]);
-	}
-	aewin_dbg("\r\n===================\r\n");
+	print_atCommand(recv2, uart2_msg_print_switch);
 	memset(recv2, 0, UART2_RX_LENGTH);
 
 	// Check IP at+cgdcont?
@@ -1153,12 +1149,7 @@ void usart2_entry(void const * argument)
 	osDelay(UART2_ATCMD_DELAY);
 	HAL_UART_Abort_IT(&huart2);
 
-	aewin_dbg("=====AT command=====\r\n");
-	for(i=0;i<UART2_RX_LENGTH;i++)
-	{
-		aewin_dbg("%c",recv2[i]);
-	}
-	aewin_dbg("\r\n===================\r\n");
+	print_atCommand(recv2, uart2_msg_print_switch);
 	memset(recv2, 0, UART2_RX_LENGTH);
 
 	// Check signal AT+CSQ
@@ -1172,12 +1163,7 @@ void usart2_entry(void const * argument)
 	osDelay(UART2_ATCMD_DELAY);
 	HAL_UART_Abort_IT(&huart2);
 
-	aewin_dbg("=====AT command=====\r\n");
-	for(i=0;i<UART2_RX_LENGTH;i++)
-	{
-		aewin_dbg("%c",recv2[i]);
-	}
-	aewin_dbg("\r\n===================\r\n");
+	print_atCommand(recv2, uart2_msg_print_switch);
 	memset(recv2, 0, UART2_RX_LENGTH);
 
 
@@ -1194,12 +1180,7 @@ void usart2_entry(void const * argument)
 	HAL_UART_Abort_IT(&huart2);
 
 
-	aewin_dbg("=====AT command=====\r\n");
-	for(i=0;i<UART2_RX_LENGTH;i++)
-	{
-		aewin_dbg("%c",recv2[i]);
-	}
-	aewin_dbg("\r\n===================\r\n");
+	print_atCommand(recv2, uart2_msg_print_switch);
 	memset(recv2, 0, UART2_RX_LENGTH);
 
 
@@ -1215,12 +1196,7 @@ void usart2_entry(void const * argument)
 	osDelay(UART2_ATCMD_DELAY);
 	HAL_UART_Abort_IT(&huart2);
 
-	aewin_dbg("=====AT command=====\r\n");
-	for(i=0;i<UART2_RX_LENGTH;i++)
-	{
-		aewin_dbg("%c",recv2[i]);
-	}
-	aewin_dbg("\r\n===================\r\n");
+	print_atCommand(recv2, uart2_msg_print_switch);
 	memset(recv2, 0, UART2_RX_LENGTH);
 
 
@@ -1235,12 +1211,7 @@ void usart2_entry(void const * argument)
 	osDelay(UART2_ATCMD_DELAY);
 	HAL_UART_Abort_IT(&huart2);
 
-	aewin_dbg("=====AT command=====\r\n");
-	for(i=0;i<UART2_RX_LENGTH;i++)
-	{
-		aewin_dbg("%c",recv2[i]);
-	}
-	aewin_dbg("\r\n===================\r\n");
+	print_atCommand(recv2, uart2_msg_print_switch);
 	memset(recv2, 0, UART2_RX_LENGTH);
 
 	//uint8_t recv2 = 0;
@@ -1293,81 +1264,76 @@ void usart2_entry(void const * argument)
 		  }
 		else
 		{
-			aewin_dbg("=====AT command=====\r\n");
-			for(i=0;i<UART2_RX_LENGTH;i++)
+			print_atCommand(recv2, uart2_msg_print_switch);
+
+
+			if(uart2_isFindString(recv2, string_Not, 3) == 1)
 			{
-				aewin_dbg("%c",recv2[i]);
+				// Enable GPS AT+UGPS=1
+				HAL_UART_Transmit(&huart2, uart_Tx[ATCMD_Enable_GPS], sizeof(uart_Tx[ATCMD_Enable_GPS])-1, 30);
+				HAL_UART_Transmit(&huart2, "\r", 1, 30);
+
+				if(HAL_UART_Receive_DMA(&huart2, recv2, UART2_RX_LENGTH) != HAL_OK)
+				  {
+					//Error_Handler();
+				  }
+				osDelay(UART2_ATCMD_DELAY);
+				HAL_UART_Abort_IT(&huart2);
+
+				print_atCommand(recv2, uart2_msg_print_switch);
+				memset(recv2, 0, UART2_RX_LENGTH);
+
+				osDelay(UART2_ATCMD_DELAY*2);
 			}
-			aewin_dbg("\r\n===================\r\n");
-
-			// find index of latitude and longitude
-			split_count = 0;
-			for(i = 0; i<UART2_RX_LENGTH; i++)
+			else
 			{
-				if(recv2[i] == ',')
-				{
-					split_count++;
-				}
+				// find data index
+				latitude_index = reg_index = uart2_findCommaIndexNext(recv2,4);
+				longitude_index = reg_index = uart2_findCommaIndexNext(recv2,6);
 
-				if(split_count == 4)
+				// Get latitude and longitude data
+				latitude = 0;   //24
+				longitude = 0;  //121
+				if(recv2[latitude_index] != ',')
 				{
-					latitude_index = i+1;
-				}
-
-				if(split_count == 6)
-				{
-					longitude_index = i+1;
-					break;
-				}
-			}
-			//latitude_index = reg_index = uart2_findCommaIndexNext(recv2,4);
-			//longitude_index = reg_index = uart2_findCommaIndexNext(recv2,6);
-
-
-			// Get latitude and longitude data
-			latitude = 0;   //24
-			longitude = 0;  //121
-			if(recv2[latitude_index] != ',')
-			{
-				// latitude
-				for( i = 0; i < 10; i++)
-				{
-					if(i < 4)
+					// latitude
+					for( i = 0; i < 10; i++)
 					{
-						latitude = 10*latitude + recv2[latitude_index+i];
+						if(i < 4)
+						{
+							latitude = 10*latitude + recv2[latitude_index+i];
+						}
+						else if(i > 4)
+						{
+							latitude = 10*latitude + recv2[latitude_index+i-1];
+						}
 					}
-					else if(i > 4)
-					{
-						latitude = 10*latitude + recv2[latitude_index+i-1];
-					}
-				}
 
-				// longitude
-				for( i = 0; i < 11; i++)
-				{
-					if(i < 5)
+					// longitude
+					for( i = 0; i < 11; i++)
 					{
-						longitude = 10*longitude + recv2[longitude_index+i];
-					}
-					else if(i > 5)
-					{
-						longitude = 10*longitude + recv2[longitude_index+i-1];
+						if(i < 5)
+						{
+							longitude = 10*longitude + recv2[longitude_index+i];
+						}
+						else if(i > 5)
+						{
+							longitude = 10*longitude + recv2[longitude_index+i-1];
+						}
 					}
 				}
+
+				// send data to queue
+				if( osMessagePut(UART2_LAT_QHandle, latitude, UART2_TIMEOUT) != osOK )
+				{
+					aewin_dbg("\n\rUART2 GPS latitude put Q failed. \r\n");
+				}
+
+				if( osMessagePut(UART2_LONG_QHandle, longitude, UART2_TIMEOUT) != osOK )
+				{
+					aewin_dbg("\n\rUART2 GPS longitude put Q failed. \r\n");
+				}
 			}
-
-			// send data to queue
-			if( osMessagePut(UART2_LAT_QHandle, latitude, osWaitForever) != osOK )
-			{
-				aewin_dbg("\n\rUART2 GPS latitude put Q failed. \r\n");
-			}
-
-			if( osMessagePut(UART2_LONG_QHandle, longitude, osWaitForever) != osOK )
-			{
-				aewin_dbg("\n\rUART2 GPS longitude put Q failed. \r\n");
-			}
-
-
 		}
 		osDelay(UART2_ATCMD_DELAY);
 		HAL_UART_Abort_IT(&huart2);
@@ -1385,7 +1351,7 @@ void usart2_entry(void const * argument)
 		osDelay(UART2_ATCMD_DELAY);
 		HAL_UART_Abort_IT(&huart2);
 
-		if(recv2[34] == '4')
+		if(recv2[35] == '4')
 		{
 			r280_module_state.normal_flight_states = 40;
 		}
@@ -1394,13 +1360,8 @@ void usart2_entry(void const * argument)
 			r280_module_state.normal_flight_states = 10;
 		}
 
-		aewin_dbg("=====AT command=====\r\n");
-		for(i=0;i<UART2_RX_LENGTH;i++)
-		{
-			aewin_dbg("%c",recv2[i]);
-		}
-		aewin_dbg("\r\n===================\r\n");
-		aewin_dbg("\r\nrecv2[34] is %d\r\n",  (recv2[34]-'0'));
+		print_atCommand(recv2, uart2_msg_print_switch);
+		aewin_dbg("SIM mode is %d (airplane mode is '4')\r\n",  (recv2[35]-'0'));
 		memset(recv2, 0, UART2_RX_LENGTH);
 
 
@@ -1412,7 +1373,7 @@ void usart2_entry(void const * argument)
 		  {
 			//Error_Handler();
 		  }
-		osDelay(UART2_ATCMD_DELAY);
+		osDelay(UART2_ATCMD_DELAY*3);
 		HAL_UART_Abort_IT(&huart2);
 
 		reg_index = uart2_findCommaIndexNext(recv2,3);
@@ -1430,12 +1391,7 @@ void usart2_entry(void const * argument)
 			r280_module_state.register_3G_4G = 0;
 		}
 
-		aewin_dbg("=====AT command=====\r\n");
-		for(i=0;i<UART2_RX_LENGTH;i++)
-		{
-			aewin_dbg("%c",recv2[i]);
-		}
-		aewin_dbg("\r\n===================\r\n");
+		print_atCommand(recv2, uart2_msg_print_switch);
 		memset(recv2, 0, UART2_RX_LENGTH);
 
 
@@ -1450,19 +1406,16 @@ void usart2_entry(void const * argument)
 		osDelay(UART2_ATCMD_DELAY);
 		HAL_UART_Abort_IT(&huart2);
 
-		r280_module_state.signal_strength = (recv2[33]-'0');
-		if (recv2[34] != ',')
+		strength_index = uart_findDataIndex(recv2, 1);
+
+		r280_module_state.signal_strength = (recv2[strength_index]-'0');
+		if (recv2[strength_index+1] != ',')
 		{
-			r280_module_state.signal_strength = 10*r280_module_state.signal_strength + (recv2[34]-'0');
+			r280_module_state.signal_strength = 10*r280_module_state.signal_strength + (recv2[strength_index+1]-'0');
 		}
 
-		aewin_dbg("=====AT command=====\r\n");
-		for(i=0;i<UART2_RX_LENGTH;i++)
-		{
-			aewin_dbg("%c",recv2[i]);
-		}
-		aewin_dbg("\r\n===================\r\n");
-
+		print_atCommand(recv2, uart2_msg_print_switch);
+		aewin_dbg("signal_sterngth is %d\r\n", r280_module_state.signal_strength);
 
 		// 4G IP Addresss at+cgdcont?
 		HAL_UART_Transmit(&huart2, uart_Tx[ATCMD_Check_APNIP], sizeof(uart_Tx[ATCMD_Check_APNIP])-1, 30);
@@ -1516,12 +1469,7 @@ void usart2_entry(void const * argument)
 			}
 		}
 
-		aewin_dbg("=====AT command=====\r\n");
-		for(i=0;i<UART2_RX_LENGTH;i++)
-		{
-			aewin_dbg("%c",recv2[i]);
-		}
-		aewin_dbg("\r\n===================\r\n");
+		print_atCommand(recv2, uart2_msg_print_switch);
 		aewin_dbg("\r\n%x.%x.%x.%x\r\n",  r280_module_state.ip_add_0, r280_module_state.ip_add_1, r280_module_state.ip_add_2, r280_module_state.ip_add_3);
 		memset(recv2, 0, UART2_RX_LENGTH);
 
@@ -1537,12 +1485,16 @@ void usart2_entry(void const * argument)
 		osDelay(UART2_ATCMD_DELAY);
 		HAL_UART_Abort_IT(&huart2);
 
-		aewin_dbg("=====AT command=====\r\n");
-		for(i=0;i<UART2_RX_LENGTH;i++)
+		if(uart2_isFindString(recv2, string_OK, 2) == 1)
 		{
-			aewin_dbg("%c",recv2[i]);
+			r280_module_state.ping_status = 1; //OK
 		}
-		aewin_dbg("\r\n===================\r\n");
+		else
+		{
+			r280_module_state.ping_status = 0; //ERROR
+		}
+
+		print_atCommand(recv2, uart2_msg_print_switch);
 
     	/*
     	if(HAL_UART_Receive_IT(&huart2, (uint8_t*)&recv2, 64) != HAL_OK)
@@ -2065,6 +2017,7 @@ void ignition_entry(void const * argument)
 						//ig_event.IG_States = IG_Recovery;
 						current_IgEvent[NUM_ig_states] = IG_Recovery;
 						HAL_GPIO_WritePin(GPIOC, D2D_EN_Pin, GPIO_PIN_RESET);
+						enable_4GModule();
 						aewin_dbg("\n\rIG_Wait_StartUp failed! IG_Wait_StartUp --> IG_Recovery");
 					}
 				}
@@ -2083,6 +2036,7 @@ void ignition_entry(void const * argument)
 						//ig_event.wait_startup_time = gIG_Event.wait_startup_time;
 						current_IgEvent[NUM_wait_startup_time] = flash_IgEvent[NUM_wait_startup_time];
 						HAL_GPIO_WritePin(GPIOC, D2D_EN_Pin, GPIO_PIN_SET);
+						enable_4GModule();
 						// Confirm the the DC2DC power and system power are available.
 						while((sva_gpi.dc2dc_pwrok != GPIO_PIN_SET) || (sva_gpi.sys_pwron == GPIO_PIN_SET)){
 							//if(0 == (ig_event.pwrgood_chk_time--)){
@@ -2098,6 +2052,7 @@ void ignition_entry(void const * argument)
 						}
 						else{
 							HAL_GPIO_WritePin(GPIOC, D2D_EN_Pin, GPIO_PIN_RESET);
+							enable_4GModule();
 							//ig_event.IG_States = IG_CloseUp;
 							current_IgEvent[NUM_ig_states] = IG_CloseUp;
 							aewin_dbg("\n\rDE2DC Power on failed! IG_Wait_StartUp --> IG_CloseUp");
@@ -2138,6 +2093,7 @@ void ignition_entry(void const * argument)
 					//if(0 == (ig_event.pwroff_btn_cnt--)){
 					if(0 == (current_IgEvent[NUM_pwroff_btn_cnt]--)){
 						HAL_GPIO_WritePin(GPIOC, D2D_EN_Pin, GPIO_PIN_RESET);
+						enable_4GModule();
 						//ig_event.IG_States = IG_Recovery;
 						current_IgEvent[NUM_ig_states] = IG_Recovery;
 					}
@@ -2187,6 +2143,7 @@ void ignition_entry(void const * argument)
 						//ig_event.shutdown_delay = gIG_Event.shutdown_delay;
 						current_IgEvent[NUM_shutdown_delay] = flash_IgEvent[NUM_shutdown_delay];
 						HAL_GPIO_WritePin(GPIOC, D2D_EN_Pin, GPIO_PIN_RESET);
+						enable_4GModule();
 						aewin_dbg("\n\rShutdown delay pass! IG_shutting_Down --> IG_CloseUp");
 					}
 				}
@@ -2754,6 +2711,81 @@ uint8_t uart2_findCommaIndexNext(uint8_t uart_msg[], uint8_t target_comma)
 		}
 	}
 	return (index+1);
+}
+
+
+uint8_t uart_findDataIndex(uint8_t uart_msg[], uint8_t target_data)
+{
+	// target data is the target_comma
+	// first data is regard as 0th comma
+
+	uint8_t index, split_count;
+	// find index
+	split_count = 0;
+	for(index = 0; index<UART2_RX_LENGTH; index++)
+	{
+		if(target_data == 1)
+		{
+			if(uart_msg[index] == ':')
+			{
+				return (index+2);
+			}
+		}
+		else
+		{
+			if(uart_msg[index] == ',')
+			{
+				split_count++;
+			}
+
+			if(split_count == target_data)
+			{
+				return (index+1);
+			}
+		}
+	}
+}
+
+uint8_t uart2_isFindString(uint8_t uart_msg[], uint8_t target_string[], uint8_t length)
+{
+	uint8_t index, string_index, flag_find = 0;
+	for(index = 0; index<UART2_RX_LENGTH; index++)
+	{
+		if(uart_msg[index] == target_string[0])
+		{
+			for(string_index = 1; string_index < length; string_index++)
+			{
+				if(uart_msg[index + string_index] != target_string[string_index])
+				{
+					break;
+				}
+			}
+			flag_find = 1;
+			break;
+		}
+	}
+	return flag_find;
+}
+
+void enable_4GModule(void)
+{
+	HAL_GPIO_WritePin(GPIOC, TEST_4G_Pin, GPIO_PIN_RESET);
+	HAL_Delay(50);
+	HAL_GPIO_WritePin(GPIOC, TEST_4G_Pin, GPIO_PIN_SET);
+}
+
+void print_atCommand(uint8_t rx_msg[], uint8_t onOff)
+{
+	int i;
+	if(onOff == 1)
+	{
+		aewin_dbg("=====AT command=====\r\n");
+		for(i=0;i<UART2_RX_LENGTH;i++)
+		{
+			aewin_dbg("%c",rx_msg[i]);
+		}
+		aewin_dbg("---------------------\r\n");
+	}
 }
 /* USER CODE END Application */
 
