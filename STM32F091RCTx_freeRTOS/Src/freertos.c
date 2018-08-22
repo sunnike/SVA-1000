@@ -106,11 +106,13 @@ char dbg_buff[PRINT_BUFF];
 sSVA_GPI_STATE 	sva_gpi={0};
 sSVA_GPO_STATE 	sva_gpo={0};
 
+s4G_MODULE r280_module_state = {0};
+
 
 uint8_t cml_array[MAX_CML_CHAR] = {0};
 uint8_t cml_proc[MAX_CML_CHAR] = {0};
 
-uint8_t uart_Tx[][13] = {"AT", "AT+cind?", "at+cgdcont?", "AT+CGACT=1,1", "AT+COPS?", "AT+CSQ", "at+ugps=1,0", "at+ugps=0", "AT+UGRMC=1", "AT+UGRMC?"};
+uint8_t uart_Tx[][26] = {"AT", "AT+cind?", "at+cgdcont?", "AT+CGACT=1,1", "AT+COPS?", "AT+CSQ", "at+ugps=1,0", "at+ugps=0", "AT+UGRMC=1", "AT+UGRMC?", "AT+UGPRF=1", "AT+CFUN?", "AT+UPING=\"www.google.com\""};
 //uint8_t uart_Tx[][13] = {"AT", "AT+CSQ", "AT+COPS?", "at+cgdcont?", "AT+CGACT=1,1", "AT+UGPRF=1", "AT+UGRMC=1", "at+ugps=1,0", "AT+UGRMC?"};
 
 
@@ -167,6 +169,7 @@ uint8_t adc_voltageConversion_int(uint32_t adc_value);
 uint8_t adc_voltageConversion_float(uint32_t adc_value);
 uint8_t adc_tempConversion_int(uint32_t adc_value);
 uint8_t adc_tempConversion_float(uint32_t adc_value);
+uint8_t uart2_findCommaIndexNext(uint8_t uart_msg[], uint8_t target_comma);
 #endif
 
 
@@ -229,7 +232,7 @@ void MX_FREERTOS_Init(void) {
   USART1_TaskHandle = osThreadCreate(osThread(USART1_Task), NULL);
 
   /* definition and creation of USART2_Task */
-  osThreadDef(USART2_Task, usart2_entry, osPriorityNormal, 0, 128);
+  osThreadDef(USART2_Task, usart2_entry, osPriorityNormal, 0, 256);
   USART2_TaskHandle = osThreadCreate(osThread(USART2_Task), NULL);
 
   /* definition and creation of USART3_Task */
@@ -1001,20 +1004,32 @@ void usart1_entry(void const * argument)
 							xFer[7] = sTime.Hours;		// Hours.
 							xFer[8] = sTime.Minutes;	// Minutes.
 							xFer[9] = sTime.Seconds;	// Seconds.
-							xFer[10] = flash_IgEvent[NUM_ig_states];	    // Ignition status.
+							xFer[10] = current_IgEvent[NUM_ig_states];	    // Ignition status.
 							xFer[11] = flash_IgEvent[NUM_shutdown_delay];	// Ignition Shutdown Count.
 
 							if(current_IgEvent[NUM_ig_states] == IG_Start_Up)           //Ignition On/Off Status
 							{
-								xFer[12] = 0x01;
+								xFer[12] = 0x00;
 							}
 							else
 							{
-								xFer[12] = 0x00;
+								xFer[12] = 0x01;
 							}
 
-							xFer[13] = 0x00;                                // Restart Failed &  Retry Times
-
+							xFer[13] = 0x00;                                       // Restart Failed &  Retry Times
+							xFer[14] = r280_module_state.normal_flight_states;     // 4G status
+							xFer[15] = r280_module_state.register_3G_4G;           // 3G/4G register
+							xFer[16] = r280_module_state.signal_strength;          // Signal strength indicator
+							xFer[17] = r280_module_state.signal_channel;           // Signal strength channel#
+							xFer[18] = r280_module_state.ip_add_0;                 // 4G IP address
+							xFer[19] = r280_module_state.ip_add_1;                 // 4G IP address
+							xFer[20] = r280_module_state.ip_add_2;                 // 4G IP address
+							xFer[21] = r280_module_state.ip_add_3;                 // 4G IP address
+							xFer[22] = r280_module_state.sim_card;                 // SIM Card Status
+							xFer[23] = r280_module_state.ping_status;              // 4G Ping Status
+							xFer[24] = r280_module_state.server_response_time_0;   // Customer Server Response Time byte0
+							xFer[25] = r280_module_state.server_response_time_0;   // Customer Server Response Time byte1
+							xFer[25] = 0xA5;
 
 							send2host = TRUE;
 							xFer_len = MCU_REPO_HEAD_CMD_SIZE +  W4G_SCMD10_LEN;
@@ -1056,6 +1071,7 @@ void usart1_entry(void const * argument)
 				xFer_len += CMD_TAIL_SIZE;
 				// Start to transmit to host.
 				HAL_UART_Transmit_DMA(&huart1, xFer, xFer_len);
+				osDelay(UART1_TX_DELAY);
 				send2host = FALSE;
 				xFer_len = 0;
 			}
@@ -1076,68 +1092,101 @@ void usart2_entry(void const * argument)
 	uint8_t recv2[UART2_RX_LENGTH] = {0};
 	char split_count;
 	uint16_t latitude, longitude;
-	uint8_t latitude_index=0, longitude_index=0;
+	uint8_t latitude_index=0, longitude_index=0, reg_index, ip_index;
+	uint8_t ip_counter;
+
+	uint8_t test;
 
 
 	int i;
 
-	// Check register status
+	osDelay(UART2_WAIT_READY);
+
+	// Check register status AT+cind?
 	HAL_UART_Transmit(&huart2, uart_Tx[ATCMD_Check_Status], sizeof(uart_Tx[ATCMD_Check_Status])-1, 30);
 	HAL_UART_Transmit(&huart2, "\r", 1, 30);
 
-	if(HAL_UART_Receive_DMA(&huart2, recv2, 64) != HAL_OK)
+	if(HAL_UART_Receive_DMA(&huart2, recv2, UART2_RX_LENGTH) != HAL_OK)
 	  {
 	    //Error_Handler();
 	  }
 	osDelay(UART2_ATCMD_DELAY);
 	HAL_UART_Abort_IT(&huart2);
 
-	/*
+
+	aewin_dbg("=====AT command=====\r\n");
 	for(i=0;i<UART2_RX_LENGTH;i++)
 	{
 		aewin_dbg("%c",recv2[i]);
 	}
-	aewin_dbg("\n");
-	*/
+	aewin_dbg("\r\n===================\r\n");
+	memset(recv2, 0, UART2_RX_LENGTH);
 
-	// Get IP
+
+	// Get IP AT+CGACT=1,1
 	HAL_UART_Transmit(&huart2, uart_Tx[ATCMD_Get_IP], sizeof(uart_Tx[ATCMD_Get_IP])-1, 30);
 	HAL_UART_Transmit(&huart2, "\r", 1, 30);
 
-	if(HAL_UART_Receive_DMA(&huart2, recv2, 64) != HAL_OK)
+	if(HAL_UART_Receive_DMA(&huart2, recv2, UART2_RX_LENGTH) != HAL_OK)
 	  {
 		//Error_Handler();
 	  }
 	osDelay(UART2_ATCMD_DELAY);
 	HAL_UART_Abort_IT(&huart2);
 
-	// Check IP
+	aewin_dbg("=====AT command=====\r\n");
+	for(i=0;i<UART2_RX_LENGTH;i++)
+	{
+		aewin_dbg("%c",recv2[i]);
+	}
+	aewin_dbg("\r\n===================\r\n");
+	memset(recv2, 0, UART2_RX_LENGTH);
+
+	// Check IP at+cgdcont?
 	HAL_UART_Transmit(&huart2, uart_Tx[ATCMD_Check_APNIP], sizeof(uart_Tx[ATCMD_Check_APNIP])-1, 30);
 	HAL_UART_Transmit(&huart2, "\r", 1, 30);
 
-	if(HAL_UART_Receive_DMA(&huart2, recv2, 64) != HAL_OK)
+	if(HAL_UART_Receive_DMA(&huart2, recv2, UART2_RX_LENGTH) != HAL_OK)
 	  {
 		//Error_Handler();
 	  }
 	osDelay(UART2_ATCMD_DELAY);
 	HAL_UART_Abort_IT(&huart2);
 
-	// Check signal
+	aewin_dbg("=====AT command=====\r\n");
+	for(i=0;i<UART2_RX_LENGTH;i++)
+	{
+		aewin_dbg("%c",recv2[i]);
+	}
+	aewin_dbg("\r\n===================\r\n");
+	memset(recv2, 0, UART2_RX_LENGTH);
+
+	// Check signal AT+CSQ
 	HAL_UART_Transmit(&huart2, uart_Tx[ATCMD_Check_Signal], sizeof(uart_Tx[ATCMD_Check_Signal])-1, 30);
 	HAL_UART_Transmit(&huart2, "\r", 1, 30);
 
-	if(HAL_UART_Receive_DMA(&huart2, recv2, 64) != HAL_OK)
+	if(HAL_UART_Receive_DMA(&huart2, recv2, UART2_RX_LENGTH) != HAL_OK)
 	  {
 		//Error_Handler();
 	  }
 	osDelay(UART2_ATCMD_DELAY);
 	HAL_UART_Abort_IT(&huart2);
 
-	// Enable GPS
-	HAL_UART_Transmit(&huart2, uart_Tx[ATCMD_Enable_GPS], sizeof(uart_Tx[ATCMD_Enable_GPS])-1, 30);
+	aewin_dbg("=====AT command=====\r\n");
+	for(i=0;i<UART2_RX_LENGTH;i++)
+	{
+		aewin_dbg("%c",recv2[i]);
+	}
+	aewin_dbg("\r\n===================\r\n");
+	memset(recv2, 0, UART2_RX_LENGTH);
+
+
+	// GPS
+	// Configures the data flow to and from a u-blox GPS receiver connected to the Wireless Module AT+UGPRF=1
+	HAL_UART_Transmit(&huart2, uart_Tx[ATCMD_Config_GPS], sizeof(uart_Tx[ATCMD_Config_GPS])-1, 30);
 	HAL_UART_Transmit(&huart2, "\r", 1, 30);
 
-	if(HAL_UART_Receive_DMA(&huart2, recv2, 64) != HAL_OK)
+	if(HAL_UART_Receive_DMA(&huart2, recv2, UART2_RX_LENGTH) != HAL_OK)
 	  {
 		//Error_Handler();
 	  }
@@ -1145,16 +1194,54 @@ void usart2_entry(void const * argument)
 	HAL_UART_Abort_IT(&huart2);
 
 
-	// Enable the NMEA $RMC messages
+	aewin_dbg("=====AT command=====\r\n");
+	for(i=0;i<UART2_RX_LENGTH;i++)
+	{
+		aewin_dbg("%c",recv2[i]);
+	}
+	aewin_dbg("\r\n===================\r\n");
+	memset(recv2, 0, UART2_RX_LENGTH);
+
+
+
+	// Enable the NMEA $RMC messages AT+UGRMC=1
 	HAL_UART_Transmit(&huart2, uart_Tx[ATCMD_Enable_RMC], sizeof(uart_Tx[ATCMD_Enable_RMC])-1, 30);
 	HAL_UART_Transmit(&huart2, "\r", 1, 30);
 
-	if(HAL_UART_Receive_DMA(&huart2, recv2, 64) != HAL_OK)
+	if(HAL_UART_Receive_DMA(&huart2, recv2, UART2_RX_LENGTH) != HAL_OK)
 	  {
 		//Error_Handler();
 	  }
 	osDelay(UART2_ATCMD_DELAY);
 	HAL_UART_Abort_IT(&huart2);
+
+	aewin_dbg("=====AT command=====\r\n");
+	for(i=0;i<UART2_RX_LENGTH;i++)
+	{
+		aewin_dbg("%c",recv2[i]);
+	}
+	aewin_dbg("\r\n===================\r\n");
+	memset(recv2, 0, UART2_RX_LENGTH);
+
+
+	// Enable GPS AT+UGPS=1
+	HAL_UART_Transmit(&huart2, uart_Tx[ATCMD_Enable_GPS], sizeof(uart_Tx[ATCMD_Enable_GPS])-1, 30);
+	HAL_UART_Transmit(&huart2, "\r", 1, 30);
+
+	if(HAL_UART_Receive_DMA(&huart2, recv2, UART2_RX_LENGTH) != HAL_OK)
+	  {
+		//Error_Handler();
+	  }
+	osDelay(UART2_ATCMD_DELAY);
+	HAL_UART_Abort_IT(&huart2);
+
+	aewin_dbg("=====AT command=====\r\n");
+	for(i=0;i<UART2_RX_LENGTH;i++)
+	{
+		aewin_dbg("%c",recv2[i]);
+	}
+	aewin_dbg("\r\n===================\r\n");
+	memset(recv2, 0, UART2_RX_LENGTH);
 
 	//uint8_t recv2 = 0;
 	//HAL_StatusTypeDef u2_states = HAL_OK;
@@ -1196,7 +1283,7 @@ void usart2_entry(void const * argument)
 
 
 
-    	// Enable the NMEA $RMC messages
+    	// Get the NMEA $RMC messages
 		HAL_UART_Transmit(&huart2, uart_Tx[ATCMD_Get_GPS_DATA], sizeof(uart_Tx[ATCMD_Get_GPS_DATA])-1, 30);
 		HAL_UART_Transmit(&huart2, "\r", 1, 30);
 
@@ -1206,6 +1293,13 @@ void usart2_entry(void const * argument)
 		  }
 		else
 		{
+			aewin_dbg("=====AT command=====\r\n");
+			for(i=0;i<UART2_RX_LENGTH;i++)
+			{
+				aewin_dbg("%c",recv2[i]);
+			}
+			aewin_dbg("\r\n===================\r\n");
+
 			// find index of latitude and longitude
 			split_count = 0;
 			for(i = 0; i<UART2_RX_LENGTH; i++)
@@ -1226,6 +1320,9 @@ void usart2_entry(void const * argument)
 					break;
 				}
 			}
+			//latitude_index = reg_index = uart2_findCommaIndexNext(recv2,4);
+			//longitude_index = reg_index = uart2_findCommaIndexNext(recv2,6);
+
 
 			// Get latitude and longitude data
 			latitude = 0;   //24
@@ -1274,7 +1371,178 @@ void usart2_entry(void const * argument)
 		}
 		osDelay(UART2_ATCMD_DELAY);
 		HAL_UART_Abort_IT(&huart2);
+		memset(recv2, 0, UART2_RX_LENGTH);
 
+
+		// Airplane mode or normal mode AT+CFUN?
+		HAL_UART_Transmit(&huart2, uart_Tx[ATCMD_Get_airplane], sizeof(uart_Tx[ATCMD_Get_airplane])-1, 30);
+		HAL_UART_Transmit(&huart2, "\r", 1, 30);
+
+		if(HAL_UART_Receive_DMA(&huart2, recv2, UART2_RX_LENGTH) != HAL_OK)
+		  {
+			//Error_Handler();
+		  }
+		osDelay(UART2_ATCMD_DELAY);
+		HAL_UART_Abort_IT(&huart2);
+
+		if(recv2[34] == '4')
+		{
+			r280_module_state.normal_flight_states = 40;
+		}
+		else //0,1,19
+		{
+			r280_module_state.normal_flight_states = 10;
+		}
+
+		aewin_dbg("=====AT command=====\r\n");
+		for(i=0;i<UART2_RX_LENGTH;i++)
+		{
+			aewin_dbg("%c",recv2[i]);
+		}
+		aewin_dbg("\r\n===================\r\n");
+		aewin_dbg("\r\nrecv2[34] is %d\r\n",  (recv2[34]-'0'));
+		memset(recv2, 0, UART2_RX_LENGTH);
+
+
+		// Get 3G,4G status AT+COPS?
+		HAL_UART_Transmit(&huart2, uart_Tx[ATCMD_Check_Reg], sizeof(uart_Tx[ATCMD_Check_Reg])-1, 30);
+		HAL_UART_Transmit(&huart2, "\r", 1, 30);
+
+		if(HAL_UART_Receive_DMA(&huart2, recv2, UART2_RX_LENGTH) != HAL_OK)
+		  {
+			//Error_Handler();
+		  }
+		osDelay(UART2_ATCMD_DELAY);
+		HAL_UART_Abort_IT(&huart2);
+
+		reg_index = uart2_findCommaIndexNext(recv2,3);
+
+		if(recv2[reg_index] == '7')                  //4G
+		{
+			r280_module_state.register_3G_4G = 7;
+		}
+		else if(recv2[reg_index] == '2')             //3G
+		{
+			r280_module_state.register_3G_4G = 2;
+		}
+		else if(recv2[reg_index] == '0')             //2G
+		{
+			r280_module_state.register_3G_4G = 0;
+		}
+
+		aewin_dbg("=====AT command=====\r\n");
+		for(i=0;i<UART2_RX_LENGTH;i++)
+		{
+			aewin_dbg("%c",recv2[i]);
+		}
+		aewin_dbg("\r\n===================\r\n");
+		memset(recv2, 0, UART2_RX_LENGTH);
+
+
+		// 4G signal strength AT+CSQ
+		HAL_UART_Transmit(&huart2, uart_Tx[ATCMD_Check_Signal], sizeof(uart_Tx[ATCMD_Check_Signal])-1, 30);
+		HAL_UART_Transmit(&huart2, "\r", 1, 30);
+
+		if(HAL_UART_Receive_DMA(&huart2, recv2, UART2_RX_LENGTH) != HAL_OK)
+		  {
+			//Error_Handler();
+		  }
+		osDelay(UART2_ATCMD_DELAY);
+		HAL_UART_Abort_IT(&huart2);
+
+		r280_module_state.signal_strength = (recv2[33]-'0');
+		if (recv2[34] != ',')
+		{
+			r280_module_state.signal_strength = 10*r280_module_state.signal_strength + (recv2[34]-'0');
+		}
+
+		aewin_dbg("=====AT command=====\r\n");
+		for(i=0;i<UART2_RX_LENGTH;i++)
+		{
+			aewin_dbg("%c",recv2[i]);
+		}
+		aewin_dbg("\r\n===================\r\n");
+
+
+		// 4G IP Addresss at+cgdcont?
+		HAL_UART_Transmit(&huart2, uart_Tx[ATCMD_Check_APNIP], sizeof(uart_Tx[ATCMD_Check_APNIP])-1, 30);
+		HAL_UART_Transmit(&huart2, "\r", 1, 30);
+
+		if(HAL_UART_Receive_DMA(&huart2, recv2, UART2_RX_LENGTH) != HAL_OK)
+		  {
+			//Error_Handler();
+		  }
+		osDelay(UART2_ATCMD_DELAY);
+		HAL_UART_Abort_IT(&huart2);
+
+		ip_index = uart2_findCommaIndexNext(recv2,3)+1;
+
+		ip_counter = 0;
+		r280_module_state.ip_add_0 = 0;
+		r280_module_state.ip_add_1 = 0;
+		r280_module_state.ip_add_2 = 0;
+		r280_module_state.ip_add_3 = 0;
+
+		for( i = ip_index ; i < uart2_findCommaIndexNext(recv2,4)-2 ; i++ )
+		{
+			if(recv2[i]!='.')
+			{
+				switch(ip_counter)
+				{
+					case 0:
+						r280_module_state.ip_add_0 = r280_module_state.ip_add_0*10 + (recv2[i]-'0');
+						break;
+
+					case 1:
+						r280_module_state.ip_add_1 = r280_module_state.ip_add_1*10 + (recv2[i]-'0');
+						break;
+
+					case 2:
+						r280_module_state.ip_add_2 = r280_module_state.ip_add_2*10 + (recv2[i]-'0');
+						break;
+
+					case 3:
+						r280_module_state.ip_add_3 = r280_module_state.ip_add_3*10 + (recv2[i]-'0');
+						break;
+
+					default:
+						break;
+				}
+
+			}
+			else
+			{
+				ip_counter++;
+			}
+		}
+
+		aewin_dbg("=====AT command=====\r\n");
+		for(i=0;i<UART2_RX_LENGTH;i++)
+		{
+			aewin_dbg("%c",recv2[i]);
+		}
+		aewin_dbg("\r\n===================\r\n");
+		aewin_dbg("\r\n%x.%x.%x.%x\r\n",  r280_module_state.ip_add_0, r280_module_state.ip_add_1, r280_module_state.ip_add_2, r280_module_state.ip_add_3);
+		memset(recv2, 0, UART2_RX_LENGTH);
+
+
+		// ping status AT+UPING="www.google.com"
+		HAL_UART_Transmit(&huart2, uart_Tx[ATCMD_Ping_web], sizeof(uart_Tx[ATCMD_Ping_web])-1, 30);
+		HAL_UART_Transmit(&huart2, "\r", 1, 30);
+
+		if(HAL_UART_Receive_DMA(&huart2, recv2, UART2_RX_LENGTH) != HAL_OK)
+		  {
+			//Error_Handler();
+		  }
+		osDelay(UART2_ATCMD_DELAY);
+		HAL_UART_Abort_IT(&huart2);
+
+		aewin_dbg("=====AT command=====\r\n");
+		for(i=0;i<UART2_RX_LENGTH;i++)
+		{
+			aewin_dbg("%c",recv2[i]);
+		}
+		aewin_dbg("\r\n===================\r\n");
 
     	/*
     	if(HAL_UART_Receive_IT(&huart2, (uint8_t*)&recv2, 64) != HAL_OK)
@@ -2448,7 +2716,7 @@ uint8_t adc_tempConversion_int(uint32_t adc_value)
 	//r_adc = 10*(adc_value & 0xfffU)/(4096-(adc_value & 0xfffU))
 
 
-	// 1/( log(r_adc/THERMISTOR_R25)/THERMISTOR_B_CONSTANT+1/(298.13) ) -273.13 ;
+	// 1/( log(r_adc/THERMISTOR_R25)/THERMISTOR_B_CONSTANT+1/(298.13) ) -273.13??;
 	//return (100/( log(r_adc/THERMISTOR_R25)/THERMISTOR_B_CONSTANT + 100/(29813) ) -27313)/100;
 	//return ((-1379)*(1*r_adc-10)+25000)/1000;
 	return (158883840-26379*(adc_value & 0xfffU))/4096000;
@@ -2462,10 +2730,30 @@ uint8_t adc_tempConversion_float(uint32_t adc_value)
 	// R = (10*MCU_ADC) / (3.3-MCU_ADC)
 	r_adc = (100 * mcu_adc)/(33 - 10*mcu_adc);
 
-	// 1/( log(r_adc/THERMISTOR_R25)/THERMISTOR_B_CONSTANT+1/(298.13) ) -273.13 ;
+	// 1/( log(r_adc/THERMISTOR_R25)/THERMISTOR_B_CONSTANT+1/(298.13) ) -273.13??;
 	//return (100/( log(r_adc/THERMISTOR_R25)/THERMISTOR_B_CONSTANT+100/(29813) ) -27313) %100;
 	//return (((-1379)*(1*r_adc-10)+25000)/10) % 100;
 	return ((158883840-26379*(adc_value & 0xfffU))/40960)%100;
+}
+
+uint8_t uart2_findCommaIndexNext(uint8_t uart_msg[], uint8_t target_comma)
+{
+	uint8_t index, split_count;
+	// find index
+	split_count = 0;
+	for(index = 0; index<UART2_RX_LENGTH; index++)
+	{
+		if(uart_msg[index] == ',')
+		{
+			split_count++;
+		}
+
+		if(split_count == target_comma)
+		{
+			break;
+		}
+	}
+	return (index+1);
 }
 /* USER CODE END Application */
 

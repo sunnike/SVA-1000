@@ -43,8 +43,11 @@
 #define UART2_TIMEOUT		1
 #define UART3_TIMEOUT		1
 
+#define UART1_TX_DELAY      10
+
 #define UART2_RX_LENGTH     128
 #define UART2_ATCMD_DELAY   100
+#define UART2_WAIT_READY    500
 
 
  /** @defgroup STM32F0XX_I2C STM32F0XX I2C Configuration
@@ -189,7 +192,7 @@
 #define IGN_SCMD41_LEN				(1U)
 
  /** Ignition sub-commands length (Unit: byte). */
- #define W4G_SCMD10_LEN				(22U)
+ #define W4G_SCMD10_LEN				(23U)
 
 
 /** Main Commands */
@@ -293,7 +296,7 @@ typedef enum{
 }eIG_Setting_SubCMDs;
 
 
-/******  SVA-1000 Ignition setting/Information sub-commands ******************************************************************/
+/******  SVA-1000 4G module AT command ******************************************************************/
 typedef enum{
 	/*
 	ATCMD_AT 	       = 0,  //AT
@@ -312,12 +315,15 @@ typedef enum{
 	ATCMD_Check_Status = 1,  //AT+cind?
 	ATCMD_Check_APNIP  = 2,  //at+cgdcont?
 	ATCMD_Get_IP       = 3,  //AT+CGACT=1,1
-	ATCMD_Check_Reg    = 4,  //AT+COPS?
+	ATCMD_Check_Reg    = 4,  //AT+COPS?      Get 3G4G
 	ATCMD_Check_Signal = 5,  //AT+CSQ
 	ATCMD_Enable_GPS   = 6,  //at+ugps=1,0
 	ATCMD_Disable_GPS  = 7,  //at+ugps=0
 	ATCMD_Enable_RMC   = 8,  //AT+UGRMC=1
 	ATCMD_Get_GPS_DATA = 9,  //AT+UGRMC?
+	ATCMD_Config_GPS   =10,  //AT+UGPRF=1
+	ATCMD_Get_airplane =11,  //AT+CFUN?
+	ATCMD_Ping_web     =12,  //AT+UPING="www.google.com"
 
 }eATCMD;
 
@@ -407,6 +413,21 @@ typedef struct{
 	uint16_t y_axis;
 	uint16_t z_axis;
 }sI2C1_DATA;
+
+typedef struct{
+	uint8_t normal_flight_states;
+	uint8_t register_3G_4G;
+	uint8_t signal_strength;
+	uint8_t signal_channel;
+	uint8_t ip_add_0;
+	uint8_t ip_add_1;
+	uint8_t ip_add_2;
+	uint8_t ip_add_3;
+	uint8_t sim_card;
+	uint8_t ping_status;
+	uint8_t server_response_time_0;
+	uint8_t server_response_time_1;
+}s4G_MODULE;
 
 /* The structure that contains the ignition related parameters, along with an IG_States
 that is used to identify which power state is. */
