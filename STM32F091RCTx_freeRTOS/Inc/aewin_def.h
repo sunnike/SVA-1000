@@ -328,7 +328,9 @@ typedef enum{
 	ATCMD_Get_GPS_DATA = 9,  //AT+UGRMC?
 	ATCMD_Config_GPS   =10,  //AT+UGPRF=1
 	ATCMD_Get_airplane =11,  //AT+CFUN?
-	ATCMD_Ping_web     =12,  //AT+UPING="www.google.com"
+	ATCMD_En_airplane  =12,  //AT+CFUN=4
+	ATCMD_Dis_airplane =13,  //AT+CFUN=1
+	ATCMD_Ping_web     =14,  //AT+UPING="www.google.com"
 
 }eATCMD;
 
