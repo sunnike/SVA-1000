@@ -40,7 +40,7 @@
 
 
 #define UART1_TIMEOUT		1
-#define UART2_TIMEOUT		500
+#define UART2_TIMEOUT		500  //osWaitForever
 #define UART3_TIMEOUT		1
 
 #define UART1_TX_DELAY      10

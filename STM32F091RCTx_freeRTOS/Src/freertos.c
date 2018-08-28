@@ -128,16 +128,26 @@ sIG_EVENT gIG_Event ={ 0x12345678, 0, 1, IG_Recovery, 1, 1, 1, 2, 2, 10, 2, 100,
 //sIG_EVENT gIG_Event ={ 0x12345678, 0, 1, IG_Recovery, 4, 1, 60, 10, 4, 90, 30, 300, 5, FALSE, 5, 12, 20, 145, 0, 50, 100, 50, 0, 0, 0}; //power adapter mode
 //uint8_t flash_IgEvent[29] = {SPI_FLASH_PROGRAM_PAGE, SPI_FLASH_ADD_Byte0, SPI_FLASH_ADD_Byte1, SPI_FLASH_ADD_Byte2, SPI_FLASH_DATA_TAG, 0, 1, IG_Recovery, 1, 1, 1, 2, 2, 10, 2, 100, 5, FALSE, 5, 12, 20, 145, 0, 50, 100, 50, 0, 0, 0};
 
+uint8_t current_IgEvent[NUM_total];
 uint8_t flash_IgEvent[NUM_total] = {SPI_FLASH_PROGRAM_PAGE, SPI_FLASH_ADD_Byte0, SPI_FLASH_ADD_Byte1, SPI_FLASH_ADD_Byte2,
 		SPI_FLASH_DATA_TAG, 0, 1, IG_Recovery, 4, 1,
 		1, 10, 2, 10, 2, 100, 5, FALSE, 5, 12,
 		20, 145, 0, 50,	100, 50, 0, 0, 0, 0,
 		0, 0, 0, 0,	0, 0, 0, 0, 0, 0,
 		0, 10, 10, 0, 9, 36, 0, 0, 0, 0,
-		0, 0, 0, 0x03, 0x03, 0x03, 0x03};
-uint8_t current_IgEvent[NUM_total];
+		0, 0, 20, 0x03, 0x03, 0x03, 0x03};
 
-//sIG_SYS_CONFIG sys_config = {0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 10, 10};
+/* power adapter (option)
+uint8_t flash_IgEvent[NUM_total] = {SPI_FLASH_PROGRAM_PAGE, SPI_FLASH_ADD_Byte0, SPI_FLASH_ADD_Byte1, SPI_FLASH_ADD_Byte2,
+		SPI_FLASH_DATA_TAG, 0, 1, IG_Recovery, 4, 1,
+		60, 10, 4, 90, 2, 100, 5, FALSE, 5, 12,
+		20, 145, 0, 50,	100, 50, 0, 0, 0, 0,
+		0, 0, 0, 0,	0, 0, 0, 0, 0, 0,
+		0, 10, 10, 0, 9, 36, 0, 0, 0, 0,
+		0, 0, 0, 0x03, 0x03, 0x03, 0x03};
+*/
+
+uint8_t flag_flashWrite = 0;
 
 volatile sIG_EVENT ig_event;
 
@@ -238,7 +248,7 @@ void MX_FREERTOS_Init(void) {
   defaultTaskHandle = osThreadCreate(osThread(defaultTask), NULL);
 
   /* definition and creation of USART1_Task */
-  osThreadDef(USART1_Task, usart1_entry, osPriorityAboveNormal, 0, 256);
+  osThreadDef(USART1_Task, usart1_entry, osPriorityRealtime, 0, 256);
   USART1_TaskHandle = osThreadCreate(osThread(USART1_Task), NULL);
 
   /* definition and creation of USART2_Task */
@@ -262,7 +272,7 @@ void MX_FREERTOS_Init(void) {
   ADC_TaskHandle = osThreadCreate(osThread(ADC_Task), NULL);
 
   /* definition and creation of IWDG_Task */
-  osThreadDef(IWDG_Task, IWDG_entry, osPriorityAboveNormal, 0, 128);
+  osThreadDef(IWDG_Task, IWDG_entry, osPriorityHigh, 0, 128);
   IWDG_TaskHandle = osThreadCreate(osThread(IWDG_Task), NULL);
 
   /* definition and creation of CMD_PROC_Task */
@@ -361,7 +371,7 @@ void usart1_entry(void const * argument)
 	osEvent     evt_long;
 	//osEvent     evt_gsensor;
 
-	RTC_TimeTypeDef rtc_alarm;
+	//RTC_TimeTypeDef rtc_alarm;
 	/* Infinite loop */
 
 	for(;;)
@@ -472,6 +482,7 @@ void usart1_entry(void const * argument)
 							if((CMD_ETX_CODE != recv1[CMD_ETX_POS(CMD_HEAD_MS_SIZE + MCU_SCMD23_LEN)]) || \
 							   (CMD_EOT_CODE != recv1[CMD_EOT_POS(CMD_HEAD_MS_SIZE + MCU_SCMD23_LEN)])) break;
 							current_IgEvent[NUM_in_sys_volt]=recv1[5];
+							flag_flashWrite = 1;
 							aewin_dbg("\n\rSet  system input voltage: %2d", current_IgEvent[NUM_in_sys_volt]);
 							break;
 
@@ -491,6 +502,7 @@ void usart1_entry(void const * argument)
 							if((CMD_ETX_CODE != recv1[CMD_ETX_POS(CMD_HEAD_MS_SIZE + MCU_SCMD27_LEN)]) || \
 							   (CMD_EOT_CODE != recv1[CMD_EOT_POS(CMD_HEAD_MS_SIZE + MCU_SCMD27_LEN)])) break;
 							current_IgEvent[NUM_reboot_source]=recv1[5];
+							flag_flashWrite = 1;
 							aewin_dbg("\n\rSet reboot source: %d", current_IgEvent[NUM_reboot_source]);
 							//Write flash
 							break;
@@ -511,6 +523,7 @@ void usart1_entry(void const * argument)
 							if((CMD_ETX_CODE != recv1[CMD_ETX_POS(CMD_HEAD_MS_SIZE + MCU_SCMD29_LEN)]) || \
 							   (CMD_EOT_CODE != recv1[CMD_EOT_POS(CMD_HEAD_MS_SIZE + MCU_SCMD29_LEN)])) break;
 							current_IgEvent[NUM_boot_mode]=recv1[5];
+							flag_flashWrite = 1;
 							aewin_dbg("\n\rSet boot mode: %d", current_IgEvent[NUM_boot_mode]);
 							//Write flash
 							break;
@@ -531,7 +544,7 @@ void usart1_entry(void const * argument)
 							if((CMD_ETX_CODE != recv1[CMD_ETX_POS(CMD_HEAD_MS_SIZE + MCU_SCMD31_LEN)]) || \
 							   (CMD_EOT_CODE != recv1[CMD_EOT_POS(CMD_HEAD_MS_SIZE + MCU_SCMD31_LEN)])) break;
 							current_IgEvent[NUM_WWAN_wakeup]=recv1[5];
-
+							flag_flashWrite = 1;
 							aewin_dbg("\n\rGet WWAN wake up status: %d", current_IgEvent[NUM_WWAN_wakeup]);
 							//Write flash
 							break;
@@ -561,6 +574,7 @@ void usart1_entry(void const * argument)
 							{
 								wwan_command = 2;
 							}
+							flag_flashWrite = 1;
 
 							aewin_dbg("\n\rGet WWAN status: %d", current_IgEvent[NUM_WWAN_status]);
 							//Write flash
@@ -614,6 +628,7 @@ void usart1_entry(void const * argument)
 							if((CMD_ETX_CODE != recv1[CMD_ETX_POS(CMD_HEAD_MS_SIZE + MCU_SCMD3B_LEN)]) || \
 							   (CMD_EOT_CODE != recv1[CMD_EOT_POS(CMD_HEAD_MS_SIZE + MCU_SCMD3B_LEN)])) break;
 							current_IgEvent[NUM_sim_card_mode]=recv1[5];
+							flag_flashWrite = 1;
 							aewin_dbg("\n\rSet SIM card select: %d", current_IgEvent[NUM_sim_card_mode]);
 							//Write flash
 							break;
@@ -634,6 +649,7 @@ void usart1_entry(void const * argument)
 							if((CMD_ETX_CODE != recv1[CMD_ETX_POS(CMD_HEAD_MS_SIZE + MCU_SCMD41_LEN)]) || \
 							   (CMD_EOT_CODE != recv1[CMD_EOT_POS(CMD_HEAD_MS_SIZE + MCU_SCMD41_LEN)])) break;
 							current_IgEvent[NUM_wifi_status]=recv1[5];
+							flag_flashWrite = 1;
 							aewin_dbg("\n\rSet WIFI status: %d", current_IgEvent[NUM_wifi_status]);
 							//Write flash
 							break;
@@ -654,6 +670,7 @@ void usart1_entry(void const * argument)
 							if((CMD_ETX_CODE != recv1[CMD_ETX_POS(CMD_HEAD_MS_SIZE + MCU_SCMD45_LEN)]) || \
 							   (CMD_EOT_CODE != recv1[CMD_EOT_POS(CMD_HEAD_MS_SIZE + MCU_SCMD45_LEN)])) break;
 							current_IgEvent[NUM_LAN_wakeup]=recv1[5];
+							flag_flashWrite = 1;
 							aewin_dbg("\n\rSet LAN wake up enable/disable: %d", current_IgEvent[NUM_LAN_wakeup]);
 							//Write flash
 							break;
@@ -674,6 +691,7 @@ void usart1_entry(void const * argument)
 							if((CMD_ETX_CODE != recv1[CMD_ETX_POS(CMD_HEAD_MS_SIZE + MCU_SCMD51_LEN)]) || \
 							   (CMD_EOT_CODE != recv1[CMD_EOT_POS(CMD_HEAD_MS_SIZE + MCU_SCMD51_LEN)])) break;
 							current_IgEvent[NUM_delay_off_setting]=recv1[5];
+							flag_flashWrite = 1;
 							aewin_dbg("\n\rSet delay off enable/disable: %d", current_IgEvent[NUM_delay_off_setting]);
 							//Write flash
 							break;
@@ -694,6 +712,7 @@ void usart1_entry(void const * argument)
 							if((CMD_ETX_CODE != recv1[CMD_ETX_POS(CMD_HEAD_MS_SIZE + MCU_SCMD53_LEN)]) || \
 							   (CMD_EOT_CODE != recv1[CMD_EOT_POS(CMD_HEAD_MS_SIZE + MCU_SCMD53_LEN)])) break;
 							current_IgEvent[NUM_delay_on_setting]=recv1[5];
+							flag_flashWrite = 1;
 							aewin_dbg("\n\rSet delay on enable/disable: %d", current_IgEvent[NUM_delay_on_setting]);
 							//Write flash
 							break;
@@ -716,6 +735,7 @@ void usart1_entry(void const * argument)
 							   (CMD_EOT_CODE != recv1[CMD_EOT_POS(CMD_HEAD_MS_SIZE + MCU_SCMD55_LEN)])) break;
 							//current_IgEvent[NUM_power_off_time]=recv1[5];
 							current_IgEvent[NUM_pwroff_delay] = recv1[5];
+							flag_flashWrite = 1;
 							aewin_dbg("\n\rSet delay time of power off: %d", current_IgEvent[NUM_power_off_time]);
 							//Write flash
 							break;
@@ -738,6 +758,7 @@ void usart1_entry(void const * argument)
 							   (CMD_EOT_CODE != recv1[CMD_EOT_POS(CMD_HEAD_MS_SIZE + MCU_SCMD57_LEN)])) break;
 							//current_IgEvent[NUM_power_on_time]=recv1[5];
 							current_IgEvent[NUM_pwron_delay] = recv1[5];
+							flag_flashWrite = 1;
 							aewin_dbg("\n\rSet delay time of power on: %d", current_IgEvent[NUM_power_on_time]);
 							//Write flash
 							break;
@@ -851,6 +872,7 @@ void usart1_entry(void const * argument)
 							current_IgEvent[NUM_12V_shutdown] = recv1[6];
 							current_IgEvent[NUM_24V_startup] = recv1[7];
 							current_IgEvent[NUM_24V_shutdown] = recv1[8];
+							flag_flashWrite = 1;
 							aewin_dbg("\n\rGet low battery data: %x %x %x %x", recv1[5], recv1[6], recv1[7], recv1[8]);
 							break;
 
@@ -870,6 +892,7 @@ void usart1_entry(void const * argument)
 							   (CMD_EOT_CODE != recv1[CMD_EOT_POS(CMD_HEAD_MS_SIZE + IGN_SCMD17_LEN)])) break;
 							current_IgEvent[NUM_InVol_limit_min] = recv1[5];
 							current_IgEvent[NUM_InVol_limit_max] = recv1[6];
+							flag_flashWrite = 1;
 							aewin_dbg("\n\rSet input voltage limit: %d V ~ %d V", current_IgEvent[NUM_InVol_limit_min], current_IgEvent[NUM_InVol_limit_max]);
 							break;
 
@@ -893,6 +916,7 @@ void usart1_entry(void const * argument)
 							//current_IgEvent[NUM_power_off_time] = recv1[6];
 							current_IgEvent[NUM_pwron_delay] = recv1[5];
 							current_IgEvent[NUM_pwroff_delay] = recv1[6];
+							flag_flashWrite = 1;
 							aewin_dbg("\n\rSet power delay time. power on: %d, power off: %d", current_IgEvent[NUM_power_on_time], current_IgEvent[NUM_power_off_time]);
 							break;
 
@@ -910,7 +934,10 @@ void usart1_entry(void const * argument)
 							if((CMD_ETX_CODE != recv1[CMD_ETX_POS(CMD_HEAD_MS_SIZE + IGN_SCMD21_LEN)]) || \
 							   (CMD_EOT_CODE != recv1[CMD_EOT_POS(CMD_HEAD_MS_SIZE + IGN_SCMD21_LEN)])) break;
 							current_IgEvent[NUM_alarm_status] = recv1[5];
+							flag_flashWrite = 1;
 							aewin_dbg("\n\rSet alarm status: %d", current_IgEvent[NUM_alarm_status]);
+
+							//HAL_RTC_DeactivateAlarm(&hrtc, RTC_ALARM_A);
 							break;
 
 						case Subcmd_Get_RTC_LocalT:
@@ -946,14 +973,23 @@ void usart1_entry(void const * argument)
 						case Subcmd_Get_RTC_AlarmT:
 							if((CMD_ETX_CODE != recv1[CMD_ETX_POS(CMD_HEAD_MS_SIZE)]) || \
 							   (CMD_EOT_CODE != recv1[CMD_EOT_POS(CMD_HEAD_MS_SIZE)])) break;
-							rtc_alarm = sAlarm.AlarmTime;
+							//rtc_alarm = sAlarm.AlarmTime;
 							xFer[2] = Subcmd_Get_RTC_AlarmT;
-							xFer[3] = current_IgEvent[NUM_RTC_AlarmT_hour];
-							xFer[4] = current_IgEvent[NUM_RTC_AlarmT_min];
-							xFer[5] = current_IgEvent[NUM_RTC_AlarmT_sec];
-							xFer[3] = rtc_alarm.Hours;
-							xFer[4] = rtc_alarm.Minutes;
-							xFer[5] = rtc_alarm.Seconds;
+							//xFer[3] = current_IgEvent[NUM_RTC_AlarmT_hour];
+							//xFer[4] = current_IgEvent[NUM_RTC_AlarmT_min];
+							//xFer[5] = current_IgEvent[NUM_RTC_AlarmT_sec];
+							//xFer[3] = rtc_alarm.Hours;
+							//xFer[4] = rtc_alarm.Minutes;
+							//xFer[5] = rtc_alarm.Seconds;
+							if(HAL_RTC_GetAlarm(&hrtc, &sAlarm, RTC_ALARM_A, RTC_FORMAT_BCD) != HAL_OK)
+							{
+								/* Initialization Error */
+								//Error_Handler();
+							}
+
+							xFer[3] = sAlarm.AlarmTime.Hours;
+							xFer[4] = sAlarm.AlarmTime.Minutes;
+							xFer[5] = sAlarm.AlarmTime.Seconds;
 							send2host = TRUE;
 							xFer_len = MCU_REPO_HEAD_CMD_SIZE + IGN_SCMD24_LEN;
 							aewin_dbg("\n\rGet RTC alarm time: %d : %d : %d", xFer[3],xFer[4], xFer[5]);
@@ -965,11 +1001,22 @@ void usart1_entry(void const * argument)
 							current_IgEvent[NUM_RTC_AlarmT_hour] = recv1[5];		// Hours.
 							current_IgEvent[NUM_RTC_AlarmT_min] = recv1[6];	// Minutes.
 							current_IgEvent[NUM_RTC_AlarmT_sec] = recv1[7];	// Seconds.
-							rtc_alarm.Hours = recv1[5];
-							rtc_alarm.Minutes = recv1[6];
-							rtc_alarm.Seconds = recv1[7];
-							sAlarm.AlarmTime = rtc_alarm;
-							HAL_RTC_SetTime(&hrtc, &sTime, RTC_FORMAT_BIN);
+							//rtc_alarm.Hours = recv1[5];
+							//rtc_alarm.Minutes = recv1[6];
+							//rtc_alarm.Seconds = recv1[7];
+							//sAlarm.AlarmTime = rtc_alarm;
+							sAlarm.AlarmTime.Hours = recv1[5];
+							sAlarm.AlarmTime.Minutes = recv1[6];
+							sAlarm.AlarmTime.Seconds = recv1[7];
+							sAlarm.Alarm = RTC_ALARM_A;
+
+							if(HAL_RTC_SetAlarm_IT(&hrtc,&sAlarm,RTC_FORMAT_BCD) != HAL_OK)
+							  {
+								/* Initialization Error */
+								Error_Handler();
+							  }
+
+							//HAL_RTC_SetTime(&hrtc, &sTime, RTC_FORMAT_BIN);
 							aewin_dbg("\n\rSet RTC alarm time: %d : %d : %d", current_IgEvent[NUM_RTC_AlarmT_hour], current_IgEvent[NUM_RTC_AlarmT_min], current_IgEvent[NUM_RTC_AlarmT_sec]);
 							break;
 
@@ -991,6 +1038,7 @@ void usart1_entry(void const * argument)
 							current_IgEvent[NUM_RTC_WakeT_hour] = recv1[5];		// Hours.
 							current_IgEvent[NUM_RTC_WakeT_min] = recv1[6];	// Minutes.
 							current_IgEvent[NUM_RTC_WakeT_sec] = recv1[7];	// Seconds.
+							flag_flashWrite = 1;
 							aewin_dbg("\n\rSet RTC wake time: %d : %d : %d", current_IgEvent[NUM_RTC_WakeT_hour], current_IgEvent[NUM_RTC_WakeT_min], current_IgEvent[NUM_RTC_WakeT_sec]);
 							break;
 
@@ -1007,7 +1055,8 @@ void usart1_entry(void const * argument)
 						case Subcmd_Set_Host_WTGT:
 							if((CMD_ETX_CODE != recv1[CMD_ETX_POS(CMD_HEAD_MS_SIZE + IGN_SCMD41_LEN)]) || \
 							   (CMD_EOT_CODE != recv1[CMD_EOT_POS(CMD_HEAD_MS_SIZE + IGN_SCMD41_LEN)])) break;
-							flash_IgEvent[NUM_Host_WTGT] = recv1[5];
+							current_IgEvent[NUM_Host_WTGT] = recv1[5];
+							flag_flashWrite = 1;
 							aewin_dbg("\n\rSet host WDT time: %d", flash_IgEvent[NUM_Host_WTGT]);
 							break;
 
@@ -1930,6 +1979,7 @@ void usart3_entry(void const * argument)
 			//-----------------------------------------------------
 			case 0x7F:
 				recv3[0] = '\b';
+				break;
 
 			case '\b':
 				if ((cml_ptr > cml_head) && (cml_limit > cml_head)){
@@ -2445,7 +2495,8 @@ void IWDG_entry(void const * argument)
   {
 	  /* Refresh IWDG */
 	  HAL_IWDG_Refresh(&hiwdg);
-	  osDelay(IWDG_TASK_ENTRY_TIME);
+	  //osDelay(IWDG_TASK_ENTRY_TIME);
+	  osDelay(current_IgEvent[NUM_Host_WTGT]*1000);
   }
   /* USER CODE END IWDG_entry */
 }
@@ -2645,7 +2696,7 @@ void spi1_entry(void const * argument)
   /* Infinite loop */
   for(;;)
   {
-	  osDelay(20);
+	  osDelay(3000);
   }
   /* USER CODE END spi1_entry */
 }
@@ -2748,19 +2799,15 @@ void HAL_UART_RxCpltCallback(UART_HandleTypeDef *UartHandle)
   UartReady = SET;
 }
 
-/*
-void HAL_RTC_AlarmAEventCallback(RTC_HandleTypeDef *hrtc)
+
+void HAL_RTC_AlarmAEventCallback(RTC_HandleTypeDef *handleRTC)
 {
     // RTC wakeup
-
-	//test
-	//RTC_TimeTypeDef rtc_alarm;
-	//rtc_alarm = sAlarm.AlarmTime;
-	//rtc_alarm.Hours = 0;
-	//rtc_alarm.Minutes = 0;
-	//rtc_alarm.Seconds = 0;
+	HAL_GPIO_WritePin(GPIOC, TEST_4G_Pin, GPIO_PIN_RESET);
+	HAL_Delay(25);
+	HAL_GPIO_WritePin(GPIOC, TEST_4G_Pin, GPIO_PIN_SET);
 }
-*/
+
 
 
 uint8_t adc_voltageConversion_int(uint32_t adc_value)
@@ -2859,6 +2906,7 @@ uint8_t uart_findDataIndex(uint8_t uart_msg[], uint8_t target_data)
 			}
 		}
 	}
+	return 0; //not found
 }
 
 uint8_t uart2_isFindString(uint8_t uart_msg[], uint8_t target_string[], uint8_t length)
@@ -2926,6 +2974,7 @@ uint8_t check_lowPower(uint32_t adc_value)
 	//current_IgEvent[NUM_24V_startup];
 	//current_IgEvent[NUM_24V_shutdown];
 }
+
 /* USER CODE END Application */
 
 /************************ (C) COPYRIGHT STMicroelectronics *****END OF FILE****/

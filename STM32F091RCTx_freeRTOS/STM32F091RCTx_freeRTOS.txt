@@ -1,0 +1,114 @@
+Configuration	STM32F091RCTx_freeRTOS
+STM32CubeMX 	4.25.0
+Date	08/24/2018
+MCU	STM32F091RCTx
+
+
+
+PERIPHERALS	MODES	FUNCTIONS	PINS
+ADC	IN5	ADC_IN5	PA5
+ADC	IN6	ADC_IN6	PA6
+CAN	Master	CAN_RX	PB8
+CAN	Master	CAN_TX	PB9
+I2C1	I2C	I2C1_SCL	PB6
+I2C1	I2C	I2C1_SDA	PB7
+I2C2	I2C	I2C2_SCL	PB13
+I2C2	I2C	I2C2_SDA	PB14
+RCC	Crystal/Ceramic Resonator	RCC_OSC32_IN	PC14OSC32_IN
+RCC	Crystal/Ceramic Resonator	RCC_OSC32_OUT	PC15OSC32_OUT
+RCC	Clock-out	RCC_MCO	PA8
+RTC	Activate RTC Clock Source	RTC_VS_RTC_Activate	VP_RTC_VS_RTC_Activate
+RTC	RTC Enabled	RTC_VS_RTC_Calendar	VP_RTC_VS_RTC_Calendar
+RTC	Internal Alarm A	RTC_VS_RTC_Alarm_A_Intern	VP_RTC_VS_RTC_Alarm_A_Intern
+RTC	Internal WakeUp	RTC_VS_RTC_WakeUp_intern	VP_RTC_VS_RTC_WakeUp_intern
+RTC	Timestamp Routed to TS	RTC_TS	PC13
+SPI1	Full-Duplex Master	SPI1_MISO	PB4
+SPI1	Full-Duplex Master	SPI1_MOSI	PA7
+SPI1	Full-Duplex Master	SPI1_SCK	PB3
+SYS	Serial_Wire	SYS_SWCLK	PA14
+SYS	Serial_Wire	SYS_SWDIO	PA13
+SYS	SYS_WakeUp4	SYS_WKUP5	PC5
+SYS	SYS_WakeUp6	SYS_WKUP7	PB15
+SYS	TIM1	SYS_VS_tim1	VP_SYS_VS_tim1
+TIM2	Trigger Mode	TIM2_VS_ControllerModeTrigger	VP_TIM2_VS_ControllerModeTrigger
+TIM2	ITR2	TIM2_VS_ClockSourceITR	VP_TIM2_VS_ClockSourceITR
+TIM2	Internal Clock	TIM2_VS_ClockSourceINT	VP_TIM2_VS_ClockSourceINT
+TIM14	Enable_Timer	TIM14_VS_ClockSourceINT	VP_TIM14_VS_ClockSourceINT
+TIM14	PWM Generation CH1	TIM14_CH1	PA4
+USART1	Asynchronous	USART1_RX	PA10
+USART1	Asynchronous	USART1_TX	PA9
+USART2	Asynchronous	USART2_RX	PA3
+USART2	Asynchronous	USART2_TX	PA2
+USART3	Asynchronous	USART3_RX	PB11
+USART3	Asynchronous	USART3_TX	PB10
+
+
+
+Pin Nb	PINs	FUNCTIONs	LABELs
+2	PC13	RTC_TS	
+3	PC14OSC32_IN	RCC_OSC32_IN	
+4	PC15OSC32_OUT	RCC_OSC32_OUT	
+8	PC0	GPIO_Output	SPI1_CS
+9	PC1	GPIO_Output	D2D_EN
+10	PC2	GPIO_Input	SYS_SHUTDOWN
+11	PC3	GPIO_Output	ENABLE_4G
+16	PA2	USART2_TX	
+17	PA3	USART2_RX	
+20	PA4	TIM14_CH1	
+21	PA5	ADC_IN5	V24_BAT
+22	PA6	ADC_IN6	MCU_TEMP
+23	PA7	SPI1_MOSI	
+24	PC4	GPIO_Output	TEST_4G
+25	PC5	SYS_WKUP5	
+29	PB10	USART3_TX	
+30	PB11	USART3_RX	
+34	PB13	I2C2_SCL	
+35	PB14	I2C2_SDA	
+36	PB15	SYS_WKUP7	
+37	PC6	GPIO_Input	IGNITION_SW
+38	PC7	GPIO_Input	PWR_BTN_IGN_R
+39	PC8	GPIO_Input	SYS_POWER_ON
+40	PC9	GPIO_Input	DC2DC_PWROK
+41	PA8	RCC_MCO	
+42	PA9	USART1_TX	
+43	PA10	USART1_RX	
+46	PA13	SYS_SWDIO	
+49	PA14	SYS_SWCLK	
+51	PC10	GPIO_Input	EBTN_IN
+52	PC11	GPIO_Output	EBTN_OUT
+55	PB3	SPI1_SCK	
+56	PB4	SPI1_MISO	
+57	PB5*	I2C1_SMBA	
+58	PB6	I2C1_SCL	
+59	PB7	I2C1_SDA	
+60	PF11BOOT0	GPIO_Input	BOOTO
+61	PB8	CAN_RX	
+62	PB9	CAN_TX	
+
+
+
+SOFTWARE PROJECT
+
+Project Settings : 
+Project Name : STM32F091RCTx_freeRTOS
+Project Folder : D:\Git_workspace\SVA-1000\first_clone\STM32F091RCTx_freeRTOS
+Toolchain / IDE : SW4STM32
+Firmware Package Name and Version : STM32Cube FW_F0 V1.9.0
+
+
+Code Generation Settings : 
+STM32Cube Firmware Library Package : Copy only the necessary library files
+Generate peripheral initialization as a pair of '.c/.h' files per peripheral : Yes
+Backup previously generated files when re-generating : No
+Delete previously generated files when not re-generated : Yes
+Set all free pins as analog (to optimize the power consumption) : No
+
+
+Toolchains Settings : 
+Compiler Optimizations : Balanced Size/Speed
+
+
+
+
+
+
