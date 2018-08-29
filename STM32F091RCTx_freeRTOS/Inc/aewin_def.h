@@ -346,18 +346,18 @@ typedef enum{
 	NUM_eeprom_tag_init       = SPI_FLASH_LEN_CMDADD,
 	NUM_major_ver             = SPI_FLASH_LEN_CMDADD + 1,
 	NUM_minor_ver,
-	NUM_ig_states,
-	NUM_pwron_delay,
-	NUM_wait_startup_time,
-	NUM_startup_timeout,
-	NUM_pwroff_delay,
-	NUM_shutdown_delay,
-	NUM_shutdown_timeout,
-	NUM_lowpwr_dealy,
+	NUM_ig_states,//-
+	NUM_pwron_delay,//
+	NUM_wait_startup_time,//
+	NUM_startup_timeout,//
+	NUM_pwroff_delay,//
+	NUM_shutdown_delay,//
+	NUM_shutdown_timeout,//
+	NUM_lowpwr_dealy,//
 	NUM_wtdog_default,
-	NUM_pwroff_btn_cnt,
-	NUM_pwrbtn_pressed,
-	NUM_pwrgood_chk_time,
+	NUM_pwroff_btn_cnt,//
+	NUM_pwrbtn_pressed,//-
+	NUM_pwrgood_chk_time,//
 	NUM_in_sys_volt,
 	NUM_in_volt_min,
 	NUM_in_volt_max,
@@ -435,6 +435,25 @@ typedef struct{
 	uint8_t server_response_time_0;
 	uint8_t server_response_time_1;
 }s4G_MODULE;
+
+
+typedef struct{
+	uint8_t poweron_delay;
+	uint8_t startup_timeout;
+	uint8_t shutdown_delay;
+	uint8_t shutdown_timeout;
+	uint8_t poweroff_delay;
+	uint8_t lowpower_delay;
+	uint8_t pwroff_btn_cnt;
+	uint8_t wait_startup_time;
+	uint8_t pwrgood_chk_time;
+}sCOUNTDOWN_TIMER;
+
+typedef struct{
+	uint8_t ig_states;
+	uint8_t pwr_btn_pressed;
+}sIG_VAR;
+
 
 /* The structure that contains the ignition related parameters, along with an IG_States
 that is used to identify which power state is. */

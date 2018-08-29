@@ -115,6 +115,8 @@ sSVA_GPO_STATE 	sva_gpo={0};
 
 s4G_MODULE r280_module_state = {0};
 
+sCOUNTDOWN_TIMER countdown_timer = {0};
+
 
 uint8_t cml_array[MAX_CML_CHAR] = {0};
 uint8_t cml_proc[MAX_CML_CHAR] = {0};
@@ -192,6 +194,7 @@ void enable_4GModule(void);
 uint8_t uart_findDataIndex(uint8_t uart_msg[], uint8_t target_data);
 void print_atCommand(uint8_t rx_msg[], uint8_t onOff);
 uint8_t check_lowPower(uint32_t adc_value);
+void config_recovery(void);
 #endif
 
 
@@ -203,11 +206,24 @@ uint8_t check_lowPower(uint32_t adc_value);
 
 void MX_FREERTOS_Init(void) {
   /* USER CODE BEGIN Init */
+	uint16_t data_index;
+
 	//HAL_UART_Transmit(&huart3, SVA_1000_NL, sizeof(SVA_1000_NL) - 1, sizeof(SVA_1000_NL));
 	HAL_RTC_GetTime(&hrtc, &sTime, RTC_FORMAT_BIN);
 	HAL_RTC_GetDate(&hrtc, &sDate, RTC_FORMAT_BIN);
 
 	HAL_GPIO_WritePin(SPI1_CS_GPIO_Port, SPI1_CS_Pin, GPIO_PIN_SET);
+
+	//current_IgEvent load data from flash_IgEvent
+	config_recovery();
+
+
+	//countdown_timer initialize
+	countdown_timer.poweron_delay    = current_IgEvent[NUM_pwron_delay];
+	countdown_timer.startup_timeout  = current_IgEvent[NUM_startup_timeout];
+	countdown_timer.shutdown_delay   = current_IgEvent[NUM_shutdown_delay];
+	countdown_timer.shutdown_timeout = current_IgEvent[NUM_shutdown_timeout];
+	countdown_timer.poweroff_delay   = current_IgEvent[NUM_pwroff_delay];
 
 
 	enable_4GModule();
@@ -325,11 +341,11 @@ void MX_FREERTOS_Init(void) {
   I2C1_ZAXIS_QHandle = osMessageCreate(osMessageQ(I2C1_ZAXIS_Q), NULL);
 
   /* definition and creation of UART2_LAT_Q */
-  osMessageQDef(UART2_LAT_Q, 1, uint16_t);
+  osMessageQDef(UART2_LAT_Q, 1, uint32_t);
   UART2_LAT_QHandle = osMessageCreate(osMessageQ(UART2_LAT_Q), NULL);
 
   /* definition and creation of UART2_LONG_Q */
-  osMessageQDef(UART2_LONG_Q, 1, uint16_t);
+  osMessageQDef(UART2_LONG_Q, 1, uint32_t);
   UART2_LONG_QHandle = osMessageCreate(osMessageQ(UART2_LONG_Q), NULL);
 
   /* USER CODE BEGIN RTOS_QUEUES */
@@ -796,7 +812,10 @@ void usart1_entry(void const * argument)
 							xFer[8] = ( (((evt_long.value.v)%10000000)*60) % 10000000)*60/10000000;
 							send2host = TRUE;
 							xFer_len = MCU_REPO_HEAD_CMD_SIZE + MCU_SCMD80_LEN;
-							aewin_dbg("\n\rGet GPS data: %x %x %x %x", xFer[3], xFer[4], xFer[5], xFer[6], xFer[7], xFer[8]);
+							aewin_dbg("\n\rPrint GPS data: %u, %u", evt_lat.value.v, evt_long.value.v);
+							aewin_dbg("\n\rPrint GPS data (compute result): %d %d %d, %d %d %d", (evt_lat.value.v)/10000000, ((evt_lat.value.v)%10000000)*60/10000000, ( (((evt_lat.value.v)%10000000)*60) % 10000000)*60/10000000,
+									(evt_long.value.v)/10000000, ((evt_long.value.v)%10000000)*60/10000000, ( (((evt_long.value.v)%10000000)*60) % 10000000)*60/10000000);
+							aewin_dbg("\n\rGet GPS data: %d %d %d, %d %d %d", xFer[3], xFer[4], xFer[5], xFer[6], xFer[7], xFer[8]);
 							break;
 
 						//-----------------------------------------------------
@@ -1168,7 +1187,7 @@ void usart2_entry(void const * argument)
   /* USER CODE BEGIN usart2_entry */
 	uint8_t recv2[UART2_RX_LENGTH] = {0};
 	char split_count;
-	uint16_t latitude, longitude;
+	uint32_t latitude, longitude;
 	uint8_t latitude_index=0, longitude_index=0, reg_index, ip_index, strength_index;
 	uint8_t ip_counter;
 	uint8_t string_OK[2] = {'O','K'};
@@ -1399,6 +1418,7 @@ void usart2_entry(void const * argument)
 			{
 				// find data index
 				// find index of latitude and longitude
+				/*
 				split_count = 0;
 				for(i = 0; i<UART2_RX_LENGTH; i++)
 				{
@@ -1418,8 +1438,9 @@ void usart2_entry(void const * argument)
 						break;
 					}
 				}
-				//latitude_index = uart2_findCommaIndexNext(recv2,4);
-				//longitude_index = uart2_findCommaIndexNext(recv2,6);
+				*/
+				latitude_index = uart2_findCommaIndexNext(recv2,4);
+				longitude_index = uart2_findCommaIndexNext(recv2,6);
 
 				// Get latitude and longitude data
 				latitude = 0;   //24
@@ -1429,29 +1450,32 @@ void usart2_entry(void const * argument)
 					// latitude
 					for( i = 0; i < 10; i++)
 					{
-						if(i < 4)
+						if(recv2[latitude_index+i] != '.')
 						{
+							if(recv2[latitude_index+i] == ',')
+							{
+								break;
+							}
 							latitude = 10*latitude + (recv2[latitude_index+i]-'0');
-						}
-						else if(i > 4)
-						{
-							latitude = 10*latitude + (recv2[latitude_index+i-1]-'0');
 						}
 					}
 
 					// longitude
 					for( i = 0; i < 11; i++)
 					{
-						if(i < 5)
+						if(recv2[longitude_index+i] != '.')
 						{
+							if(recv2[longitude_index+i] == ',')
+							{
+								break;
+							}
 							longitude = 10*longitude + (recv2[longitude_index+i]-'0');
-						}
-						else if(i > 5)
-						{
-							longitude = 10*longitude + (recv2[longitude_index+i-1]-'0');
 						}
 					}
 				}
+
+				aewin_dbg("\n\rlatitude  index is: %d, value is %u. \r\n", latitude_index, latitude);
+				aewin_dbg("\n\rlongitude index is: %d, value is %u. \r\n", longitude_index, longitude);
 
 				// send data to queue
 				if( osMessagePut(UART2_LAT_QHandle, latitude, UART2_TIMEOUT) != osOK )
@@ -2039,14 +2063,8 @@ void ignition_entry(void const * argument)
   /* USER CODE BEGIN ignition_entry */
 	osEvent  	evt;
 	uint32_t 	adc_24v, adc_temp;
-	uint8_t     index;
 
 	ig_event = gIG_Event;
-
-	for(index = 0; index<NUM_total;index++)
-	{
-		current_IgEvent[index] = flash_IgEvent[index];
-	}
 
     /* Infinite loop */
     for(;;)
@@ -2080,11 +2098,8 @@ void ignition_entry(void const * argument)
 		switch(current_IgEvent[NUM_ig_states]){
 			case IG_Recovery:
 				// Recovery all of IG states and parameters.
-				ig_event = gIG_Event;
-				for(index = 0; index<NUM_total;index++)
-				{
-					current_IgEvent[index] = flash_IgEvent[index];
-				}
+				//ig_event = gIG_Event;
+				config_recovery();
 				//ig_event.IG_States = IG_CloseUp;
 				current_IgEvent[NUM_ig_states] = IG_CloseUp;
 				break;
@@ -2101,14 +2116,16 @@ void ignition_entry(void const * argument)
 
 					// Reset the "Start up timeout"
 					//ig_event.startup_timeout = gIG_Event.startup_timeout;
-					current_IgEvent[NUM_startup_timeout] = flash_IgEvent[NUM_startup_timeout];
+					//current_IgEvent[NUM_startup_timeout] = flash_IgEvent[NUM_startup_timeout];
+					countdown_timer.startup_timeout = current_IgEvent[NUM_startup_timeout];
 					aewin_dbg("\n\rIgnition ON! IG_CloseUp --> IG_PowerOn_Delay");
 				}
 
 				// Judge the power button states.
 				if(sva_gpi.pwr_btn == GPIO_PIN_RESET){
 					//ig_event.startup_timeout = gIG_Event.startup_timeout;
-					current_IgEvent[NUM_startup_timeout] = flash_IgEvent[NUM_startup_timeout];
+					//current_IgEvent[NUM_startup_timeout] = flash_IgEvent[NUM_startup_timeout];
+					countdown_timer.startup_timeout = current_IgEvent[NUM_startup_timeout];
 					//ig_event.IG_States = IG_Wait_StartUp;
 					current_IgEvent[NUM_ig_states] = IG_Wait_StartUp;
 					aewin_dbg("\n\rPower button On! IG_CloseUp --> IG_Wait_StartUp");
@@ -2120,21 +2137,24 @@ void ignition_entry(void const * argument)
 				// Judge the IG switch states.
 				if(sva_gpi.ig_sw == GPIO_PIN_SET){
 					//if (0 == (ig_event.pwron_delay--)){
-					if (0 == (current_IgEvent[NUM_pwron_delay]--)){
+					//if (0 == (current_IgEvent[NUM_pwron_delay]--)){
+					if (0 == (countdown_timer.poweron_delay--)){
 						//ig_event.pwron_delay = gIG_Event.pwron_delay;
-						current_IgEvent[NUM_pwron_delay] = flash_IgEvent[NUM_pwron_delay];
+						//current_IgEvent[NUM_pwron_delay] = flash_IgEvent[NUM_pwron_delay];
+						countdown_timer.poweron_delay = current_IgEvent[NUM_pwron_delay];
 						//ig_event.IG_States = IG_Wait_StartUp;
 						current_IgEvent[NUM_ig_states] = IG_Wait_StartUp;
 						aewin_dbg("\n\rPower on delay pass! IG_PowerOn_Delay --> IG_Wait_StartUp");
 					}
 					else
 					{
-						aewin_dbg("\n\rpwron_delay_countdown:%d",current_IgEvent[NUM_pwron_delay]);
+						aewin_dbg("\n\rpwron_delay_countdown:%d",countdown_timer.poweron_delay);
 					}
 				}
 				else{
 					//ig_event.pwron_delay = gIG_Event.pwron_delay;
-					current_IgEvent[NUM_pwron_delay] = flash_IgEvent[NUM_pwron_delay];
+					//current_IgEvent[NUM_pwron_delay] = flash_IgEvent[NUM_pwron_delay];
+					countdown_timer.poweron_delay = current_IgEvent[NUM_pwron_delay];
 					//ig_event.IG_States = IG_CloseUp;
 					current_IgEvent[NUM_ig_states] = IG_CloseUp;
 					aewin_dbg("\n\rPower on delay failed! IG_PowerOn_Delay --> IG_CloseUp");
@@ -2148,7 +2168,8 @@ void ignition_entry(void const * argument)
 					//ig_event.pwrbtn_pressed = TRUE;
 					current_IgEvent[NUM_pwrbtn_pressed] = TRUE;
 					//if(0 == (ig_event.pwroff_btn_cnt--)){
-					if(0 == (current_IgEvent[NUM_pwroff_btn_cnt]--)){
+					//if(0 == (current_IgEvent[NUM_pwroff_btn_cnt]--)){
+					if(0 == (countdown_timer.pwroff_btn_cnt--)){
 						//ig_event.IG_States = IG_Recovery;
 						current_IgEvent[NUM_ig_states] = IG_Recovery;
 						HAL_GPIO_WritePin(GPIOC, D2D_EN_Pin, GPIO_PIN_RESET);
@@ -2160,27 +2181,32 @@ void ignition_entry(void const * argument)
 				//if(ig_event.pwrbtn_pressed && (sva_gpi.pwr_btn == GPIO_PIN_SET)){
 				if(current_IgEvent[NUM_pwrbtn_pressed] && (sva_gpi.pwr_btn == GPIO_PIN_SET)){
 					//ig_event.pwroff_btn_cnt = gIG_Event.pwroff_btn_cnt;
-					current_IgEvent[NUM_pwroff_btn_cnt] = flash_IgEvent[NUM_pwroff_btn_cnt];
+					//current_IgEvent[NUM_pwroff_btn_cnt] = flash_IgEvent[NUM_pwroff_btn_cnt];
+					countdown_timer.pwroff_btn_cnt = current_IgEvent[NUM_pwroff_btn_cnt];
 					//ig_event.pwrbtn_pressed = FALSE;
 					current_IgEvent[NUM_pwrbtn_pressed] = FALSE;
 				}
 
 				if(sva_gpi.ig_sw == GPIO_PIN_SET){
 					//if (0 == (ig_event.wait_startup_time--)){
-					if (0 == (current_IgEvent[NUM_wait_startup_time]--)){
+					//if (0 == (current_IgEvent[NUM_wait_startup_time]--)){
+					if (0 == (countdown_timer.wait_startup_time--)){
 						//ig_event.wait_startup_time = gIG_Event.wait_startup_time;
-						current_IgEvent[NUM_wait_startup_time] = flash_IgEvent[NUM_wait_startup_time];
+						//current_IgEvent[NUM_wait_startup_time] = flash_IgEvent[NUM_wait_startup_time];
+						countdown_timer.wait_startup_time = current_IgEvent[NUM_wait_startup_time];
 						HAL_GPIO_WritePin(GPIOC, D2D_EN_Pin, GPIO_PIN_SET);
 						enable_4GModule();
 						// Confirm the the DC2DC power and system power are available.
 						while((sva_gpi.dc2dc_pwrok != GPIO_PIN_SET) || (sva_gpi.sys_pwron == GPIO_PIN_SET)){
 							//if(0 == (ig_event.pwrgood_chk_time--)){
-							if(0 == (current_IgEvent[NUM_pwrgood_chk_time]--)){
+							//if(0 == (current_IgEvent[NUM_pwrgood_chk_time]--)){
+							if(0 == (countdown_timer.pwrgood_chk_time--)){
 								break;
 							}
 						}
 						//if(0 != ig_event.pwrgood_chk_time){
-						if(0 != current_IgEvent[NUM_pwrgood_chk_time]){
+						//if(0 != current_IgEvent[NUM_pwrgood_chk_time]){
+						if(0 != countdown_timer.pwrgood_chk_time){
 							//ig_event.IG_States = IG_Start_Up;
 							current_IgEvent[NUM_ig_states] = IG_Start_Up;
 							aewin_dbg("\n\rPower on delay ok! IG_Wait_StartUp --> IG_Start_Up");
@@ -2193,12 +2219,14 @@ void ignition_entry(void const * argument)
 							aewin_dbg("\n\rDE2DC Power on failed! IG_Wait_StartUp --> IG_CloseUp");
 						}
 						//ig_event.pwrgood_chk_time = gIG_Event.pwrgood_chk_time;
-						current_IgEvent[NUM_pwrgood_chk_time] = flash_IgEvent[NUM_pwrgood_chk_time];
+						//current_IgEvent[NUM_pwrgood_chk_time] = flash_IgEvent[NUM_pwrgood_chk_time];
+						countdown_timer.pwrgood_chk_time = current_IgEvent[NUM_pwrgood_chk_time];
 					}
 				}
 				else{
 					//ig_event.wait_startup_time = gIG_Event.wait_startup_time;
-					current_IgEvent[NUM_wait_startup_time] = flash_IgEvent[NUM_wait_startup_time];
+					//current_IgEvent[NUM_wait_startup_time] = flash_IgEvent[NUM_wait_startup_time];
+					countdown_timer.wait_startup_time = current_IgEvent[NUM_wait_startup_time];
 					//ig_event.IG_States = IG_PowerOn_Delay;
 					current_IgEvent[NUM_ig_states] = IG_PowerOn_Delay;
 					aewin_dbg("\n\rIG_Wait_StartUp failed! IG_Wait_StartUp --> IG_PowerOn_Delay");
@@ -2208,10 +2236,12 @@ void ignition_entry(void const * argument)
 			//-------------------------------------------------------------------------------------
 			case IG_Start_Up:
 				//if(ig_event.startup_timeout > 0){
-				if(current_IgEvent[NUM_startup_timeout] > 0){
+				//if(current_IgEvent[NUM_startup_timeout] > 0){
+				if(countdown_timer.startup_timeout > 0){
 					/* Lock ignition off to prevent that user shutdowns the OS. */
 					//ig_event.startup_timeout--;
-					current_IgEvent[NUM_startup_timeout]--;
+					//current_IgEvent[NUM_startup_timeout]--;
+					countdown_timer.startup_timeout--;
 					aewin_dbg("\n\rLock power on!");
 				}
 				else{
@@ -2226,7 +2256,8 @@ void ignition_entry(void const * argument)
 					//ig_event.pwrbtn_pressed = TRUE;
 					current_IgEvent[NUM_pwrbtn_pressed] = TRUE;
 					//if(0 == (ig_event.pwroff_btn_cnt--)){
-					if(0 == (current_IgEvent[NUM_pwroff_btn_cnt]--)){
+					//if(0 == (current_IgEvent[NUM_pwroff_btn_cnt]--)){
+					if(0 == (countdown_timer.pwroff_btn_cnt--)){
 						HAL_GPIO_WritePin(GPIOC, D2D_EN_Pin, GPIO_PIN_RESET);
 						enable_4GModule();
 						//ig_event.IG_States = IG_Recovery;
@@ -2237,7 +2268,8 @@ void ignition_entry(void const * argument)
 				//if(ig_event.pwrbtn_pressed && (sva_gpi.pwr_btn == GPIO_PIN_SET)){
 				if(current_IgEvent[NUM_pwrbtn_pressed] && (sva_gpi.pwr_btn == GPIO_PIN_SET)){
 					//ig_event.pwroff_btn_cnt = gIG_Event.pwroff_btn_cnt;
-					current_IgEvent[NUM_pwroff_btn_cnt] = flash_IgEvent[NUM_pwroff_btn_cnt];
+					//current_IgEvent[NUM_pwroff_btn_cnt] = flash_IgEvent[NUM_pwroff_btn_cnt];
+					countdown_timer.pwroff_btn_cnt = current_IgEvent[NUM_pwroff_btn_cnt];
 					//ig_event.pwrbtn_pressed = FALSE;
 					current_IgEvent[NUM_pwrbtn_pressed] = FALSE;
 					//ig_event.IG_States = IG_shutting_Down;
@@ -2257,16 +2289,18 @@ void ignition_entry(void const * argument)
 			case IG_Shutdown_Delay:
 				if(sva_gpi.ig_sw == GPIO_PIN_RESET){
 					//if (0 == (ig_event.pwroff_delay--)){
-					if (0 == (current_IgEvent[NUM_pwroff_delay]--)){
+					//if (0 == (current_IgEvent[NUM_pwroff_delay]--)){
+					if (0 == (countdown_timer.poweroff_delay--)){
 						//ig_event.IG_States = IG_shutting_Down;
 						current_IgEvent[NUM_ig_states] = IG_shutting_Down;
 						//ig_event.pwroff_delay = gIG_Event.pwroff_delay;
-						current_IgEvent[NUM_pwroff_delay] = flash_IgEvent[NUM_pwroff_delay];
+						//current_IgEvent[NUM_pwroff_delay] = flash_IgEvent[NUM_pwroff_delay];
+						countdown_timer.poweroff_delay = current_IgEvent[NUM_pwroff_delay];
 						aewin_dbg("\n\rPower off delay pass! IG_Shutdown_Delay --> IG_shutting_Down");
 					}
 					else
 					{
-						aewin_dbg("\n\rpwroff_delay_countdown:%d",current_IgEvent[NUM_pwroff_delay]);
+						aewin_dbg("\n\rpwroff_delay_countdown:%d",countdown_timer.poweroff_delay);
 					}
 				}
 				else{
@@ -2280,7 +2314,8 @@ void ignition_entry(void const * argument)
 				if(check_lowPower(adc_temp) == 1)
 				{
 					current_IgEvent[NUM_ig_states] = IG_LowPower_Delay;
-					current_IgEvent[NUM_pwroff_delay] = flash_IgEvent[NUM_pwroff_delay];
+					//current_IgEvent[NUM_pwroff_delay] = flash_IgEvent[NUM_pwroff_delay];
+					countdown_timer.poweroff_delay = current_IgEvent[NUM_pwroff_delay];
 					aewin_dbg("\n\rPower off delay failed! IG_Shutdown_Delay --> IG_LowPower_Delay");
 				}
 
@@ -2290,11 +2325,13 @@ void ignition_entry(void const * argument)
 			case IG_shutting_Down:
 				if(sva_gpi.ig_sw == GPIO_PIN_RESET){
 					//if (0 == (ig_event.shutdown_delay--)){
-					if (0 == (current_IgEvent[NUM_shutdown_delay]--)){
+					//if (0 == (current_IgEvent[NUM_shutdown_delay]--)){
+					if (0 == (countdown_timer.shutdown_delay--)){
 						//ig_event.IG_States = IG_CloseUp;
 						current_IgEvent[NUM_ig_states] = IG_CloseUp;
 						//ig_event.shutdown_delay = gIG_Event.shutdown_delay;
-						current_IgEvent[NUM_shutdown_delay] = flash_IgEvent[NUM_shutdown_delay];
+						//current_IgEvent[NUM_shutdown_delay] = flash_IgEvent[NUM_shutdown_delay];
+						countdown_timer.shutdown_delay = current_IgEvent[NUM_shutdown_delay];
 						HAL_GPIO_WritePin(GPIOC, D2D_EN_Pin, GPIO_PIN_RESET);
 						enable_4GModule();
 						aewin_dbg("\n\rShutdown delay pass! IG_shutting_Down --> IG_CloseUp");
@@ -2304,16 +2341,19 @@ void ignition_entry(void const * argument)
 					//ig_event.IG_States = IG_Shutdown_Delay;
 					current_IgEvent[NUM_ig_states] = IG_Shutdown_Delay;
 					//ig_event.shutdown_delay = gIG_Event.shutdown_delay;
-					current_IgEvent[NUM_shutdown_delay] = flash_IgEvent[NUM_shutdown_delay];
+					//current_IgEvent[NUM_shutdown_delay] = flash_IgEvent[NUM_shutdown_delay];
+					countdown_timer.shutdown_delay = current_IgEvent[NUM_shutdown_delay];
 					aewin_dbg("\n\rShutdown delay failed! IG_shutting_Down --> IG_Shutdown_Delay");
 				}
 				break;
 
 			//-------------------------------------------------------------------------------------
 			case IG_LowPower_Delay:
-				if (0 == (current_IgEvent[NUM_lowpwr_dealy]--)){
+				//if (0 == (current_IgEvent[NUM_lowpwr_dealy]--)){
+				if (0 == (countdown_timer.lowpower_delay--)){
 					current_IgEvent[NUM_ig_states] = IG_CloseUp;
-					current_IgEvent[NUM_lowpwr_dealy] = flash_IgEvent[NUM_lowpwr_dealy];
+					//current_IgEvent[NUM_lowpwr_dealy] = flash_IgEvent[NUM_lowpwr_dealy];
+					countdown_timer.lowpower_delay = current_IgEvent[NUM_lowpwr_dealy];
 					HAL_GPIO_WritePin(GPIOC, D2D_EN_Pin, GPIO_PIN_RESET);
 					enable_4GModule();
 					aewin_dbg("\n\rLowPower delay pass! IG_LowPower_Delay --> IG_CloseUp");
@@ -2804,7 +2844,7 @@ void HAL_RTC_AlarmAEventCallback(RTC_HandleTypeDef *handleRTC)
 {
     // RTC wakeup
 	HAL_GPIO_WritePin(GPIOC, TEST_4G_Pin, GPIO_PIN_RESET);
-	HAL_Delay(25);
+	osDelay(25);
 	HAL_GPIO_WritePin(GPIOC, TEST_4G_Pin, GPIO_PIN_SET);
 }
 
@@ -2937,7 +2977,7 @@ uint8_t uart2_isFindString(uint8_t uart_msg[], uint8_t target_string[], uint8_t 
 void enable_4GModule(void)
 {
 	HAL_GPIO_WritePin(GPIOC, TEST_4G_Pin, GPIO_PIN_RESET);
-	HAL_Delay(50);
+	HAL_Delay(1);
 	HAL_GPIO_WritePin(GPIOC, TEST_4G_Pin, GPIO_PIN_SET);
 }
 
@@ -2973,6 +3013,17 @@ uint8_t check_lowPower(uint32_t adc_value)
 	//current_IgEvent[NUM_12V_shutdown];
 	//current_IgEvent[NUM_24V_startup];
 	//current_IgEvent[NUM_24V_shutdown];
+}
+
+void config_recovery(void)
+{
+	uint8_t data_index;
+
+	for(data_index = 0; data_index<NUM_total;data_index++)
+	{
+		current_IgEvent[data_index] = flash_IgEvent[data_index];
+	}
+
 }
 
 /* USER CODE END Application */
