@@ -116,6 +116,7 @@ sSVA_GPO_STATE 	sva_gpo={0};
 s4G_MODULE r280_module_state = {0};
 
 sCOUNTDOWN_TIMER countdown_timer = {0};
+sIG_VAR ig_var = {0};
 
 
 uint8_t cml_array[MAX_CML_CHAR] = {0};
@@ -264,7 +265,7 @@ void MX_FREERTOS_Init(void) {
   defaultTaskHandle = osThreadCreate(osThread(defaultTask), NULL);
 
   /* definition and creation of USART1_Task */
-  osThreadDef(USART1_Task, usart1_entry, osPriorityRealtime, 0, 256);
+  osThreadDef(USART1_Task, usart1_entry, osPriorityHigh, 0, 256);
   USART1_TaskHandle = osThreadCreate(osThread(USART1_Task), NULL);
 
   /* definition and creation of USART2_Task */
@@ -394,14 +395,14 @@ void usart1_entry(void const * argument)
     {
 #if 1
 		// Wait until the first byte is coming
-		//while((HAL_UART_Receive(&huart1, &recv1[CMD_SYN_POS0], 1, 1)) != HAL_OK );
+		//while((HAL_UART_Receive_IT(&huart1, &recv1[CMD_SYN_POS0], 100)) != HAL_OK );
 		// Get the SYN code.
 		//taskENTER_CRITICAL();
 		while(HAL_UART_Receive_DMA(&huart1, &recv1[CMD_SYN_POS0] ,(CMD_MAX_LEN - 1)) != HAL_OK);
 		//HAL_UART_Receive(&huart1, &recv1[CMD_SYN_POS1] ,(CMD_MAX_LEN - 1), 100);
 
 		// Give some time for DMA receiving data. Let this thread take a break.
-		osDelay(20);
+		osDelay(25);
 		//taskENTER_CRITICAL();
 		//HAL_Delay(20);
 
@@ -1000,7 +1001,7 @@ void usart1_entry(void const * argument)
 							//xFer[3] = rtc_alarm.Hours;
 							//xFer[4] = rtc_alarm.Minutes;
 							//xFer[5] = rtc_alarm.Seconds;
-							if(HAL_RTC_GetAlarm(&hrtc, &sAlarm, RTC_ALARM_A, RTC_FORMAT_BCD) != HAL_OK)
+							if(HAL_RTC_GetAlarm(&hrtc, &sAlarm, RTC_ALARM_A, RTC_FORMAT_BIN) != HAL_OK)
 							{
 								/* Initialization Error */
 								//Error_Handler();
@@ -1029,7 +1030,7 @@ void usart1_entry(void const * argument)
 							sAlarm.AlarmTime.Seconds = recv1[7];
 							sAlarm.Alarm = RTC_ALARM_A;
 
-							if(HAL_RTC_SetAlarm_IT(&hrtc,&sAlarm,RTC_FORMAT_BCD) != HAL_OK)
+							if(HAL_RTC_SetAlarm_IT(&hrtc,&sAlarm,RTC_FORMAT_BIN) != HAL_OK)
 							  {
 								/* Initialization Error */
 								Error_Handler();
@@ -1187,7 +1188,7 @@ void usart2_entry(void const * argument)
   /* USER CODE BEGIN usart2_entry */
 	uint8_t recv2[UART2_RX_LENGTH] = {0};
 	char split_count;
-	uint32_t latitude, longitude;
+	uint32_t latitude = 0, longitude = 0;
 	uint8_t latitude_index=0, longitude_index=0, reg_index, ip_index, strength_index;
 	uint8_t ip_counter;
 	uint8_t string_OK[2] = {'O','K'};
@@ -1445,7 +1446,7 @@ void usart2_entry(void const * argument)
 				// Get latitude and longitude data
 				latitude = 0;   //24
 				longitude = 0;  //121
-				if(recv2[latitude_index] != ',')
+				if((recv2[latitude_index] != ',') && (latitude_index != longitude_index))
 				{
 					// latitude
 					for( i = 0; i < 10; i++)
@@ -1474,8 +1475,8 @@ void usart2_entry(void const * argument)
 					}
 				}
 
-				aewin_dbg("\n\rlatitude  index is: %d, value is %u. \r\n", latitude_index, latitude);
-				aewin_dbg("\n\rlongitude index is: %d, value is %u. \r\n", longitude_index, longitude);
+				//aewin_dbg("\n\rlatitude  index is: %d, value is %u. \r\n", latitude_index, latitude);
+				//aewin_dbg("\n\rlongitude index is: %d, value is %u. \r\n", longitude_index, longitude);
 
 				// send data to queue
 				if( osMessagePut(UART2_LAT_QHandle, latitude, UART2_TIMEOUT) != osOK )
@@ -1560,12 +1561,16 @@ void usart2_entry(void const * argument)
 		osDelay(UART2_ATCMD_DELAY);
 		HAL_UART_Abort_IT(&huart2);
 
+		r280_module_state.signal_strength = 0;
 		strength_index = uart_findDataIndex(recv2, 1);
 
-		r280_module_state.signal_strength = (recv2[strength_index]-'0');
-		if (recv2[strength_index+1] != ',')
+		if(strength_index != 0)
 		{
-			r280_module_state.signal_strength = 10*r280_module_state.signal_strength + (recv2[strength_index+1]-'0');
+			r280_module_state.signal_strength = (recv2[strength_index]-'0');
+			if (recv2[strength_index+1] != ',')
+			{
+				r280_module_state.signal_strength = 10*r280_module_state.signal_strength + (recv2[strength_index+1]-'0');
+			}
 		}
 
 		print_atCommand(recv2, uart2_msg_print_switch);
@@ -1650,106 +1655,6 @@ void usart2_entry(void const * argument)
 
 		print_atCommand(recv2, uart2_msg_print_switch);
 
-    	/*
-    	if(HAL_UART_Receive_IT(&huart2, (uint8_t*)&recv2, 64) != HAL_OK)
-    	  {
-    	    //Error_Handler();
-    	  }
-    	else
-    	{
-    		// find index of latitude and longitude
-    		split_count = 0;
-    		for(i = 0; i<UART2_RX_LENGTH; i++)
-    		{
-    			if(recv2[i] == ',')
-    			{
-    				split_count++;
-    			}
-
-    			if(split_count == 4)
-    			{
-    				latitude_index = i+1;
-    			}
-
-    			if(split_count == 6)
-    			{
-    				longitude_index = i+1;
-    				break;
-    			}
-    		}
-
-    		// Get latitude and longitude data
-    		latitude = 0;   //24
-    		longitude = 0;  //121
-    		if(recv2[latitude_index] != ',')
-    		{
-    			// latitude
-    			for( i = 0; i < 10; i++)
-    			{
-    				if(i < 4)
-    				{
-    					latitude = 10*latitude + recv2[latitude_index+i];
-    				}
-    				else if(i > 4)
-    				{
-    					latitude = 10*latitude + recv2[latitude_index+i-1];
-    				}
-    			}
-
-    			// longitude
-    			for( i = 0; i < 11; i++)
-				{
-					if(i < 5)
-					{
-						longitude = 10*longitude + recv2[longitude_index+i];
-					}
-					else if(i > 5)
-					{
-						longitude = 10*longitude + recv2[longitude_index+i-1];
-					}
-				}
-    		}
-
-    		// send data to queue
-    		if( osMessagePut(UART2_LAT_QHandle, latitude, osWaitForever) != osOK )
-			{
-				aewin_dbg("\n\rUART2 GPS latitude put Q failed. \r\n");
-			}
-
-			if( osMessagePut(UART2_LONG_QHandle, longitude, osWaitForever) != osOK )
-			{
-				aewin_dbg("\n\rUART2 GPS longitude put Q failed. \r\n");
-			}
-
-
-    	}
-
-
-
-    	// Let this thread take a break.
-		osDelay(30);
-		// Abort UART processing.
-		//HAL_UART_Abort_IT(&huart2);   //if add this line, UART can not get rx data
-
-
-    	HAL_UART_Transmit(&huart2, uart_Tx[ATCMD_Get_GPS_DATA], sizeof(uart_Tx[ATCMD_Get_GPS_DATA])-1, 30);
-    	//HAL_UART_Transmit(&huart2, "AT", 2, 30);
-    	for(i = 0; i < 300; i++);
-    	HAL_UART_Transmit(&huart2, "\r", 1, 30);
-    	*/
-
-
-
-    	/*
-    	HAL_UART_Transmit(&huart2, "AT+cind?", 11, 30);
-    	if(HAL_UART_Receive_IT(&huart2, (uint8_t*)&recv2, 2)==HAL_OK)
-    	{
-    		HAL_UART_Transmit(&huart2, "AAAAAA", 6, 30);
-    	}
-    	*/
-
-
-
 
 #if 0
 		if((u2_states = HAL_UART_Receive(&huart2, (uint8_t*)&recv2, 1, UART3_TIMEOUT)) == HAL_OK){
@@ -1759,7 +1664,7 @@ void usart2_entry(void const * argument)
 			HAL_UART_Abort(&huart2);
 		}
 #endif
-		osDelay(50);
+		osDelay(UART2_TASK_ENTRY_TIME);
     }
   /* USER CODE END usart2_entry */
 }
@@ -2480,7 +2385,7 @@ void i2c1_entry(void const * argument)
 
 
 		//aewin_dbg("\n\rI2C Task");
-        osDelay(50);
+        osDelay(I2C1_TASK_ENTRY_TIME);
 	}
   /* USER CODE END i2c1_entry */
 }
@@ -2520,7 +2425,7 @@ void adc_entry(void const * argument)
 		/* Stop ADC converting. */
 		HAL_ADC_Stop_DMA(&hadc);
 		// Let ADC converter take a break.
-		osDelay(ADC_RESET_TIME);
+		osDelay(ADC_TASK_ENTRY_TIME);
 
     }
   /* USER CODE END adc_entry */
@@ -2534,9 +2439,10 @@ void IWDG_entry(void const * argument)
   for(;;)
   {
 	  /* Refresh IWDG */
+
 	  HAL_IWDG_Refresh(&hiwdg);
-	  //osDelay(IWDG_TASK_ENTRY_TIME);
-	  osDelay(current_IgEvent[NUM_Host_WTGT]*1000);
+	  osDelay(IWDG_TASK_ENTRY_TIME);
+	  //osDelay(current_IgEvent[NUM_Host_WTGT]*1000);
   }
   /* USER CODE END IWDG_entry */
 }
@@ -2548,7 +2454,7 @@ void cmd_proc_entry(void const * argument)
   /* Infinite loop */
   for(;;)
   {
-    osDelay(30);
+    osDelay(1000);
   }
   /* USER CODE END cmd_proc_entry */
 }
@@ -2736,7 +2642,16 @@ void spi1_entry(void const * argument)
   /* Infinite loop */
   for(;;)
   {
-	  osDelay(3000);
+	  HAL_RTC_GetTime(&hrtc, &sTime, RTC_FORMAT_BIN);
+	  HAL_RTC_GetDate(&hrtc, &sDate, RTC_FORMAT_BIN);
+
+	  HAL_RTC_GetAlarm(&hrtc, &sAlarm, RTC_ALARM_A, RTC_FORMAT_BIN);
+
+	  //aewin_dbg("\n\rGet RTC alarm time: %d : %d : %d", sAlarm.AlarmTime.Hours,sAlarm.AlarmTime.Minutes, sAlarm.AlarmTime.Seconds);
+	  //aewin_dbg("\n\rGet Time: %2d:%2d:%2d",sTime.Hours ,sTime.Minutes, sTime.Seconds);
+	  //aewin_dbg("\n\r=============================",sTime.Hours ,sTime.Minutes, sTime.Seconds);
+	  osDelay(1000);
+	  //osDealy(SPI1_TASK_ENTRY_TIME);
   }
   /* USER CODE END spi1_entry */
 }
@@ -2810,7 +2725,7 @@ void can_entry(void const * argument)
 
 	  //HAL_CAN_Transmit_IT(&hcan);
 	  //HAL_CAN_Receive(&hcan,  CAN_FIFO0, 1000);
-	  osDelay(30);
+	  osDelay(CAN_TASK_ENTRY_TIME);
   }
   /* USER CODE END can_entry */
 }
@@ -2846,6 +2761,9 @@ void HAL_RTC_AlarmAEventCallback(RTC_HandleTypeDef *handleRTC)
 	HAL_GPIO_WritePin(GPIOC, TEST_4G_Pin, GPIO_PIN_RESET);
 	osDelay(25);
 	HAL_GPIO_WritePin(GPIOC, TEST_4G_Pin, GPIO_PIN_SET);
+	aewin_dbg("\n\rAlarm!!");
+	aewin_dbg("\n\rAlarm ISR time: %d : %d : %d", sAlarm.AlarmTime.Hours,sAlarm.AlarmTime.Minutes, sAlarm.AlarmTime.Seconds);
+	aewin_dbg("\n\rAlarm RTC Time: %2d:%2d:%2d",sTime.Hours ,sTime.Minutes, sTime.Seconds);
 }
 
 

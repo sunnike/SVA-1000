@@ -92,11 +92,16 @@
    * @{
    */
 #define UART1_TASK_ENTRY_TIME		(1U)
-#define UART3_TASK_ENTRY_TIME		(1U)
+#define UART2_TASK_ENTRY_TIME       (30U)
+#define UART3_TASK_ENTRY_TIME		(2U)
 
 #define INGITION_TASK_ENTRY_TIME	(980U)
-#define GPIO_GET_TASK_TIME			(50)
-#define IWDG_TASK_ENTRY_TIME		(20U)
+#define I2C1_TASK_ENTRY_TIME        (100U)
+#define ADC_TASK_ENTRY_TIME 		(450U)
+#define GPIO_GET_TASK_TIME			(100U)
+#define SPI1_TASK_ENTRY_TIME        (3000U)
+#define CAN_TASK_ENTRY_TIME         (100U)
+#define IWDG_TASK_ENTRY_TIME		(50U)
 
 
  /** @defgroup STM32F0XX_ADC STM32F0XX ADC Configuration
@@ -104,7 +109,7 @@
    */
 #define ADC_DEVICE_NUM				(2U)
 #define ADC_CAP_TIME				(450U)
-#define ADC_RESET_TIME				(450U)
+
 
 #define THERMISTOR_B_CONSTANT       (3380U)
 #define THERMISTOR_R25              (10)
