@@ -116,38 +116,81 @@ sSVA_GPO_STATE 	sva_gpo={0};
 s4G_MODULE r280_module_state = {0};
 
 sCOUNTDOWN_TIMER countdown_timer = {0};
-sIG_VAR ig_var = {0};
+sIG_VAR ig_var = {IG_Recovery, FALSE, 0};
 
 
 uint8_t cml_array[MAX_CML_CHAR] = {0};
 uint8_t cml_proc[MAX_CML_CHAR] = {0};
 
-uint8_t uart_Tx[][26] = {"AT", "AT+cind?", "at+cgdcont?", "AT+CGACT=1,1", "AT+COPS?", "AT+CSQ", "at+ugps=1,0", "at+ugps=0", "AT+UGRMC=1", "AT+UGRMC?", "AT+UGPRF=1", "AT+CFUN?", "AT+CFUN=4", "AT+CFUN=1",  "AT+UPING=\"www.google.com\""};
+uint8_t uart_Tx[][26] = {"AT", "AT+cind?", "at+cgdcont?", "AT+CGACT=1,1", "AT+COPS?", "AT+CSQ", "at+ugps=1,0", "at+ugps=0", "AT+UGRMC=1",
+		"AT+UGRMC?", "AT+UGPRF=1", "AT+CFUN?", "AT+CFUN=4", "AT+CFUN=1",  "AT+UPING=\"www.google.com\"", "AT+UPSD=0,1,\"apn.name\"",
+		"AT+UPSDA=0,0", "AT+UPSDA=0,3"};
 //uint8_t uart_Tx[][13] = {"AT", "AT+CSQ", "AT+COPS?", "at+cgdcont?", "AT+CGACT=1,1", "AT+UGPRF=1", "AT+UGRMC=1", "at+ugps=1,0", "AT+UGRMC?"};
 
 
-sIG_EVENT gIG_Event ={ 0x12345678, 0, 1, IG_Recovery, 1, 1, 1, 2, 2, 10, 2, 100, 5, FALSE, 5, 12, 20, 145, 0, 50, 100, 50, 0, 0, 0};
+//sIG_EVENT gIG_Event ={ 0x12345678, 0, 1, IG_Recovery, 1, 1, 1, 2, 2, 10, 2, 100, 5, FALSE, 5, 12, 20, 145, 0, 50, 100, 50, 0, 0, 0};
 //sIG_EVENT gIG_Event ={ 0x12345678, 0, 1, IG_Recovery, 4, 1, 60, 10, 4, 60, 30, 300, 5, FALSE, 5, 12, 9, 54, 0, 50, 100, 50, 0, 0, 0}; //ignition mode
 //sIG_EVENT gIG_Event ={ 0x12345678, 0, 1, IG_Recovery, 4, 1, 60, 10, 4, 90, 30, 300, 5, FALSE, 5, 12, 20, 145, 0, 50, 100, 50, 0, 0, 0}; //power adapter mode
 //uint8_t flash_IgEvent[29] = {SPI_FLASH_PROGRAM_PAGE, SPI_FLASH_ADD_Byte0, SPI_FLASH_ADD_Byte1, SPI_FLASH_ADD_Byte2, SPI_FLASH_DATA_TAG, 0, 1, IG_Recovery, 1, 1, 1, 2, 2, 10, 2, 100, 5, FALSE, 5, 12, 20, 145, 0, 50, 100, 50, 0, 0, 0};
 
-uint8_t current_IgEvent[NUM_total];
+volatile uint8_t current_IgEvent[NUM_total];
+
+// ignition (test, boot faster)
 uint8_t flash_IgEvent[NUM_total] = {SPI_FLASH_PROGRAM_PAGE, SPI_FLASH_ADD_Byte0, SPI_FLASH_ADD_Byte1, SPI_FLASH_ADD_Byte2,
 		SPI_FLASH_DATA_TAG, 0, 1, IG_Recovery, 4, 1,
-		1, 10, 2, 10, 2, 100, 5, FALSE, 5, 12,
+		1, 10, 2, 10, 2, 30, 5, FALSE, 5, 12,
 		20, 145, 0, 50,	100, 50, 0, 0, 0, 0,
 		0, 0, 0, 0,	0, 0, 0, 0, 0, 0,
 		0, 10, 10, 0, 9, 36, 0, 0, 0, 0,
-		0, 0, 20, 0x03, 0x03, 0x03, 0x03};
+		0, 0, 0x03, 0x03, 0x03, 0x03};
+
+// ignition (test, boot faster) less
+/*
+uint8_t flash_IgEvent[NUM_total] = {SPI_FLASH_PROGRAM_PAGE, SPI_FLASH_ADD_Byte0, SPI_FLASH_ADD_Byte1, SPI_FLASH_ADD_Byte2,
+		SPI_FLASH_DATA_TAG, 0, 1, 30, 12, 20,
+		145, 0, 50,	100, 50, 0, 0, 0, 0, 0,
+		0, 0, 0, 0, 0, 0, 0, 0, 0, 0,
+		0, 9, 36, 0, 0, 0, 0, 0, 0, 0x03,
+		0x03, 0x03, 0x03};
+ */
+
+
+
+/* ignition (default)
+//less
+uint8_t flash_IgEvent[NUM_total] = {SPI_FLASH_PROGRAM_PAGE, SPI_FLASH_ADD_Byte0, SPI_FLASH_ADD_Byte1, SPI_FLASH_ADD_Byte2,
+		SPI_FLASH_DATA_TAG, 0, 1, 30, 12, 9,
+		54, 0, 50, 100, 50, 0, 0, 0, 0, 0,
+		0, 0, 0, 0, 0, 0, 0, 0, 0, 0,
+		 0, 9, 36, 0, 0, 0, 0, 0, 0, 0x03,
+		 0x03, 0x03, 0x03};
+
+uint8_t flash_IgEvent[NUM_total] = {SPI_FLASH_PROGRAM_PAGE, SPI_FLASH_ADD_Byte0, SPI_FLASH_ADD_Byte1, SPI_FLASH_ADD_Byte2,
+		SPI_FLASH_DATA_TAG, 0, 1, IG_Recovery, 4, 1,
+		60, 10, 4, 60, 2, 30, 5, FALSE, 5, 12,
+		9, 54, 0, 50,	100, 50, 0, 0, 0, 0,
+		0, 0, 0, 0,	0, 0, 0, 0, 0, 0,
+		0, 10, 10, 0, 9, 36, 0, 0, 0, 0,
+		0, 0, 0x03, 0x03, 0x03, 0x03};
+
+*/
 
 /* power adapter (option)
+//less
+uint8_t flash_IgEvent[NUM_total] = {SPI_FLASH_PROGRAM_PAGE, SPI_FLASH_ADD_Byte0, SPI_FLASH_ADD_Byte1, SPI_FLASH_ADD_Byte2,
+		SPI_FLASH_DATA_TAG, 0, 1, 30, 12, 20,
+		145, 0, 50,	100, 50, 0, 0, 0, 0, 0,
+		0, 0, 0, 0, 0, 0, 0, 0, 0, 0,
+		0, 9, 36, 0, 0, 0, 0, 0, 0, 0x03,
+		0x03, 0x03, 0x03};
+
 uint8_t flash_IgEvent[NUM_total] = {SPI_FLASH_PROGRAM_PAGE, SPI_FLASH_ADD_Byte0, SPI_FLASH_ADD_Byte1, SPI_FLASH_ADD_Byte2,
 		SPI_FLASH_DATA_TAG, 0, 1, IG_Recovery, 4, 1,
-		60, 10, 4, 90, 2, 100, 5, FALSE, 5, 12,
+		60, 10, 4, 90, 2, 30, 5, FALSE, 5, 12,
 		20, 145, 0, 50,	100, 50, 0, 0, 0, 0,
 		0, 0, 0, 0,	0, 0, 0, 0, 0, 0,
 		0, 10, 10, 0, 9, 36, 0, 0, 0, 0,
-		0, 0, 0, 0x03, 0x03, 0x03, 0x03};
+		0, 0, 0x03, 0x03, 0x03, 0x03};
 */
 
 uint8_t flag_flashWrite = 0;
@@ -214,6 +257,8 @@ void MX_FREERTOS_Init(void) {
 	HAL_RTC_GetDate(&hrtc, &sDate, RTC_FORMAT_BIN);
 
 	HAL_GPIO_WritePin(SPI1_CS_GPIO_Port, SPI1_CS_Pin, GPIO_PIN_SET);
+
+	//read flash
 
 	//current_IgEvent load data from flash_IgEvent
 	config_recovery();
@@ -386,7 +431,6 @@ void usart1_entry(void const * argument)
 	osEvent     evt_zaxis;
 	osEvent     evt_lat;
 	osEvent     evt_long;
-	//osEvent     evt_gsensor;
 
 	//RTC_TimeTypeDef rtc_alarm;
 	/* Infinite loop */
@@ -752,8 +796,9 @@ void usart1_entry(void const * argument)
 							   (CMD_EOT_CODE != recv1[CMD_EOT_POS(CMD_HEAD_MS_SIZE + MCU_SCMD55_LEN)])) break;
 							//current_IgEvent[NUM_power_off_time]=recv1[5];
 							current_IgEvent[NUM_pwroff_delay] = recv1[5];
+							countdown_timer.poweroff_delay = current_IgEvent[NUM_pwroff_delay];
 							flag_flashWrite = 1;
-							aewin_dbg("\n\rSet delay time of power off: %d", current_IgEvent[NUM_power_off_time]);
+							aewin_dbg("\n\rSet delay time of power off: %d", current_IgEvent[NUM_pwroff_delay]);
 							//Write flash
 							break;
 
@@ -775,8 +820,9 @@ void usart1_entry(void const * argument)
 							   (CMD_EOT_CODE != recv1[CMD_EOT_POS(CMD_HEAD_MS_SIZE + MCU_SCMD57_LEN)])) break;
 							//current_IgEvent[NUM_power_on_time]=recv1[5];
 							current_IgEvent[NUM_pwron_delay] = recv1[5];
+							countdown_timer.poweron_delay = current_IgEvent[NUM_pwron_delay];
 							flag_flashWrite = 1;
-							aewin_dbg("\n\rSet delay time of power on: %d", current_IgEvent[NUM_power_on_time]);
+							aewin_dbg("\n\rSet delay time of power on: %d", current_IgEvent[NUM_pwron_delay]);
 							//Write flash
 							break;
 
@@ -859,7 +905,8 @@ void usart1_entry(void const * argument)
 							if((CMD_ETX_CODE != recv1[CMD_ETX_POS(CMD_HEAD_MS_SIZE)]) || \
 							   (CMD_EOT_CODE != recv1[CMD_EOT_POS(CMD_HEAD_MS_SIZE)])) break;
 							xFer[2] = Subcmd_IG_Get_OnOff;
-							if(current_IgEvent[NUM_ig_states] == IG_Start_Up)
+							//if(current_IgEvent[NUM_ig_states] == IG_Start_Up)
+							if(ig_var.ig_states == IG_Start_Up)
 							{
 								xFer[3] = 0x01;
 							}
@@ -936,8 +983,10 @@ void usart1_entry(void const * argument)
 							//current_IgEvent[NUM_power_off_time] = recv1[6];
 							current_IgEvent[NUM_pwron_delay] = recv1[5];
 							current_IgEvent[NUM_pwroff_delay] = recv1[6];
+							countdown_timer.poweron_delay = current_IgEvent[NUM_pwron_delay];
+							countdown_timer.poweroff_delay = current_IgEvent[NUM_pwroff_delay];
 							flag_flashWrite = 1;
-							aewin_dbg("\n\rSet power delay time. power on: %d, power off: %d", current_IgEvent[NUM_power_on_time], current_IgEvent[NUM_power_off_time]);
+							aewin_dbg("\n\rSet power delay time. power on: %d, power off: %d", current_IgEvent[NUM_pwron_delay], current_IgEvent[NUM_pwroff_delay]);
 							break;
 
 						case Subcmd_Get_Alarm_Stat:
@@ -1066,7 +1115,7 @@ void usart1_entry(void const * argument)
 							if((CMD_ETX_CODE != recv1[CMD_ETX_POS(CMD_HEAD_MS_SIZE)]) || \
 							   (CMD_EOT_CODE != recv1[CMD_EOT_POS(CMD_HEAD_MS_SIZE)])) break;
 							xFer[2] = Subcmd_Get_Host_WTGT;
-							xFer[3] = current_IgEvent[NUM_Host_WTGT];
+							xFer[3] = current_IgEvent[NUM_wtdog_default];
 							send2host = TRUE;
 							xFer_len = MCU_REPO_HEAD_CMD_SIZE + IGN_SCMD40_LEN;
 							aewin_dbg("\n\rGet host WDT time: %d", xFer[3]);
@@ -1075,9 +1124,9 @@ void usart1_entry(void const * argument)
 						case Subcmd_Set_Host_WTGT:
 							if((CMD_ETX_CODE != recv1[CMD_ETX_POS(CMD_HEAD_MS_SIZE + IGN_SCMD41_LEN)]) || \
 							   (CMD_EOT_CODE != recv1[CMD_EOT_POS(CMD_HEAD_MS_SIZE + IGN_SCMD41_LEN)])) break;
-							current_IgEvent[NUM_Host_WTGT] = recv1[5];
+							current_IgEvent[NUM_wtdog_default] = recv1[5];
 							flag_flashWrite = 1;
-							aewin_dbg("\n\rSet host WDT time: %d", flash_IgEvent[NUM_Host_WTGT]);
+							aewin_dbg("\n\rSet host WDT time: %d", flash_IgEvent[NUM_wtdog_default]);
 							break;
 
 						//-----------------------------------------------------
@@ -1102,10 +1151,12 @@ void usart1_entry(void const * argument)
 							xFer[7] = sTime.Hours;		// Hours.
 							xFer[8] = sTime.Minutes;	// Minutes.
 							xFer[9] = sTime.Seconds;	// Seconds.
-							xFer[10] = current_IgEvent[NUM_ig_states];	    // Ignition status.
+							//xFer[10] = current_IgEvent[NUM_ig_states];	    // Ignition status.
+							xFer[10] = ig_var.ig_states;
 							xFer[11] = current_IgEvent[NUM_shutdown_delay];	// Ignition Shutdown Count.
 
-							if(current_IgEvent[NUM_ig_states] == IG_Start_Up)           //Ignition On/Off Status
+							//if(current_IgEvent[NUM_ig_states] == IG_Start_Up)           //Ignition On/Off Status
+							if(ig_var.ig_states == IG_Start_Up)
 							{
 								xFer[12] = 0x00;
 							}
@@ -1193,6 +1244,8 @@ void usart2_entry(void const * argument)
 	uint8_t ip_counter;
 	uint8_t string_OK[2] = {'O','K'};
 	uint8_t string_Not[3] = {'N', 'o', 't'};
+	uint8_t string_UUPING[7] = {'+', 'U', 'U', 'P', 'I', 'N', 'G'};
+	uint8_t string_UUPINGER[9] = {'+', 'U', 'U', 'P', 'I', 'N', 'G', 'E', 'R'};
 
 	uint8_t uart2_test;
 
@@ -1253,6 +1306,48 @@ void usart2_entry(void const * argument)
 		//Error_Handler();
 	  }
 	osDelay(UART2_ATCMD_DELAY);
+	HAL_UART_Abort_IT(&huart2);
+
+	print_atCommand(recv2, uart2_msg_print_switch);
+	memset(recv2, 0, UART2_RX_LENGTH);
+
+	// set APN provider
+	HAL_UART_Transmit(&huart2, uart_Tx[ATCMD_Set_APN], sizeof(uart_Tx[ATCMD_Set_APN])-1, 30);
+	HAL_UART_Transmit(&huart2, "\r", 1, 30);
+
+	if(HAL_UART_Receive_DMA(&huart2, recv2, UART2_RX_LENGTH) != HAL_OK)
+	  {
+		//Error_Handler();
+	  }
+	osDelay(UART2_ATCMD_DELAY);
+	HAL_UART_Abort_IT(&huart2);
+
+	print_atCommand(recv2, uart2_msg_print_switch);
+	memset(recv2, 0, UART2_RX_LENGTH);
+
+	// reset PSD
+	HAL_UART_Transmit(&huart2, uart_Tx[ATCMD_Reset_PSD], sizeof(uart_Tx[ATCMD_Reset_PSD])-1, 30);
+	HAL_UART_Transmit(&huart2, "\r", 1, 30);
+
+	if(HAL_UART_Receive_DMA(&huart2, recv2, UART2_RX_LENGTH) != HAL_OK)
+	  {
+		//Error_Handler();
+	  }
+	osDelay(UART2_ATCMD_DELAY*2);
+	HAL_UART_Abort_IT(&huart2);
+
+	print_atCommand(recv2, uart2_msg_print_switch);
+	memset(recv2, 0, UART2_RX_LENGTH);
+
+	// activate PSD
+	HAL_UART_Transmit(&huart2, uart_Tx[ATCMD_Enable_PSD], sizeof(uart_Tx[ATCMD_Enable_PSD])-1, 30);
+	HAL_UART_Transmit(&huart2, "\r", 1, 30);
+
+	if(HAL_UART_Receive_DMA(&huart2, recv2, UART2_RX_LENGTH) != HAL_OK)
+	  {
+		//Error_Handler();
+	  }
+	osDelay(UART2_ATCMD_DELAY*2);
 	HAL_UART_Abort_IT(&huart2);
 
 	print_atCommand(recv2, uart2_msg_print_switch);
@@ -1481,12 +1576,12 @@ void usart2_entry(void const * argument)
 				// send data to queue
 				if( osMessagePut(UART2_LAT_QHandle, latitude, UART2_TIMEOUT) != osOK )
 				{
-					aewin_dbg("\n\rUART2 GPS latitude put Q failed. \r\n");
+					//aewin_dbg("\n\rUART2 GPS latitude put Q failed. \r\n");
 				}
 
 				if( osMessagePut(UART2_LONG_QHandle, longitude, UART2_TIMEOUT) != osOK )
 				{
-					aewin_dbg("\n\rUART2 GPS longitude put Q failed. \r\n");
+					//aewin_dbg("\n\rUART2 GPS longitude put Q failed. \r\n");
 				}
 			}
 		}
@@ -1641,16 +1736,60 @@ void usart2_entry(void const * argument)
 		  {
 			//Error_Handler();
 		  }
-		osDelay(UART2_ATCMD_DELAY);
+		osDelay(UART2_ATCMD_DELAY*5);
 		HAL_UART_Abort_IT(&huart2);
 
-		if(uart2_isFindString(recv2, string_OK, 2) == 1)
+		if((uart2_isFindString(recv2, string_UUPING, sizeof(string_UUPING)) == 1) && (uart2_isFindString(recv2, string_UUPINGER, sizeof(string_UUPINGER)) == 0))
 		{
 			r280_module_state.ping_status = 0; //OK
 		}
 		else
 		{
 			r280_module_state.ping_status = 1; //ERROR
+
+			//reset APN and PSD
+
+			// set APN provider
+			HAL_UART_Transmit(&huart2, uart_Tx[ATCMD_Set_APN], sizeof(uart_Tx[ATCMD_Set_APN])-1, 30);
+			HAL_UART_Transmit(&huart2, "\r", 1, 30);
+
+			if(HAL_UART_Receive_DMA(&huart2, recv2, UART2_RX_LENGTH) != HAL_OK)
+			  {
+				//Error_Handler();
+			  }
+			osDelay(UART2_ATCMD_DELAY);
+			HAL_UART_Abort_IT(&huart2);
+
+			print_atCommand(recv2, uart2_msg_print_switch);
+			memset(recv2, 0, UART2_RX_LENGTH);
+
+			// reset PSD
+			HAL_UART_Transmit(&huart2, uart_Tx[ATCMD_Reset_PSD], sizeof(uart_Tx[ATCMD_Reset_PSD])-1, 30);
+			HAL_UART_Transmit(&huart2, "\r", 1, 30);
+
+			if(HAL_UART_Receive_DMA(&huart2, recv2, UART2_RX_LENGTH) != HAL_OK)
+			  {
+				//Error_Handler();
+			  }
+			osDelay(UART2_ATCMD_DELAY*2);
+			HAL_UART_Abort_IT(&huart2);
+
+			print_atCommand(recv2, uart2_msg_print_switch);
+			memset(recv2, 0, UART2_RX_LENGTH);
+
+			// activate PSD
+			HAL_UART_Transmit(&huart2, uart_Tx[ATCMD_Enable_PSD], sizeof(uart_Tx[ATCMD_Enable_PSD])-1, 30);
+			HAL_UART_Transmit(&huart2, "\r", 1, 30);
+
+			if(HAL_UART_Receive_DMA(&huart2, recv2, UART2_RX_LENGTH) != HAL_OK)
+			  {
+				//Error_Handler();
+			  }
+			osDelay(UART2_ATCMD_DELAY*2);
+			HAL_UART_Abort_IT(&huart2);
+
+			print_atCommand(recv2, uart2_msg_print_switch);
+			memset(recv2, 0, UART2_RX_LENGTH);
 		}
 
 		print_atCommand(recv2, uart2_msg_print_switch);
@@ -1969,7 +2108,7 @@ void ignition_entry(void const * argument)
 	osEvent  	evt;
 	uint32_t 	adc_24v, adc_temp;
 
-	ig_event = gIG_Event;
+	//ig_event = gIG_Event;
 
     /* Infinite loop */
     for(;;)
@@ -2000,13 +2139,16 @@ void ignition_entry(void const * argument)
 
 
 		//switch(ig_event.IG_States){
-		switch(current_IgEvent[NUM_ig_states]){
+		//switch(current_IgEvent[NUM_ig_states]){
+		switch(ig_var.ig_states){
 			case IG_Recovery:
 				// Recovery all of IG states and parameters.
 				//ig_event = gIG_Event;
-				config_recovery();
+				//config_recovery();
+
 				//ig_event.IG_States = IG_CloseUp;
-				current_IgEvent[NUM_ig_states] = IG_CloseUp;
+				//current_IgEvent[NUM_ig_states] = IG_CloseUp;
+				ig_var.ig_states = IG_CloseUp;
 				break;
 
 			//-------------------------------------------------------------------------------------
@@ -2016,7 +2158,8 @@ void ignition_entry(void const * argument)
 					/* IG On process */
 					// Ready to enter IG_PowerOn_Delay state.
 					//ig_event.IG_States = IG_PowerOn_Delay;
-					current_IgEvent[NUM_ig_states] = IG_PowerOn_Delay;
+					//current_IgEvent[NUM_ig_states] = IG_PowerOn_Delay;
+					ig_var.ig_states = IG_PowerOn_Delay;
 
 
 					// Reset the "Start up timeout"
@@ -2032,7 +2175,8 @@ void ignition_entry(void const * argument)
 					//current_IgEvent[NUM_startup_timeout] = flash_IgEvent[NUM_startup_timeout];
 					countdown_timer.startup_timeout = current_IgEvent[NUM_startup_timeout];
 					//ig_event.IG_States = IG_Wait_StartUp;
-					current_IgEvent[NUM_ig_states] = IG_Wait_StartUp;
+					//current_IgEvent[NUM_ig_states] = IG_Wait_StartUp;
+					ig_var.ig_states = IG_Wait_StartUp;
 					aewin_dbg("\n\rPower button On! IG_CloseUp --> IG_Wait_StartUp");
 				}
 				break;
@@ -2048,7 +2192,8 @@ void ignition_entry(void const * argument)
 						//current_IgEvent[NUM_pwron_delay] = flash_IgEvent[NUM_pwron_delay];
 						countdown_timer.poweron_delay = current_IgEvent[NUM_pwron_delay];
 						//ig_event.IG_States = IG_Wait_StartUp;
-						current_IgEvent[NUM_ig_states] = IG_Wait_StartUp;
+						//current_IgEvent[NUM_ig_states] = IG_Wait_StartUp;
+						ig_var.ig_states = IG_Wait_StartUp;
 						aewin_dbg("\n\rPower on delay pass! IG_PowerOn_Delay --> IG_Wait_StartUp");
 					}
 					else
@@ -2061,7 +2206,8 @@ void ignition_entry(void const * argument)
 					//current_IgEvent[NUM_pwron_delay] = flash_IgEvent[NUM_pwron_delay];
 					countdown_timer.poweron_delay = current_IgEvent[NUM_pwron_delay];
 					//ig_event.IG_States = IG_CloseUp;
-					current_IgEvent[NUM_ig_states] = IG_CloseUp;
+					//current_IgEvent[NUM_ig_states] = IG_CloseUp;
+					ig_var.ig_states = IG_CloseUp;
 					aewin_dbg("\n\rPower on delay failed! IG_PowerOn_Delay --> IG_CloseUp");
 				}
 				break;
@@ -2071,12 +2217,14 @@ void ignition_entry(void const * argument)
 				/* Power button has been (long) pressed. */
 				if(sva_gpi.pwr_btn == GPIO_PIN_RESET){
 					//ig_event.pwrbtn_pressed = TRUE;
-					current_IgEvent[NUM_pwrbtn_pressed] = TRUE;
+					//current_IgEvent[NUM_pwrbtn_pressed] = TRUE;
+					ig_var.pwrbtn_pressed = TRUE;
 					//if(0 == (ig_event.pwroff_btn_cnt--)){
 					//if(0 == (current_IgEvent[NUM_pwroff_btn_cnt]--)){
 					if(0 == (countdown_timer.pwroff_btn_cnt--)){
 						//ig_event.IG_States = IG_Recovery;
-						current_IgEvent[NUM_ig_states] = IG_Recovery;
+						//current_IgEvent[NUM_ig_states] = IG_Recovery;
+						ig_var.ig_states = IG_Recovery;
 						HAL_GPIO_WritePin(GPIOC, D2D_EN_Pin, GPIO_PIN_RESET);
 						enable_4GModule();
 						aewin_dbg("\n\rIG_Wait_StartUp failed! IG_Wait_StartUp --> IG_Recovery");
@@ -2084,12 +2232,14 @@ void ignition_entry(void const * argument)
 				}
 
 				//if(ig_event.pwrbtn_pressed && (sva_gpi.pwr_btn == GPIO_PIN_SET)){
-				if(current_IgEvent[NUM_pwrbtn_pressed] && (sva_gpi.pwr_btn == GPIO_PIN_SET)){
+				//if(current_IgEvent[NUM_pwrbtn_pressed] && (sva_gpi.pwr_btn == GPIO_PIN_SET)){
+				if(ig_var.pwrbtn_pressed && (sva_gpi.pwr_btn == GPIO_PIN_SET)){
 					//ig_event.pwroff_btn_cnt = gIG_Event.pwroff_btn_cnt;
 					//current_IgEvent[NUM_pwroff_btn_cnt] = flash_IgEvent[NUM_pwroff_btn_cnt];
 					countdown_timer.pwroff_btn_cnt = current_IgEvent[NUM_pwroff_btn_cnt];
 					//ig_event.pwrbtn_pressed = FALSE;
-					current_IgEvent[NUM_pwrbtn_pressed] = FALSE;
+					//current_IgEvent[NUM_pwrbtn_pressed] = FALSE;
+					ig_var.pwrbtn_pressed = FALSE;
 				}
 
 				if(sva_gpi.ig_sw == GPIO_PIN_SET){
@@ -2113,14 +2263,16 @@ void ignition_entry(void const * argument)
 						//if(0 != current_IgEvent[NUM_pwrgood_chk_time]){
 						if(0 != countdown_timer.pwrgood_chk_time){
 							//ig_event.IG_States = IG_Start_Up;
-							current_IgEvent[NUM_ig_states] = IG_Start_Up;
+							//current_IgEvent[NUM_ig_states] = IG_Start_Up;
+							ig_var.ig_states = IG_Start_Up;
 							aewin_dbg("\n\rPower on delay ok! IG_Wait_StartUp --> IG_Start_Up");
 						}
 						else{
 							HAL_GPIO_WritePin(GPIOC, D2D_EN_Pin, GPIO_PIN_RESET);
 							enable_4GModule();
 							//ig_event.IG_States = IG_CloseUp;
-							current_IgEvent[NUM_ig_states] = IG_CloseUp;
+							//current_IgEvent[NUM_ig_states] = IG_CloseUp;
+							ig_var.ig_states = IG_CloseUp;
 							aewin_dbg("\n\rDE2DC Power on failed! IG_Wait_StartUp --> IG_CloseUp");
 						}
 						//ig_event.pwrgood_chk_time = gIG_Event.pwrgood_chk_time;
@@ -2133,7 +2285,8 @@ void ignition_entry(void const * argument)
 					//current_IgEvent[NUM_wait_startup_time] = flash_IgEvent[NUM_wait_startup_time];
 					countdown_timer.wait_startup_time = current_IgEvent[NUM_wait_startup_time];
 					//ig_event.IG_States = IG_PowerOn_Delay;
-					current_IgEvent[NUM_ig_states] = IG_PowerOn_Delay;
+					//current_IgEvent[NUM_ig_states] = IG_PowerOn_Delay;
+					ig_var.ig_states = IG_PowerOn_Delay;
 					aewin_dbg("\n\rIG_Wait_StartUp failed! IG_Wait_StartUp --> IG_PowerOn_Delay");
 				}
 				break;
@@ -2152,39 +2305,46 @@ void ignition_entry(void const * argument)
 				else{
 					if( sva_gpi.ig_sw ==  GPIO_PIN_RESET){
 						//ig_event.IG_States = IG_Shutdown_Delay;
-						current_IgEvent[NUM_ig_states] = IG_Shutdown_Delay;
+						//current_IgEvent[NUM_ig_states] = IG_Shutdown_Delay;
+						ig_var.ig_states = IG_Shutdown_Delay;
 						aewin_dbg("\n\rIngition switch off! IG_Start_Up --> IG_Shutdown_Delay");
 					}
 				}
 
 				if(sva_gpi.pwr_btn == GPIO_PIN_RESET){
 					//ig_event.pwrbtn_pressed = TRUE;
-					current_IgEvent[NUM_pwrbtn_pressed] = TRUE;
+					//current_IgEvent[NUM_pwrbtn_pressed] = TRUE;
+					ig_var.pwrbtn_pressed = TRUE;
 					//if(0 == (ig_event.pwroff_btn_cnt--)){
 					//if(0 == (current_IgEvent[NUM_pwroff_btn_cnt]--)){
 					if(0 == (countdown_timer.pwroff_btn_cnt--)){
 						HAL_GPIO_WritePin(GPIOC, D2D_EN_Pin, GPIO_PIN_RESET);
 						enable_4GModule();
 						//ig_event.IG_States = IG_Recovery;
-						current_IgEvent[NUM_ig_states] = IG_Recovery;
+						//current_IgEvent[NUM_ig_states] = IG_Recovery;
+						ig_var.ig_states = IG_Recovery;
 					}
 				}
 
 				//if(ig_event.pwrbtn_pressed && (sva_gpi.pwr_btn == GPIO_PIN_SET)){
-				if(current_IgEvent[NUM_pwrbtn_pressed] && (sva_gpi.pwr_btn == GPIO_PIN_SET)){
+				//if(current_IgEvent[NUM_pwrbtn_pressed] && (sva_gpi.pwr_btn == GPIO_PIN_SET)){
+				if(ig_var.pwrbtn_pressed && (sva_gpi.pwr_btn == GPIO_PIN_SET)){
 					//ig_event.pwroff_btn_cnt = gIG_Event.pwroff_btn_cnt;
 					//current_IgEvent[NUM_pwroff_btn_cnt] = flash_IgEvent[NUM_pwroff_btn_cnt];
 					countdown_timer.pwroff_btn_cnt = current_IgEvent[NUM_pwroff_btn_cnt];
 					//ig_event.pwrbtn_pressed = FALSE;
-					current_IgEvent[NUM_pwrbtn_pressed] = FALSE;
+					//current_IgEvent[NUM_pwrbtn_pressed] = FALSE;
+					ig_var.pwrbtn_pressed = FALSE;
 					//ig_event.IG_States = IG_shutting_Down;
-					current_IgEvent[NUM_ig_states] = IG_shutting_Down;
+					//current_IgEvent[NUM_ig_states] = IG_shutting_Down;
+					ig_var.ig_states = IG_shutting_Down;
 					aewin_dbg("\n\rPower button off! IG_Start_Up --> IG_shutting_Down");
 				}
 
 				if(check_lowPower(adc_temp) == 1)
 				{
-					current_IgEvent[NUM_ig_states] = IG_LowPower_Delay;
+					//current_IgEvent[NUM_ig_states] = IG_LowPower_Delay;
+					ig_var.ig_states = IG_LowPower_Delay;
 					aewin_dbg("\n\rPower off delay failed! IG_Shutdown_Delay --> IG_LowPower_Delay");
 				}
 
@@ -2197,7 +2357,8 @@ void ignition_entry(void const * argument)
 					//if (0 == (current_IgEvent[NUM_pwroff_delay]--)){
 					if (0 == (countdown_timer.poweroff_delay--)){
 						//ig_event.IG_States = IG_shutting_Down;
-						current_IgEvent[NUM_ig_states] = IG_shutting_Down;
+						//current_IgEvent[NUM_ig_states] = IG_shutting_Down;
+						ig_var.ig_states = IG_shutting_Down;
 						//ig_event.pwroff_delay = gIG_Event.pwroff_delay;
 						//current_IgEvent[NUM_pwroff_delay] = flash_IgEvent[NUM_pwroff_delay];
 						countdown_timer.poweroff_delay = current_IgEvent[NUM_pwroff_delay];
@@ -2210,7 +2371,8 @@ void ignition_entry(void const * argument)
 				}
 				else{
 					//ig_event.IG_States = IG_Start_Up;
-					current_IgEvent[NUM_ig_states] = IG_Start_Up;
+					//current_IgEvent[NUM_ig_states] = IG_Start_Up;
+					ig_var.ig_states = IG_Start_Up;
 					//ig_event.pwroff_delay = gIG_Event.pwroff_delay;
 					current_IgEvent[NUM_pwroff_delay] = flash_IgEvent[NUM_pwroff_delay];
 					aewin_dbg("\n\rPower off delay failed! IG_Shutdown_Delay --> IG_Start_Up");
@@ -2218,7 +2380,8 @@ void ignition_entry(void const * argument)
 
 				if(check_lowPower(adc_temp) == 1)
 				{
-					current_IgEvent[NUM_ig_states] = IG_LowPower_Delay;
+					//current_IgEvent[NUM_ig_states] = IG_LowPower_Delay;
+					ig_var.ig_states = IG_LowPower_Delay;
 					//current_IgEvent[NUM_pwroff_delay] = flash_IgEvent[NUM_pwroff_delay];
 					countdown_timer.poweroff_delay = current_IgEvent[NUM_pwroff_delay];
 					aewin_dbg("\n\rPower off delay failed! IG_Shutdown_Delay --> IG_LowPower_Delay");
@@ -2233,7 +2396,8 @@ void ignition_entry(void const * argument)
 					//if (0 == (current_IgEvent[NUM_shutdown_delay]--)){
 					if (0 == (countdown_timer.shutdown_delay--)){
 						//ig_event.IG_States = IG_CloseUp;
-						current_IgEvent[NUM_ig_states] = IG_CloseUp;
+						//current_IgEvent[NUM_ig_states] = IG_CloseUp;
+						ig_var.ig_states = IG_CloseUp;
 						//ig_event.shutdown_delay = gIG_Event.shutdown_delay;
 						//current_IgEvent[NUM_shutdown_delay] = flash_IgEvent[NUM_shutdown_delay];
 						countdown_timer.shutdown_delay = current_IgEvent[NUM_shutdown_delay];
@@ -2244,7 +2408,8 @@ void ignition_entry(void const * argument)
 				}
 				else{
 					//ig_event.IG_States = IG_Shutdown_Delay;
-					current_IgEvent[NUM_ig_states] = IG_Shutdown_Delay;
+					//current_IgEvent[NUM_ig_states] = IG_Shutdown_Delay;
+					ig_var.ig_states = IG_Shutdown_Delay;
 					//ig_event.shutdown_delay = gIG_Event.shutdown_delay;
 					//current_IgEvent[NUM_shutdown_delay] = flash_IgEvent[NUM_shutdown_delay];
 					countdown_timer.shutdown_delay = current_IgEvent[NUM_shutdown_delay];
@@ -2256,7 +2421,8 @@ void ignition_entry(void const * argument)
 			case IG_LowPower_Delay:
 				//if (0 == (current_IgEvent[NUM_lowpwr_dealy]--)){
 				if (0 == (countdown_timer.lowpower_delay--)){
-					current_IgEvent[NUM_ig_states] = IG_CloseUp;
+					//current_IgEvent[NUM_ig_states] = IG_CloseUp;
+					ig_var.ig_states = IG_CloseUp;
 					//current_IgEvent[NUM_lowpwr_dealy] = flash_IgEvent[NUM_lowpwr_dealy];
 					countdown_timer.lowpower_delay = current_IgEvent[NUM_lowpwr_dealy];
 					HAL_GPIO_WritePin(GPIOC, D2D_EN_Pin, GPIO_PIN_RESET);
@@ -2442,7 +2608,7 @@ void IWDG_entry(void const * argument)
 
 	  HAL_IWDG_Refresh(&hiwdg);
 	  osDelay(IWDG_TASK_ENTRY_TIME);
-	  //osDelay(current_IgEvent[NUM_Host_WTGT]*1000);
+	  //osDelay(current_IgEvent[NUM_wtdog_default]*1000);
   }
   /* USER CODE END IWDG_entry */
 }
@@ -2487,6 +2653,7 @@ void gpio_state_entry(void const * argument)
 void spi1_entry(void const * argument)
 {
   /* USER CODE BEGIN spi1_entry */
+	uint8_t loop_index = 0;
 	uint8_t cmd_rdsr[] = {0x05};
 	uint8_t cmd_devID[] = {0x90, 0x00, 0x00, 0X01};
 	uint8_t aTxBuffer0[] = {0x06};
@@ -2499,7 +2666,7 @@ void spi1_entry(void const * argument)
 	uint8_t aRxBuffer[6];
 	uint8_t data_rdsr[1];
 	uint8_t data_devID[2];
-	uint8_t flash_RxBuffer[25];
+	uint8_t flash_RxBuffer[NUM_total];
 
 	//read deviceID
 	HAL_GPIO_WritePin(SPI1_CS_GPIO_Port, SPI1_CS_Pin, GPIO_PIN_RESET);
@@ -2508,108 +2675,8 @@ void spi1_entry(void const * argument)
 	HAL_SPI_Receive(&hspi1, (uint8_t*)data_devID, 2, 5000);
 	HAL_GPIO_WritePin(SPI1_CS_GPIO_Port, SPI1_CS_Pin, GPIO_PIN_SET);
 
-	//WREN
-	HAL_GPIO_WritePin(SPI1_CS_GPIO_Port, SPI1_CS_Pin, GPIO_PIN_RESET);
-	HAL_SPI_Transmit(&hspi1, (uint8_t*)aTxBuffer0, sizeof(aTxBuffer0), 5000);
-	HAL_GPIO_WritePin(SPI1_CS_GPIO_Port, SPI1_CS_Pin, GPIO_PIN_SET);
-
-	//RDSR
-	HAL_GPIO_WritePin(SPI1_CS_GPIO_Port, SPI1_CS_Pin, GPIO_PIN_RESET);
-	HAL_SPI_Transmit(&hspi1, (uint8_t*)cmd_rdsr, sizeof(cmd_rdsr), 5000);
-
-	HAL_SPI_Receive(&hspi1, (uint8_t*)data_rdsr, 1, 5000);
-	HAL_GPIO_WritePin(SPI1_CS_GPIO_Port, SPI1_CS_Pin, GPIO_PIN_SET);
-
-	//Check WEL
-	while((data_rdsr[0] & (1<<1)) == 0)
-	{
-		//WREN
-		HAL_GPIO_WritePin(SPI1_CS_GPIO_Port, SPI1_CS_Pin, GPIO_PIN_RESET);
-		HAL_SPI_Transmit(&hspi1, (uint8_t*)aTxBuffer0, sizeof(aTxBuffer0), 5000);
-		HAL_GPIO_WritePin(SPI1_CS_GPIO_Port, SPI1_CS_Pin, GPIO_PIN_SET);
-
-		//RDSR
-		HAL_GPIO_WritePin(SPI1_CS_GPIO_Port, SPI1_CS_Pin, GPIO_PIN_RESET);
-		HAL_SPI_Transmit(&hspi1, (uint8_t*)cmd_rdsr, sizeof(cmd_rdsr), 5000);
-
-		HAL_SPI_Receive(&hspi1, (uint8_t*)data_rdsr, 1, 5000);
-		HAL_GPIO_WritePin(SPI1_CS_GPIO_Port, SPI1_CS_Pin, GPIO_PIN_SET);
-	}
-
-	//Erase
-	HAL_GPIO_WritePin(SPI1_CS_GPIO_Port, SPI1_CS_Pin, GPIO_PIN_RESET);
-	HAL_SPI_Transmit(&hspi1, (uint8_t*)aTxBuffer1, sizeof(aTxBuffer1), 5000);
-	HAL_GPIO_WritePin(SPI1_CS_GPIO_Port, SPI1_CS_Pin, GPIO_PIN_SET);
-
-
-	//Erase 0xC7
-	//HAL_GPIO_WritePin(SPI1_CS_GPIO_Port, SPI1_CS_Pin, GPIO_PIN_RESET);
-	//HAL_SPI_Transmit(&hspi1, (uint8_t*)cmd_erase, sizeof(cmd_erase), 5000);
-	//HAL_GPIO_WritePin(SPI1_CS_GPIO_Port, SPI1_CS_Pin, GPIO_PIN_SET);
-
-	//Check WIP
-	while((data_rdsr[0] & (1<<0)) != 0)
-	{
-		//RDSR
-		HAL_GPIO_WritePin(SPI1_CS_GPIO_Port, SPI1_CS_Pin, GPIO_PIN_RESET);
-		HAL_SPI_Transmit(&hspi1, (uint8_t*)cmd_rdsr, sizeof(cmd_rdsr), 5000);
-
-		HAL_SPI_Receive(&hspi1, (uint8_t*)data_rdsr, 1, 5000);
-		HAL_GPIO_WritePin(SPI1_CS_GPIO_Port, SPI1_CS_Pin, GPIO_PIN_SET);
-	}
-
-	//WREN
-	HAL_GPIO_WritePin(SPI1_CS_GPIO_Port, SPI1_CS_Pin, GPIO_PIN_RESET);
-	HAL_SPI_Transmit(&hspi1, (uint8_t*)aTxBuffer0, sizeof(aTxBuffer0), 5000);
-	HAL_GPIO_WritePin(SPI1_CS_GPIO_Port, SPI1_CS_Pin, GPIO_PIN_SET);
-
-
-	//RDSR
-	HAL_GPIO_WritePin(SPI1_CS_GPIO_Port, SPI1_CS_Pin, GPIO_PIN_RESET);
-	HAL_SPI_Transmit(&hspi1, (uint8_t*)cmd_rdsr, sizeof(cmd_rdsr), 5000);
-
-	HAL_SPI_Receive(&hspi1, (uint8_t*)data_rdsr, 1, 5000);
-	HAL_GPIO_WritePin(SPI1_CS_GPIO_Port, SPI1_CS_Pin, GPIO_PIN_SET);
-
-	//Check WEL
-	while((data_rdsr[0] & (1<<1)) == 0)
-	{
-		//WREN
-		HAL_GPIO_WritePin(SPI1_CS_GPIO_Port, SPI1_CS_Pin, GPIO_PIN_RESET);
-		HAL_SPI_Transmit(&hspi1, (uint8_t*)aTxBuffer0, sizeof(aTxBuffer0), 5000);
-		HAL_GPIO_WritePin(SPI1_CS_GPIO_Port, SPI1_CS_Pin, GPIO_PIN_SET);
-
-		//RDSR
-		HAL_GPIO_WritePin(SPI1_CS_GPIO_Port, SPI1_CS_Pin, GPIO_PIN_RESET);
-		HAL_SPI_Transmit(&hspi1, (uint8_t*)cmd_rdsr, sizeof(cmd_rdsr), 5000);
-
-		HAL_SPI_Receive(&hspi1, (uint8_t*)data_rdsr, 1, 5000);
-		HAL_GPIO_WritePin(SPI1_CS_GPIO_Port, SPI1_CS_Pin, GPIO_PIN_SET);
-	}
-
-	//Program
-	HAL_GPIO_WritePin(SPI1_CS_GPIO_Port, SPI1_CS_Pin, GPIO_PIN_RESET);
-	HAL_SPI_Transmit(&hspi1, (uint8_t*)flash_IgEvent, sizeof(flash_IgEvent), 5000);
-	HAL_GPIO_WritePin(SPI1_CS_GPIO_Port, SPI1_CS_Pin, GPIO_PIN_SET);
-
-	//RDSR
-	HAL_GPIO_WritePin(SPI1_CS_GPIO_Port, SPI1_CS_Pin, GPIO_PIN_RESET);
-	HAL_SPI_Transmit(&hspi1, (uint8_t*)cmd_rdsr, sizeof(cmd_rdsr), 5000);
-
-	HAL_SPI_Receive(&hspi1, (uint8_t*)data_rdsr, 1, 5000);
-	HAL_GPIO_WritePin(SPI1_CS_GPIO_Port, SPI1_CS_Pin, GPIO_PIN_SET);
-
-	//Check WIP
-	while((data_rdsr[0] & (1<<0)) != 0)
-	{
-		//RDSR
-		HAL_GPIO_WritePin(SPI1_CS_GPIO_Port, SPI1_CS_Pin, GPIO_PIN_RESET);
-		HAL_SPI_Transmit(&hspi1, (uint8_t*)cmd_rdsr, sizeof(cmd_rdsr), 5000);
-
-		HAL_SPI_Receive(&hspi1, (uint8_t*)data_rdsr, 1, 5000);
-		HAL_GPIO_WritePin(SPI1_CS_GPIO_Port, SPI1_CS_Pin, GPIO_PIN_SET);
-	}
-
+	//if flash tag not correct, program default data into flash
+	//Read flash data
 	//RDSR
 	HAL_GPIO_WritePin(SPI1_CS_GPIO_Port, SPI1_CS_Pin, GPIO_PIN_RESET);
 	HAL_SPI_Transmit(&hspi1, (uint8_t*)cmd_rdsr, sizeof(cmd_rdsr), 5000);
@@ -2637,6 +2704,156 @@ void spi1_entry(void const * argument)
 	HAL_SPI_Receive(&hspi1, (uint8_t*)flash_RxBuffer, sizeof(flash_RxBuffer), 10000);
 	HAL_GPIO_WritePin(SPI1_CS_GPIO_Port, SPI1_CS_Pin, GPIO_PIN_SET);
 
+	if(flash_RxBuffer[NUM_eeprom_tag_init - SPI_FLASH_LEN_CMDADD] != SPI_FLASH_DATA_TAG)
+	{
+		//WREN
+		HAL_GPIO_WritePin(SPI1_CS_GPIO_Port, SPI1_CS_Pin, GPIO_PIN_RESET);
+		HAL_SPI_Transmit(&hspi1, (uint8_t*)aTxBuffer0, sizeof(aTxBuffer0), 5000);
+		HAL_GPIO_WritePin(SPI1_CS_GPIO_Port, SPI1_CS_Pin, GPIO_PIN_SET);
+
+		//RDSR
+		HAL_GPIO_WritePin(SPI1_CS_GPIO_Port, SPI1_CS_Pin, GPIO_PIN_RESET);
+		HAL_SPI_Transmit(&hspi1, (uint8_t*)cmd_rdsr, sizeof(cmd_rdsr), 5000);
+
+		HAL_SPI_Receive(&hspi1, (uint8_t*)data_rdsr, 1, 5000);
+		HAL_GPIO_WritePin(SPI1_CS_GPIO_Port, SPI1_CS_Pin, GPIO_PIN_SET);
+
+		//Check WEL
+		while((data_rdsr[0] & (1<<1)) == 0)
+		{
+			//WREN
+			HAL_GPIO_WritePin(SPI1_CS_GPIO_Port, SPI1_CS_Pin, GPIO_PIN_RESET);
+			HAL_SPI_Transmit(&hspi1, (uint8_t*)aTxBuffer0, sizeof(aTxBuffer0), 5000);
+			HAL_GPIO_WritePin(SPI1_CS_GPIO_Port, SPI1_CS_Pin, GPIO_PIN_SET);
+
+			//RDSR
+			HAL_GPIO_WritePin(SPI1_CS_GPIO_Port, SPI1_CS_Pin, GPIO_PIN_RESET);
+			HAL_SPI_Transmit(&hspi1, (uint8_t*)cmd_rdsr, sizeof(cmd_rdsr), 5000);
+
+			HAL_SPI_Receive(&hspi1, (uint8_t*)data_rdsr, 1, 5000);
+			HAL_GPIO_WritePin(SPI1_CS_GPIO_Port, SPI1_CS_Pin, GPIO_PIN_SET);
+		}
+
+		//Erase
+		HAL_GPIO_WritePin(SPI1_CS_GPIO_Port, SPI1_CS_Pin, GPIO_PIN_RESET);
+		HAL_SPI_Transmit(&hspi1, (uint8_t*)aTxBuffer1, sizeof(aTxBuffer1), 5000);
+		HAL_GPIO_WritePin(SPI1_CS_GPIO_Port, SPI1_CS_Pin, GPIO_PIN_SET);
+
+
+		//Erase 0xC7
+		//HAL_GPIO_WritePin(SPI1_CS_GPIO_Port, SPI1_CS_Pin, GPIO_PIN_RESET);
+		//HAL_SPI_Transmit(&hspi1, (uint8_t*)cmd_erase, sizeof(cmd_erase), 5000);
+		//HAL_GPIO_WritePin(SPI1_CS_GPIO_Port, SPI1_CS_Pin, GPIO_PIN_SET);
+
+		//Check WIP
+		while((data_rdsr[0] & (1<<0)) != 0)
+		{
+			//RDSR
+			HAL_GPIO_WritePin(SPI1_CS_GPIO_Port, SPI1_CS_Pin, GPIO_PIN_RESET);
+			HAL_SPI_Transmit(&hspi1, (uint8_t*)cmd_rdsr, sizeof(cmd_rdsr), 5000);
+
+			HAL_SPI_Receive(&hspi1, (uint8_t*)data_rdsr, 1, 5000);
+			HAL_GPIO_WritePin(SPI1_CS_GPIO_Port, SPI1_CS_Pin, GPIO_PIN_SET);
+		}
+
+		//WREN
+		HAL_GPIO_WritePin(SPI1_CS_GPIO_Port, SPI1_CS_Pin, GPIO_PIN_RESET);
+		HAL_SPI_Transmit(&hspi1, (uint8_t*)aTxBuffer0, sizeof(aTxBuffer0), 5000);
+		HAL_GPIO_WritePin(SPI1_CS_GPIO_Port, SPI1_CS_Pin, GPIO_PIN_SET);
+
+
+		//RDSR
+		HAL_GPIO_WritePin(SPI1_CS_GPIO_Port, SPI1_CS_Pin, GPIO_PIN_RESET);
+		HAL_SPI_Transmit(&hspi1, (uint8_t*)cmd_rdsr, sizeof(cmd_rdsr), 5000);
+
+		HAL_SPI_Receive(&hspi1, (uint8_t*)data_rdsr, 1, 5000);
+		HAL_GPIO_WritePin(SPI1_CS_GPIO_Port, SPI1_CS_Pin, GPIO_PIN_SET);
+
+		//Check WEL
+		while((data_rdsr[0] & (1<<1)) == 0)
+		{
+			//WREN
+			HAL_GPIO_WritePin(SPI1_CS_GPIO_Port, SPI1_CS_Pin, GPIO_PIN_RESET);
+			HAL_SPI_Transmit(&hspi1, (uint8_t*)aTxBuffer0, sizeof(aTxBuffer0), 5000);
+			HAL_GPIO_WritePin(SPI1_CS_GPIO_Port, SPI1_CS_Pin, GPIO_PIN_SET);
+
+			//RDSR
+			HAL_GPIO_WritePin(SPI1_CS_GPIO_Port, SPI1_CS_Pin, GPIO_PIN_RESET);
+			HAL_SPI_Transmit(&hspi1, (uint8_t*)cmd_rdsr, sizeof(cmd_rdsr), 5000);
+
+			HAL_SPI_Receive(&hspi1, (uint8_t*)data_rdsr, 1, 5000);
+			HAL_GPIO_WritePin(SPI1_CS_GPIO_Port, SPI1_CS_Pin, GPIO_PIN_SET);
+		}
+
+		//Program
+		HAL_GPIO_WritePin(SPI1_CS_GPIO_Port, SPI1_CS_Pin, GPIO_PIN_RESET);
+		HAL_SPI_Transmit(&hspi1, (uint8_t*)flash_IgEvent, sizeof(flash_IgEvent), 5000);
+		HAL_GPIO_WritePin(SPI1_CS_GPIO_Port, SPI1_CS_Pin, GPIO_PIN_SET);
+
+		//RDSR
+		HAL_GPIO_WritePin(SPI1_CS_GPIO_Port, SPI1_CS_Pin, GPIO_PIN_RESET);
+		HAL_SPI_Transmit(&hspi1, (uint8_t*)cmd_rdsr, sizeof(cmd_rdsr), 5000);
+
+		HAL_SPI_Receive(&hspi1, (uint8_t*)data_rdsr, 1, 5000);
+		HAL_GPIO_WritePin(SPI1_CS_GPIO_Port, SPI1_CS_Pin, GPIO_PIN_SET);
+
+		//Check WIP
+		while((data_rdsr[0] & (1<<0)) != 0)
+		{
+			//RDSR
+			HAL_GPIO_WritePin(SPI1_CS_GPIO_Port, SPI1_CS_Pin, GPIO_PIN_RESET);
+			HAL_SPI_Transmit(&hspi1, (uint8_t*)cmd_rdsr, sizeof(cmd_rdsr), 5000);
+
+			HAL_SPI_Receive(&hspi1, (uint8_t*)data_rdsr, 1, 5000);
+			HAL_GPIO_WritePin(SPI1_CS_GPIO_Port, SPI1_CS_Pin, GPIO_PIN_SET);
+		}
+
+		//Read flash data
+		//RDSR
+		HAL_GPIO_WritePin(SPI1_CS_GPIO_Port, SPI1_CS_Pin, GPIO_PIN_RESET);
+		HAL_SPI_Transmit(&hspi1, (uint8_t*)cmd_rdsr, sizeof(cmd_rdsr), 5000);
+
+		HAL_SPI_Receive(&hspi1, (uint8_t*)data_rdsr, 1, 5000);
+		HAL_GPIO_WritePin(SPI1_CS_GPIO_Port, SPI1_CS_Pin, GPIO_PIN_SET);
+
+		//Check WEL
+		/*
+		while((data_rdsr[0] & (1<<1)) != 0)
+		{
+			//RDSR
+			HAL_GPIO_WritePin(SPI1_CS_GPIO_Port, SPI1_CS_Pin, GPIO_PIN_RESET);
+			HAL_SPI_Transmit(&hspi1, (uint8_t*)cmd_rdsr, sizeof(cmd_rdsr), 5000);
+
+			HAL_SPI_Receive(&hspi1, (uint8_t*)data_rdsr, 1, 5000);
+			HAL_GPIO_WritePin(SPI1_CS_GPIO_Port, SPI1_CS_Pin, GPIO_PIN_SET);
+		}
+		*/
+
+		//Read
+		HAL_GPIO_WritePin(SPI1_CS_GPIO_Port, SPI1_CS_Pin, GPIO_PIN_RESET);
+		HAL_SPI_Transmit(&hspi1, (uint8_t*)aTxBuffer3, sizeof(aTxBuffer3), 5000);
+
+		HAL_SPI_Receive(&hspi1, (uint8_t*)flash_RxBuffer, sizeof(flash_RxBuffer), 10000);
+		HAL_GPIO_WritePin(SPI1_CS_GPIO_Port, SPI1_CS_Pin, GPIO_PIN_SET);
+
+	}
+	else
+	{
+		for(loop_index = 0; loop_index < (NUM_total-SPI_FLASH_LEN_CMDADD); loop_index++)
+		{
+			flash_IgEvent[loop_index + SPI_FLASH_LEN_CMDADD] = flash_RxBuffer[loop_index];
+		}
+		flash_IgEvent[0] = SPI_FLASH_PROGRAM_PAGE;
+		flash_IgEvent[1] = SPI_FLASH_ADD_Byte0;
+		flash_IgEvent[2] = SPI_FLASH_ADD_Byte1;
+		flash_IgEvent[3] = SPI_FLASH_ADD_Byte2;
+	}
+
+
+
+	//=========================================================
+
+
 
 
   /* Infinite loop */
@@ -2651,6 +2868,146 @@ void spi1_entry(void const * argument)
 	  //aewin_dbg("\n\rGet Time: %2d:%2d:%2d",sTime.Hours ,sTime.Minutes, sTime.Seconds);
 	  //aewin_dbg("\n\r=============================",sTime.Hours ,sTime.Minutes, sTime.Seconds);
 	  osDelay(1000);
+
+	  if(flag_flashWrite == 1)
+	  {
+		  //write flash
+		  //WREN
+		  	HAL_GPIO_WritePin(SPI1_CS_GPIO_Port, SPI1_CS_Pin, GPIO_PIN_RESET);
+		  	HAL_SPI_Transmit(&hspi1, (uint8_t*)aTxBuffer0, sizeof(aTxBuffer0), 5000);
+		  	HAL_GPIO_WritePin(SPI1_CS_GPIO_Port, SPI1_CS_Pin, GPIO_PIN_SET);
+
+		  	//RDSR
+		  	HAL_GPIO_WritePin(SPI1_CS_GPIO_Port, SPI1_CS_Pin, GPIO_PIN_RESET);
+		  	HAL_SPI_Transmit(&hspi1, (uint8_t*)cmd_rdsr, sizeof(cmd_rdsr), 5000);
+
+		  	HAL_SPI_Receive(&hspi1, (uint8_t*)data_rdsr, 1, 5000);
+		  	HAL_GPIO_WritePin(SPI1_CS_GPIO_Port, SPI1_CS_Pin, GPIO_PIN_SET);
+
+		  	//Check WEL
+		  	while((data_rdsr[0] & (1<<1)) == 0)
+		  	{
+		  		//WREN
+		  		HAL_GPIO_WritePin(SPI1_CS_GPIO_Port, SPI1_CS_Pin, GPIO_PIN_RESET);
+		  		HAL_SPI_Transmit(&hspi1, (uint8_t*)aTxBuffer0, sizeof(aTxBuffer0), 5000);
+		  		HAL_GPIO_WritePin(SPI1_CS_GPIO_Port, SPI1_CS_Pin, GPIO_PIN_SET);
+
+		  		//RDSR
+		  		HAL_GPIO_WritePin(SPI1_CS_GPIO_Port, SPI1_CS_Pin, GPIO_PIN_RESET);
+		  		HAL_SPI_Transmit(&hspi1, (uint8_t*)cmd_rdsr, sizeof(cmd_rdsr), 5000);
+
+		  		HAL_SPI_Receive(&hspi1, (uint8_t*)data_rdsr, 1, 5000);
+		  		HAL_GPIO_WritePin(SPI1_CS_GPIO_Port, SPI1_CS_Pin, GPIO_PIN_SET);
+		  	}
+
+		  	//Erase
+		  	HAL_GPIO_WritePin(SPI1_CS_GPIO_Port, SPI1_CS_Pin, GPIO_PIN_RESET);
+		  	HAL_SPI_Transmit(&hspi1, (uint8_t*)aTxBuffer1, sizeof(aTxBuffer1), 5000);
+		  	HAL_GPIO_WritePin(SPI1_CS_GPIO_Port, SPI1_CS_Pin, GPIO_PIN_SET);
+
+
+		  	//Erase 0xC7
+		  	//HAL_GPIO_WritePin(SPI1_CS_GPIO_Port, SPI1_CS_Pin, GPIO_PIN_RESET);
+		  	//HAL_SPI_Transmit(&hspi1, (uint8_t*)cmd_erase, sizeof(cmd_erase), 5000);
+		  	//HAL_GPIO_WritePin(SPI1_CS_GPIO_Port, SPI1_CS_Pin, GPIO_PIN_SET);
+
+		  	//Check WIP
+		  	while((data_rdsr[0] & (1<<0)) != 0)
+		  	{
+		  		//RDSR
+		  		HAL_GPIO_WritePin(SPI1_CS_GPIO_Port, SPI1_CS_Pin, GPIO_PIN_RESET);
+		  		HAL_SPI_Transmit(&hspi1, (uint8_t*)cmd_rdsr, sizeof(cmd_rdsr), 5000);
+
+		  		HAL_SPI_Receive(&hspi1, (uint8_t*)data_rdsr, 1, 5000);
+		  		HAL_GPIO_WritePin(SPI1_CS_GPIO_Port, SPI1_CS_Pin, GPIO_PIN_SET);
+		  	}
+
+		  	//WREN
+		  	HAL_GPIO_WritePin(SPI1_CS_GPIO_Port, SPI1_CS_Pin, GPIO_PIN_RESET);
+		  	HAL_SPI_Transmit(&hspi1, (uint8_t*)aTxBuffer0, sizeof(aTxBuffer0), 5000);
+		  	HAL_GPIO_WritePin(SPI1_CS_GPIO_Port, SPI1_CS_Pin, GPIO_PIN_SET);
+
+
+		  	//RDSR
+		  	HAL_GPIO_WritePin(SPI1_CS_GPIO_Port, SPI1_CS_Pin, GPIO_PIN_RESET);
+		  	HAL_SPI_Transmit(&hspi1, (uint8_t*)cmd_rdsr, sizeof(cmd_rdsr), 5000);
+
+		  	HAL_SPI_Receive(&hspi1, (uint8_t*)data_rdsr, 1, 5000);
+		  	HAL_GPIO_WritePin(SPI1_CS_GPIO_Port, SPI1_CS_Pin, GPIO_PIN_SET);
+
+		  	//Check WEL
+		  	while((data_rdsr[0] & (1<<1)) == 0)
+		  	{
+		  		//WREN
+		  		HAL_GPIO_WritePin(SPI1_CS_GPIO_Port, SPI1_CS_Pin, GPIO_PIN_RESET);
+		  		HAL_SPI_Transmit(&hspi1, (uint8_t*)aTxBuffer0, sizeof(aTxBuffer0), 5000);
+		  		HAL_GPIO_WritePin(SPI1_CS_GPIO_Port, SPI1_CS_Pin, GPIO_PIN_SET);
+
+		  		//RDSR
+		  		HAL_GPIO_WritePin(SPI1_CS_GPIO_Port, SPI1_CS_Pin, GPIO_PIN_RESET);
+		  		HAL_SPI_Transmit(&hspi1, (uint8_t*)cmd_rdsr, sizeof(cmd_rdsr), 5000);
+
+		  		HAL_SPI_Receive(&hspi1, (uint8_t*)data_rdsr, 1, 5000);
+		  		HAL_GPIO_WritePin(SPI1_CS_GPIO_Port, SPI1_CS_Pin, GPIO_PIN_SET);
+		  	}
+
+		  	//Program
+		  	HAL_GPIO_WritePin(SPI1_CS_GPIO_Port, SPI1_CS_Pin, GPIO_PIN_RESET);
+		  	HAL_SPI_Transmit(&hspi1, (uint8_t*)flash_IgEvent, sizeof(flash_IgEvent), 5000);
+		  	HAL_GPIO_WritePin(SPI1_CS_GPIO_Port, SPI1_CS_Pin, GPIO_PIN_SET);
+
+		  	//RDSR
+		  	HAL_GPIO_WritePin(SPI1_CS_GPIO_Port, SPI1_CS_Pin, GPIO_PIN_RESET);
+		  	HAL_SPI_Transmit(&hspi1, (uint8_t*)cmd_rdsr, sizeof(cmd_rdsr), 5000);
+
+		  	HAL_SPI_Receive(&hspi1, (uint8_t*)data_rdsr, 1, 5000);
+		  	HAL_GPIO_WritePin(SPI1_CS_GPIO_Port, SPI1_CS_Pin, GPIO_PIN_SET);
+
+		  	//Check WIP
+		  	while((data_rdsr[0] & (1<<0)) != 0)
+		  	{
+		  		//RDSR
+		  		HAL_GPIO_WritePin(SPI1_CS_GPIO_Port, SPI1_CS_Pin, GPIO_PIN_RESET);
+		  		HAL_SPI_Transmit(&hspi1, (uint8_t*)cmd_rdsr, sizeof(cmd_rdsr), 5000);
+
+		  		HAL_SPI_Receive(&hspi1, (uint8_t*)data_rdsr, 1, 5000);
+		  		HAL_GPIO_WritePin(SPI1_CS_GPIO_Port, SPI1_CS_Pin, GPIO_PIN_SET);
+		  	}
+
+		  	//RDSR
+		  	HAL_GPIO_WritePin(SPI1_CS_GPIO_Port, SPI1_CS_Pin, GPIO_PIN_RESET);
+		  	HAL_SPI_Transmit(&hspi1, (uint8_t*)cmd_rdsr, sizeof(cmd_rdsr), 5000);
+
+		  	HAL_SPI_Receive(&hspi1, (uint8_t*)data_rdsr, 1, 5000);
+		  	HAL_GPIO_WritePin(SPI1_CS_GPIO_Port, SPI1_CS_Pin, GPIO_PIN_SET);
+
+		  	//Check WEL
+		  	/*
+		  	while((data_rdsr[0] & (1<<1)) != 0)
+		  	{
+		  		//RDSR
+		  		HAL_GPIO_WritePin(SPI1_CS_GPIO_Port, SPI1_CS_Pin, GPIO_PIN_RESET);
+		  		HAL_SPI_Transmit(&hspi1, (uint8_t*)cmd_rdsr, sizeof(cmd_rdsr), 5000);
+
+		  		HAL_SPI_Receive(&hspi1, (uint8_t*)data_rdsr, 1, 5000);
+		  		HAL_GPIO_WritePin(SPI1_CS_GPIO_Port, SPI1_CS_Pin, GPIO_PIN_SET);
+		  	}
+		  	*/
+
+		  	//Read
+		  	HAL_GPIO_WritePin(SPI1_CS_GPIO_Port, SPI1_CS_Pin, GPIO_PIN_RESET);
+		  	HAL_SPI_Transmit(&hspi1, (uint8_t*)aTxBuffer3, sizeof(aTxBuffer3), 5000);
+
+		  	HAL_SPI_Receive(&hspi1, (uint8_t*)flash_RxBuffer, sizeof(flash_RxBuffer), 10000);
+		  	HAL_GPIO_WritePin(SPI1_CS_GPIO_Port, SPI1_CS_Pin, GPIO_PIN_SET);
+
+
+
+		  flag_flashWrite = 0;
+	  }
+
+
+
 	  //osDealy(SPI1_TASK_ENTRY_TIME);
   }
   /* USER CODE END spi1_entry */
@@ -2886,7 +3243,7 @@ uint8_t uart2_isFindString(uint8_t uart_msg[], uint8_t target_string[], uint8_t 
 					flag_find = 1;
 				}
 			}
-			break;
+			//break;
 		}
 	}
 	return flag_find;

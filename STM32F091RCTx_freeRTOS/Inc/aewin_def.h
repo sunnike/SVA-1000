@@ -45,7 +45,7 @@
 
 #define UART1_TX_DELAY      10
 
-#define UART2_RX_LENGTH     128
+#define UART2_RX_LENGTH     200
 #define UART2_ATCMD_DELAY   30
 #define UART2_WAIT_READY    900
 
@@ -308,19 +308,6 @@ typedef enum{
 
 /******  SVA-1000 4G module AT command ******************************************************************/
 typedef enum{
-	/*
-	ATCMD_AT 	       = 0,  //AT
-	ATCMD_Check_Signal = 1,  //AT+CSQ
-	ATCMD_Check_Reg    = 2,  //AT+COPS?
-	ATCMD_Check_APNIP  = 3,  //at+cgdcont?
-	ATCMD_Get_IP       = 4,  //AT+CGACT=1,1
-	ATCMD_Config_GPS   = 5,  //AT+UGPRF=1
-	ATCMD_Enable_RMC   = 6,  //AT+UGRMC=1
-	ATCMD_Enable_GPS   = 7,  //at+ugps=1,0
-	ATCMD_Get_GPS_DATA = 8,  //AT+UGRMC?
-	*/
-
-
 	ATCMD_AT 	       = 0,  //AT
 	ATCMD_Check_Status = 1,  //AT+cind?
 	ATCMD_Check_APNIP  = 2,  //at+cgdcont?
@@ -336,6 +323,9 @@ typedef enum{
 	ATCMD_En_airplane  =12,  //AT+CFUN=4
 	ATCMD_Dis_airplane =13,  //AT+CFUN=1
 	ATCMD_Ping_web     =14,  //AT+UPING="www.google.com"
+	ATCMD_Set_APN      =15,  //AT+UPSD=0,1,"apn.name"
+	ATCMD_Reset_PSD    =16,  //AT+UPSDA=0,0
+	ATCMD_Enable_PSD   =17,  //AT+UPSDA=0,3
 
 }eATCMD;
 
@@ -371,8 +361,8 @@ typedef enum{
 	NUM_in_temp_max,
 	NUM_startup_temp,
 	NUM_dc_lowpwr,
-	NUM_fail_retry,
-	NUM_fail_count,
+	NUM_fail_retry, // same as fail count
+	NUM_fail_count, //
 
 	NUM_syspowr_input_type,
 	NUM_reboot_source,
@@ -386,8 +376,8 @@ typedef enum{
 	NUM_LAN_wakeup,
 	NUM_delay_off_setting,
 	NUM_delay_on_setting,
-	NUM_power_off_time,
-	NUM_power_on_time,
+	NUM_power_off_time,//remove
+	NUM_power_on_time,//remove
 
 	NUM_alarm_status,
 	NUM_InVol_limit_min,
@@ -398,7 +388,7 @@ typedef enum{
 	NUM_RTC_WakeT_hour,
 	NUM_RTC_WakeT_min,
 	NUM_RTC_WakeT_sec,
-	NUM_Host_WTGT,
+	//NUM_Host_WTGT,
 
 	NUM_12V_startup,
 	NUM_12V_shutdown,
@@ -456,7 +446,8 @@ typedef struct{
 
 typedef struct{
 	uint8_t ig_states;
-	uint8_t pwr_btn_pressed;
+	uint8_t pwrbtn_pressed;
+	uint8_t fail_count;
 }sIG_VAR;
 
 
