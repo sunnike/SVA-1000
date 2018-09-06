@@ -336,6 +336,55 @@ typedef enum{
 
 
 /******  SVA-1000 specific Ignition States ******************************************************************/
+#if 0
+typedef enum{
+
+	NUM_eeprom_tag_init       = SPI_FLASH_LEN_CMDADD,
+	NUM_major_ver             = SPI_FLASH_LEN_CMDADD + 1,
+	NUM_minor_ver,
+	NUM_wtdog_default,
+	NUM_in_sys_volt,
+	NUM_in_volt_min,
+	NUM_in_volt_max,
+	NUM_startup_volt,
+	NUM_in_temp_min,
+	NUM_in_temp_max,
+	NUM_startup_temp,
+	NUM_dc_lowpwr,
+
+	NUM_syspowr_input_type,
+	NUM_reboot_source,
+	NUM_boot_mode,
+	NUM_WWAN_wakeup,
+	NUM_WWAN_status,
+	NUM_digital_input,
+	NUM_digital_output,
+	NUM_sim_card_mode,
+	NUM_wifi_status,
+	NUM_LAN_wakeup,
+	NUM_delay_off_setting,
+	NUM_delay_on_setting,
+
+	NUM_alarm_status,
+	NUM_InVol_limit_min,
+	NUM_InVol_limit_max,
+	NUM_RTC_AlarmT_hour,
+	NUM_RTC_AlarmT_min,
+	NUM_RTC_AlarmT_sec,
+	NUM_RTC_WakeT_hour,
+	NUM_RTC_WakeT_min,
+	NUM_RTC_WakeT_sec,
+
+	NUM_12V_startup,
+	NUM_12V_shutdown,
+	NUM_24V_startup,
+	NUM_24V_shutdown,
+
+	NUM_total,
+}eData_Num;
+#endif
+
+#if 1
 typedef enum{
 
 	NUM_eeprom_tag_init       = SPI_FLASH_LEN_CMDADD,
@@ -397,7 +446,7 @@ typedef enum{
 
 	NUM_total,
 }eData_Num;
-
+#endif
 
 /* USER CODE END ENUM definitions  */
 

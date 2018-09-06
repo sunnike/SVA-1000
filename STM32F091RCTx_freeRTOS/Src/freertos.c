@@ -125,7 +125,6 @@ uint8_t cml_proc[MAX_CML_CHAR] = {0};
 uint8_t uart_Tx[][26] = {"AT", "AT+cind?", "at+cgdcont?", "AT+CGACT=1,1", "AT+COPS?", "AT+CSQ", "at+ugps=1,0", "at+ugps=0", "AT+UGRMC=1",
 		"AT+UGRMC?", "AT+UGPRF=1", "AT+CFUN?", "AT+CFUN=4", "AT+CFUN=1",  "AT+UPING=\"www.google.com\"", "AT+UPSD=0,1,\"apn.name\"",
 		"AT+UPSDA=0,0", "AT+UPSDA=0,3"};
-//uint8_t uart_Tx[][13] = {"AT", "AT+CSQ", "AT+COPS?", "at+cgdcont?", "AT+CGACT=1,1", "AT+UGPRF=1", "AT+UGRMC=1", "at+ugps=1,0", "AT+UGRMC?"};
 
 
 //sIG_EVENT gIG_Event ={ 0x12345678, 0, 1, IG_Recovery, 1, 1, 1, 2, 2, 10, 2, 100, 5, FALSE, 5, 12, 20, 145, 0, 50, 100, 50, 0, 0, 0};
@@ -149,9 +148,9 @@ uint8_t flash_IgEvent[NUM_total] = {SPI_FLASH_PROGRAM_PAGE, SPI_FLASH_ADD_Byte0,
 uint8_t flash_IgEvent[NUM_total] = {SPI_FLASH_PROGRAM_PAGE, SPI_FLASH_ADD_Byte0, SPI_FLASH_ADD_Byte1, SPI_FLASH_ADD_Byte2,
 		SPI_FLASH_DATA_TAG, 0, 1, 30, 12, 20,
 		145, 0, 50,	100, 50, 0, 0, 0, 0, 0,
-		0, 0, 0, 0, 0, 0, 0, 0, 0, 0,
-		0, 9, 36, 0, 0, 0, 0, 0, 0, 0x03,
-		0x03, 0x03, 0x03};
+		0, 0, 0, 0, 0, 0, 0, 0,	0, 9,
+		36, 0, 0, 0, 0, 0, 0, 0x03,	0x03, 0x03,
+		0x03};
  */
 
 
@@ -161,9 +160,9 @@ uint8_t flash_IgEvent[NUM_total] = {SPI_FLASH_PROGRAM_PAGE, SPI_FLASH_ADD_Byte0,
 uint8_t flash_IgEvent[NUM_total] = {SPI_FLASH_PROGRAM_PAGE, SPI_FLASH_ADD_Byte0, SPI_FLASH_ADD_Byte1, SPI_FLASH_ADD_Byte2,
 		SPI_FLASH_DATA_TAG, 0, 1, 30, 12, 9,
 		54, 0, 50, 100, 50, 0, 0, 0, 0, 0,
-		0, 0, 0, 0, 0, 0, 0, 0, 0, 0,
-		 0, 9, 36, 0, 0, 0, 0, 0, 0, 0x03,
-		 0x03, 0x03, 0x03};
+		0, 0, 0, 0, 0, 0, 0, 0, 0, 9,
+		36, 0, 0, 0, 0, 0, 0, 0x03,	0x03, 0x03,
+		0x03};
 
 uint8_t flash_IgEvent[NUM_total] = {SPI_FLASH_PROGRAM_PAGE, SPI_FLASH_ADD_Byte0, SPI_FLASH_ADD_Byte1, SPI_FLASH_ADD_Byte2,
 		SPI_FLASH_DATA_TAG, 0, 1, IG_Recovery, 4, 1,
@@ -180,9 +179,9 @@ uint8_t flash_IgEvent[NUM_total] = {SPI_FLASH_PROGRAM_PAGE, SPI_FLASH_ADD_Byte0,
 uint8_t flash_IgEvent[NUM_total] = {SPI_FLASH_PROGRAM_PAGE, SPI_FLASH_ADD_Byte0, SPI_FLASH_ADD_Byte1, SPI_FLASH_ADD_Byte2,
 		SPI_FLASH_DATA_TAG, 0, 1, 30, 12, 20,
 		145, 0, 50,	100, 50, 0, 0, 0, 0, 0,
-		0, 0, 0, 0, 0, 0, 0, 0, 0, 0,
-		0, 9, 36, 0, 0, 0, 0, 0, 0, 0x03,
-		0x03, 0x03, 0x03};
+		0, 0, 0, 0, 0, 0, 0, 0,	0, 9,
+		36, 0, 0, 0, 0, 0, 0, 0x03,	0x03, 0x03,
+		0x03};
 
 uint8_t flash_IgEvent[NUM_total] = {SPI_FLASH_PROGRAM_PAGE, SPI_FLASH_ADD_Byte0, SPI_FLASH_ADD_Byte1, SPI_FLASH_ADD_Byte2,
 		SPI_FLASH_DATA_TAG, 0, 1, IG_Recovery, 4, 1,
@@ -2620,7 +2619,18 @@ void cmd_proc_entry(void const * argument)
   /* Infinite loop */
   for(;;)
   {
-    osDelay(1000);
+	  //HAL_RTC_GetTime(&hrtc, &sTime, RTC_FORMAT_BIN);
+	  //HAL_RTC_GetDate(&hrtc, &sDate, RTC_FORMAT_BIN);
+
+	  //HAL_RTC_GetAlarm(&hrtc, &sAlarm, RTC_ALARM_A, RTC_FORMAT_BIN);
+
+	  //aewin_dbg("\n\rGet RTC alarm time: %d : %d : %d", sAlarm.AlarmTime.Hours,sAlarm.AlarmTime.Minutes, sAlarm.AlarmTime.Seconds);
+	  //aewin_dbg("\n\rGet Time: %2d:%2d:%2d",sTime.Hours ,sTime.Minutes, sTime.Seconds);
+	  //aewin_dbg("\n\r=============================",sTime.Hours ,sTime.Minutes, sTime.Seconds);
+	  osDelay(1000);
+
+
+	  //osDelay(1000);
   }
   /* USER CODE END cmd_proc_entry */
 }
@@ -2859,14 +2869,6 @@ void spi1_entry(void const * argument)
   /* Infinite loop */
   for(;;)
   {
-	  HAL_RTC_GetTime(&hrtc, &sTime, RTC_FORMAT_BIN);
-	  HAL_RTC_GetDate(&hrtc, &sDate, RTC_FORMAT_BIN);
-
-	  HAL_RTC_GetAlarm(&hrtc, &sAlarm, RTC_ALARM_A, RTC_FORMAT_BIN);
-
-	  //aewin_dbg("\n\rGet RTC alarm time: %d : %d : %d", sAlarm.AlarmTime.Hours,sAlarm.AlarmTime.Minutes, sAlarm.AlarmTime.Seconds);
-	  //aewin_dbg("\n\rGet Time: %2d:%2d:%2d",sTime.Hours ,sTime.Minutes, sTime.Seconds);
-	  //aewin_dbg("\n\r=============================",sTime.Hours ,sTime.Minutes, sTime.Seconds);
 	  osDelay(1000);
 
 	  if(flag_flashWrite == 1)
