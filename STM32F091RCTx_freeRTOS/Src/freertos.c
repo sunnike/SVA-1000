@@ -104,7 +104,7 @@ osMutexId MUTEX_SPI1Handle;
 char dbg_buff[PRINT_BUFF];
 #endif
 
-uint8_t uart2_msg_print_switch = 1;
+uint8_t uart2_msg_print_switch = 0;
 uint8_t wwan_command = 0;
 // 0 : no command
 // 1 : enable
@@ -237,6 +237,7 @@ void enable_4GModule(void);
 uint8_t uart_findDataIndex(uint8_t uart_msg[], uint8_t target_data);
 void print_atCommand(uint8_t rx_msg[], uint8_t onOff);
 uint8_t check_lowPower(uint32_t adc_value);
+uint8_t check_highPower(uint32_t adc_value);
 void config_recovery(void);
 #endif
 
@@ -839,7 +840,8 @@ void usart1_entry(void const * argument)
 							xFer[6] = adc_tempConversion_int(evt_temp.value.v);        //MCU temperature
 							send2host = TRUE;
 							xFer_len = MCU_REPO_HEAD_CMD_SIZE + MCU_SCMD70_LEN;
-							aewin_dbg("\n\rGet system input voltage: %2d", xFer[3]);
+							aewin_dbg("\n\rGet system input voltage: %2d.%2d", xFer[4], xFer[3]);
+							aewin_dbg("\n\rGet system input temperature: %2d.%2d", xFer[6], xFer[5]);
 							aewin_dbg("\n\rGet MCU temperature: %2d", xFer[4]);
 							break;
 
@@ -856,6 +858,13 @@ void usart1_entry(void const * argument)
 							xFer[6] = (evt_long.value.v)/10000000;
 							xFer[7] = ((evt_long.value.v)%10000000)*60/10000000;
 							xFer[8] = ( (((evt_long.value.v)%10000000)*60) % 10000000)*60/10000000;
+
+							//DMM to DMS
+							xFer[4] = ((evt_lat.value.v)%10000000)/100000;
+							xFer[5] = (((evt_lat.value.v)%10000000)%100000)*60/100000;
+							xFer[7] = ((evt_long.value.v)%10000000)/100000;
+							xFer[8] = (((evt_long.value.v)%10000000)%100000)*60/100000;
+
 							send2host = TRUE;
 							xFer_len = MCU_REPO_HEAD_CMD_SIZE + MCU_SCMD80_LEN;
 							aewin_dbg("\n\rPrint GPS data: %u, %u", evt_lat.value.v, evt_long.value.v);
@@ -2105,10 +2114,15 @@ void ignition_entry(void const * argument)
 {
   /* USER CODE BEGIN ignition_entry */
 	osEvent  	evt;
-	uint32_t 	adc_24v, adc_temp;
+	uint32_t 	adc_24v = 0;
+	uint32_t    adc_temp = 0;
 
 	//ig_event = gIG_Event;
 
+	aewin_dbg("\n\rInitialize finished.\n\r");
+	aewin_dbg("\n\rReset status : 0x%x.\n\r", RCC->CSR);
+	RCC->CSR |= 0x01000000;
+	aewin_dbg("\n\rClear reset status : 0x%x.\n\r", RCC->CSR);
     /* Infinite loop */
     for(;;)
     {
@@ -2122,6 +2136,7 @@ void ignition_entry(void const * argument)
     	evt = osMessageGet(ADC_VOLT_QHandle, osWaitForever);
 		if (evt.status == osEventMessage){
 			adc_24v = evt.value.v;
+			check_highPower(adc_24v);
 			//aewin_dbg("\n\r");
 			//aewin_dbg("\n\rGet ADC 24V = %.1d.%.2d V", (((adc_24v & 0xfffU) * 330) / 409600), \
 							  	  	  	  	  	  	   ((((adc_24v & 0xfffU) * 330) / 4096) % 100));
@@ -2340,7 +2355,7 @@ void ignition_entry(void const * argument)
 					aewin_dbg("\n\rPower button off! IG_Start_Up --> IG_shutting_Down");
 				}
 
-				if(check_lowPower(adc_temp) == 1)
+				if(check_lowPower(adc_24v) == 1)
 				{
 					//current_IgEvent[NUM_ig_states] = IG_LowPower_Delay;
 					ig_var.ig_states = IG_LowPower_Delay;
@@ -2377,7 +2392,7 @@ void ignition_entry(void const * argument)
 					aewin_dbg("\n\rPower off delay failed! IG_Shutdown_Delay --> IG_Start_Up");
 				}
 
-				if(check_lowPower(adc_temp) == 1)
+				if(check_lowPower(adc_24v) == 1)
 				{
 					//current_IgEvent[NUM_ig_states] = IG_LowPower_Delay;
 					ig_var.ig_states = IG_LowPower_Delay;
@@ -3117,9 +3132,6 @@ void HAL_UART_RxCpltCallback(UART_HandleTypeDef *UartHandle)
 void HAL_RTC_AlarmAEventCallback(RTC_HandleTypeDef *handleRTC)
 {
     // RTC wakeup
-	HAL_GPIO_WritePin(GPIOC, TEST_4G_Pin, GPIO_PIN_RESET);
-	osDelay(25);
-	HAL_GPIO_WritePin(GPIOC, TEST_4G_Pin, GPIO_PIN_SET);
 	aewin_dbg("\n\rAlarm!!");
 	aewin_dbg("\n\rAlarm ISR time: %d : %d : %d", sAlarm.AlarmTime.Hours,sAlarm.AlarmTime.Minutes, sAlarm.AlarmTime.Seconds);
 	aewin_dbg("\n\rAlarm RTC Time: %2d:%2d:%2d",sTime.Hours ,sTime.Minutes, sTime.Seconds);
@@ -3253,6 +3265,12 @@ uint8_t uart2_isFindString(uint8_t uart_msg[], uint8_t target_string[], uint8_t 
 
 void enable_4GModule(void)
 {
+	//A1
+	HAL_GPIO_WritePin(ENABLE_4G_GPIO_Port, ENABLE_4G_Pin, GPIO_PIN_RESET);
+	HAL_Delay(1);
+	HAL_GPIO_WritePin(ENABLE_4G_GPIO_Port, ENABLE_4G_Pin, GPIO_PIN_SET);
+
+	//A0
 	HAL_GPIO_WritePin(GPIOC, TEST_4G_Pin, GPIO_PIN_RESET);
 	HAL_Delay(1);
 	HAL_GPIO_WritePin(GPIOC, TEST_4G_Pin, GPIO_PIN_SET);
@@ -3275,13 +3293,16 @@ void print_atCommand(uint8_t rx_msg[], uint8_t onOff)
 uint8_t check_lowPower(uint32_t adc_value)
 {
 	uint8_t low_std = 9*10 + current_IgEvent[NUM_12V_shutdown]*5;
+	uint8_t current_voltage = (adc_voltageConversion_int(adc_value)*10 + (adc_voltageConversion_float(adc_value)/10) );
 
-	if( (adc_voltageConversion_int(adc_value)*10 + (adc_voltageConversion_float(adc_value)/10) ) < low_std)
+	if( current_voltage < low_std)
 	{
+		//aewin_dbg("Current Voltage %d V is lower than shutdown power setting %d V.\r\n", current_voltage, low_std);
 		return 1;
 	}
 	else
 	{
+		//aewin_dbg("Current Voltage %d V is higher than shutdown power setting %d V.\r\n", current_voltage, low_std);
 		return 0;
 	}
 
@@ -3290,6 +3311,23 @@ uint8_t check_lowPower(uint32_t adc_value)
 	//current_IgEvent[NUM_12V_shutdown];
 	//current_IgEvent[NUM_24V_startup];
 	//current_IgEvent[NUM_24V_shutdown];
+}
+
+uint8_t check_highPower(uint32_t adc_value)
+{
+	uint8_t high_std = 10*10 + current_IgEvent[NUM_12V_startup]*5;
+	uint8_t current_voltage = (adc_voltageConversion_int(adc_value)*10 + (adc_voltageConversion_float(adc_value)/10) );
+
+	if( current_voltage > high_std)
+	{
+		//aewin_dbg("\r\nCurrent Voltage %d V is higher than startup power setting %d V.\r\n", current_voltage, high_std);
+		return 1;
+	}
+	else
+	{
+		//aewin_dbg("\r\nCurrent Voltage %d V is lower than startup power setting %d V.\r\n", current_voltage, high_std);
+		return 0;
+	}
 }
 
 void config_recovery(void)
