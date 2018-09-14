@@ -85,6 +85,9 @@ void MX_GPIO_Init(void)
   /*Configure GPIO pin Output Level */
   HAL_GPIO_WritePin(TEST_4G_GPIO_Port, TEST_4G_Pin, GPIO_PIN_SET);
 
+  /*Configure GPIO pin Output Level */
+  HAL_GPIO_WritePin(DEBUG_GPO_GPIO_Port, DEBUG_GPO_Pin, GPIO_PIN_RESET);
+
   /*Configure GPIO pins : PCPin PCPin PCPin PCPin 
                            PCPin */
   GPIO_InitStruct.Pin = SPI1_CS_Pin|D2D_EN_Pin|ENABLE_4G_Pin|TEST_4G_Pin 
@@ -101,6 +104,13 @@ void MX_GPIO_Init(void)
   GPIO_InitStruct.Mode = GPIO_MODE_INPUT;
   GPIO_InitStruct.Pull = GPIO_NOPULL;
   HAL_GPIO_Init(GPIOC, &GPIO_InitStruct);
+
+  /*Configure GPIO pin : PtPin */
+  GPIO_InitStruct.Pin = DEBUG_GPO_Pin;
+  GPIO_InitStruct.Mode = GPIO_MODE_OUTPUT_PP;
+  GPIO_InitStruct.Pull = GPIO_NOPULL;
+  GPIO_InitStruct.Speed = GPIO_SPEED_FREQ_LOW;
+  HAL_GPIO_Init(DEBUG_GPO_GPIO_Port, &GPIO_InitStruct);
 
   /*Configure GPIO pin : PA8 */
   GPIO_InitStruct.Pin = GPIO_PIN_8;

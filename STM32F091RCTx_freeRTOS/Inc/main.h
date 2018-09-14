@@ -73,6 +73,8 @@
 #define MCU_TEMP_GPIO_Port GPIOA
 #define TEST_4G_Pin GPIO_PIN_4
 #define TEST_4G_GPIO_Port GPIOC
+#define DEBUG_GPO_Pin GPIO_PIN_0
+#define DEBUG_GPO_GPIO_Port GPIOB
 #define IGNITION_SW_Pin GPIO_PIN_6
 #define IGNITION_SW_GPIO_Port GPIOC
 #define PWR_BTN_IGN_R_Pin GPIO_PIN_7

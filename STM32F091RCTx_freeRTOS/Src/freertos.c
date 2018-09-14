@@ -322,7 +322,7 @@ void MX_FREERTOS_Init(void) {
   USART3_TaskHandle = osThreadCreate(osThread(USART3_Task), NULL);
 
   /* definition and creation of IGNITION_Task */
-  osThreadDef(IGNITION_Task, ignition_entry, osPriorityNormal, 0, 128);
+  osThreadDef(IGNITION_Task, ignition_entry, osPriorityNormal, 0, 256);
   IGNITION_TaskHandle = osThreadCreate(osThread(IGNITION_Task), NULL);
 
   /* definition and creation of I2C1_Task */
@@ -2620,6 +2620,10 @@ void IWDG_entry(void const * argument)
   {
 	  /* Refresh IWDG */
 
+	  HAL_GPIO_WritePin(DEBUG_GPO_GPIO_Port, DEBUG_GPO_Pin, GPIO_PIN_SET);
+	  HAL_Delay(1);
+	  HAL_GPIO_WritePin(DEBUG_GPO_GPIO_Port, DEBUG_GPO_Pin, GPIO_PIN_RESET);
+
 	  HAL_IWDG_Refresh(&hiwdg);
 	  osDelay(IWDG_TASK_ENTRY_TIME);
 	  //osDelay(current_IgEvent[NUM_wtdog_default]*1000);
@@ -2634,14 +2638,14 @@ void cmd_proc_entry(void const * argument)
   /* Infinite loop */
   for(;;)
   {
-	  //HAL_RTC_GetTime(&hrtc, &sTime, RTC_FORMAT_BIN);
-	  //HAL_RTC_GetDate(&hrtc, &sDate, RTC_FORMAT_BIN);
+	  HAL_RTC_GetTime(&hrtc, &sTime, RTC_FORMAT_BIN);
+	  HAL_RTC_GetDate(&hrtc, &sDate, RTC_FORMAT_BIN);
 
-	  //HAL_RTC_GetAlarm(&hrtc, &sAlarm, RTC_ALARM_A, RTC_FORMAT_BIN);
+	  HAL_RTC_GetAlarm(&hrtc, &sAlarm, RTC_ALARM_A, RTC_FORMAT_BIN);
 
-	  //aewin_dbg("\n\rGet RTC alarm time: %d : %d : %d", sAlarm.AlarmTime.Hours,sAlarm.AlarmTime.Minutes, sAlarm.AlarmTime.Seconds);
-	  //aewin_dbg("\n\rGet Time: %2d:%2d:%2d",sTime.Hours ,sTime.Minutes, sTime.Seconds);
-	  //aewin_dbg("\n\r=============================",sTime.Hours ,sTime.Minutes, sTime.Seconds);
+	  aewin_dbg("\n\rGet RTC alarm time: %d : %d : %d", sAlarm.AlarmTime.Hours,sAlarm.AlarmTime.Minutes, sAlarm.AlarmTime.Seconds);
+	  aewin_dbg("\n\rGet Time: %2d:%2d:%2d",sTime.Hours ,sTime.Minutes, sTime.Seconds);
+	  aewin_dbg("\n\r=============================",sTime.Hours ,sTime.Minutes, sTime.Seconds);
 	  osDelay(1000);
 
 
@@ -3132,9 +3136,12 @@ void HAL_UART_RxCpltCallback(UART_HandleTypeDef *UartHandle)
 void HAL_RTC_AlarmAEventCallback(RTC_HandleTypeDef *handleRTC)
 {
     // RTC wakeup
-	aewin_dbg("\n\rAlarm!!");
-	aewin_dbg("\n\rAlarm ISR time: %d : %d : %d", sAlarm.AlarmTime.Hours,sAlarm.AlarmTime.Minutes, sAlarm.AlarmTime.Seconds);
-	aewin_dbg("\n\rAlarm RTC Time: %2d:%2d:%2d",sTime.Hours ,sTime.Minutes, sTime.Seconds);
+	if(current_IgEvent[NUM_alarm_status] == 1)
+	{
+		HAL_GPIO_WritePin(GPIOC, TEST_4G_Pin, GPIO_PIN_RESET);
+		HAL_Delay(1);
+		HAL_GPIO_WritePin(GPIOC, TEST_4G_Pin, GPIO_PIN_SET);
+	}
 }
 
 
