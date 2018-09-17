@@ -196,8 +196,6 @@ uint8_t flag_flashWrite = 0;
 
 volatile sIG_EVENT ig_event;
 
-__IO ITStatus UartReady = RESET;
-
 /** @defgroup STM32F0XX_RTC STM32F0XX RTC time, date and alarm.
   * @{
   */
@@ -2160,6 +2158,13 @@ void ignition_entry(void const * argument)
 				//ig_event = gIG_Event;
 				//config_recovery();
 
+				//countdown_timer initialize
+				countdown_timer.poweron_delay    = current_IgEvent[NUM_pwron_delay];
+				countdown_timer.startup_timeout  = current_IgEvent[NUM_startup_timeout];
+				countdown_timer.shutdown_delay   = current_IgEvent[NUM_shutdown_delay];
+				countdown_timer.shutdown_timeout = current_IgEvent[NUM_shutdown_timeout];
+				countdown_timer.poweroff_delay   = current_IgEvent[NUM_pwroff_delay];
+
 				//ig_event.IG_States = IG_CloseUp;
 				//current_IgEvent[NUM_ig_states] = IG_CloseUp;
 				ig_var.ig_states = IG_CloseUp;
@@ -2199,6 +2204,12 @@ void ignition_entry(void const * argument)
 			case IG_PowerOn_Delay:
 				// Judge the IG switch states.
 				if(sva_gpi.ig_sw == GPIO_PIN_SET){
+
+					if(current_IgEvent[NUM_delay_on_setting] == 0)
+					{
+						countdown_timer.poweron_delay = 0;
+					}
+
 					//if (0 == (ig_event.pwron_delay--)){
 					//if (0 == (current_IgEvent[NUM_pwron_delay]--)){
 					if (0 == (countdown_timer.poweron_delay--)){
@@ -2303,6 +2314,13 @@ void ignition_entry(void const * argument)
 					ig_var.ig_states = IG_PowerOn_Delay;
 					aewin_dbg("\n\rIG_Wait_StartUp failed! IG_Wait_StartUp --> IG_PowerOn_Delay");
 				}
+
+				//check startup battery
+				if(check_highPower(adc_24v) == 0)
+				{
+					//ig_var.fail_count++;
+					//ig_var.ig_states = IG_Recovery;
+				}
 				break;
 
 			//-------------------------------------------------------------------------------------
@@ -2367,6 +2385,12 @@ void ignition_entry(void const * argument)
 			//-------------------------------------------------------------------------------------
 			case IG_Shutdown_Delay:
 				if(sva_gpi.ig_sw == GPIO_PIN_RESET){
+
+					if(current_IgEvent[NUM_delay_off_setting] == 0)
+					{
+						countdown_timer.poweroff_delay = 0;
+					}
+
 					//if (0 == (ig_event.pwroff_delay--)){
 					//if (0 == (current_IgEvent[NUM_pwroff_delay]--)){
 					if (0 == (countdown_timer.poweroff_delay--)){
@@ -3126,13 +3150,6 @@ void aewin_dbg(char *fmt,...){
 }
 #endif
 
-void HAL_UART_RxCpltCallback(UART_HandleTypeDef *UartHandle)
-{
-  /* Set transmission flag: transfer complete */
-  UartReady = SET;
-}
-
-
 void HAL_RTC_AlarmAEventCallback(RTC_HandleTypeDef *handleRTC)
 {
     // RTC wakeup
@@ -3300,6 +3317,7 @@ void print_atCommand(uint8_t rx_msg[], uint8_t onOff)
 uint8_t check_lowPower(uint32_t adc_value)
 {
 	uint8_t low_std = 9*10 + current_IgEvent[NUM_12V_shutdown]*5;
+	//low_std = current_IgEvent[NUM_in_volt_min]*10;
 	uint8_t current_voltage = (adc_voltageConversion_int(adc_value)*10 + (adc_voltageConversion_float(adc_value)/10) );
 
 	if( current_voltage < low_std)
