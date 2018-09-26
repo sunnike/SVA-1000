@@ -104,7 +104,10 @@ osMutexId MUTEX_SPI1Handle;
 char dbg_buff[PRINT_BUFF];
 #endif
 
-uint8_t uart2_msg_print_switch = 0;
+//debug timer counter
+TickType_t xTimeNow;
+
+uint8_t uart2_msg_print_switch = 1;
 uint8_t wwan_command = 0;
 // 0 : no command
 // 1 : enable
@@ -203,6 +206,8 @@ RTC_TimeTypeDef  sTime = {0};
 RTC_DateTypeDef  sDate = {0};
 RTC_AlarmTypeDef sAlarm = {0};
 
+DMA_HandleTypeDef hdma_usart1_rx;
+DMA_HandleTypeDef hdma_usart1_tx;
 
 /* USER CODE END Variables */
 
@@ -420,6 +425,11 @@ void usart1_entry(void const * argument)
 	uint8_t send2host = FALSE;
 	uint8_t xFer_len = 0;
 
+	uint8_t uart1_rx_buffer[CMD_MAX_LEN]= {0};
+	uint8_t u16InsIdx,u16Delidx;
+	uint8_t rx_byte_counter = 0;
+	uint8_t flag_rx_finished = 0;
+
 	sI2C1_DATA  *gsensor_data;
 
 	osEvent  	evt_vol;
@@ -430,12 +440,46 @@ void usart1_entry(void const * argument)
 	osEvent     evt_lat;
 	osEvent     evt_long;
 
+
+	HAL_UART_Receive_DMA(&huart1, &uart1_rx_buffer[CMD_SYN_POS0] ,CMD_MAX_LEN);
+	u16InsIdx = 0;
+	u16Delidx = 0;
+
 	//RTC_TimeTypeDef rtc_alarm;
 	/* Infinite loop */
 
 	for(;;)
     {
+		// check DMA new data
+		u16InsIdx = CMD_MAX_LEN - (hdma_usart1_rx.Instance->CNDTR);
+
+		// if data frame packet is not received completely and there are still some data in DMA buffer that uart1 haven't read
+		// if haven't read the data in DMA buffer
+		if((u16InsIdx != u16Delidx) && (flag_rx_finished == 0))
+		{
+			recv1[rx_byte_counter] = uart1_rx_buffer[u16Delidx];
+
+			// end of data frame packet, received completely
+			if((rx_byte_counter > 6)&&(recv1[rx_byte_counter-2] == 0x03)&&(recv1[rx_byte_counter-1] == 0x00)&&(recv1[rx_byte_counter] == 0x04))
+			{
+				rx_byte_counter = 0;
+				flag_rx_finished = 1;
+			}
+			else
+			{
+				rx_byte_counter = rx_byte_counter+1;
+			}
+
+			//get 1 byte from circular buffer
+			u16Delidx = u16Delidx + 1;
+			u16Delidx %= CMD_MAX_LEN;
+		}
 #if 1
+		/*
+
+		//xTimeNow = xTaskGetTickCount();
+		//aewin_dbg("\n\rTask: UART1; TaskGetTickCount: %d", xTimeNow);
+
 		// Wait until the first byte is coming
 		//while((HAL_UART_Receive_IT(&huart1, &recv1[CMD_SYN_POS0], 100)) != HAL_OK );
 		// Get the SYN code.
@@ -450,6 +494,8 @@ void usart1_entry(void const * argument)
 
 		// Abort UART processing.
 		HAL_UART_Abort_IT(&huart1);
+
+		*/
 #else
 
 		// Wait until the first byte is coming
@@ -467,7 +513,7 @@ void usart1_entry(void const * argument)
 #endif
 		//
 		// Check command head.
-		if ((CMD_SYN_CODE == recv1[CMD_SYN_POS0]) && (CMD_SYN_CODE == recv1[CMD_SYN_POS1]) && (CMD_STX_CODE == recv1[CMD_STX_POS])){
+		if ((CMD_SYN_CODE == recv1[CMD_SYN_POS0]) && (CMD_SYN_CODE == recv1[CMD_SYN_POS1]) && (CMD_STX_CODE == recv1[CMD_STX_POS]) && (flag_rx_finished == 1)){
 			switch(recv1[CMD_MCMD_POS]){
 				//-----------------------------------------------------
 				case M_CMD_MCU_SETTING:
@@ -505,7 +551,6 @@ void usart1_entry(void const * argument)
 							aewin_dbg("\n\rGet Date: 20%2d_%2d_%2d  Weekday:%d",sDate.Year ,sDate.Month, sDate.Date ,sDate.WeekDay);
 							break;
 
-
 						//-----------------------------------------------------
 						case Subcmd_MCU_Set_Date:
 							if((CMD_ETX_CODE != recv1[CMD_ETX_POS(CMD_HEAD_MS_SIZE + MCU_SCMD21_LEN)]) || \
@@ -522,7 +567,6 @@ void usart1_entry(void const * argument)
 							HAL_RTC_SetTime(&hrtc, &sTime, RTC_FORMAT_BIN);
 							HAL_RTC_SetDate(&hrtc, &sDate, RTC_FORMAT_BIN);
 							break;
-
 
 						//-----------------------------------------------------
 						case Subcmd_Get_Sys_InVOLT:
@@ -904,6 +948,7 @@ void usart1_entry(void const * argument)
 							break;
 					}
 					break;
+
 				//-----------------------------------------------------
 				case M_CMD_IG_SETTING:
 					switch(recv1[CMD_SCMD_POS]){
@@ -1110,9 +1155,9 @@ void usart1_entry(void const * argument)
 						case Subcmd_Set_RTC_WakeT:
 							if((CMD_ETX_CODE != recv1[CMD_ETX_POS(CMD_HEAD_MS_SIZE + IGN_SCMD27_LEN)]) || \
 							   (CMD_EOT_CODE != recv1[CMD_EOT_POS(CMD_HEAD_MS_SIZE + IGN_SCMD27_LEN)])) break;
-							current_IgEvent[NUM_RTC_WakeT_hour] = recv1[5];		// Hours.
-							current_IgEvent[NUM_RTC_WakeT_min] = recv1[6];	// Minutes.
-							current_IgEvent[NUM_RTC_WakeT_sec] = recv1[7];	// Seconds.
+							current_IgEvent[NUM_RTC_WakeT_hour] = recv1[5];	 // Hours.
+							current_IgEvent[NUM_RTC_WakeT_min] = recv1[6];	 // Minutes.
+							current_IgEvent[NUM_RTC_WakeT_sec] = recv1[7];	 // Seconds.
 							flag_flashWrite = 1;
 							aewin_dbg("\n\rSet RTC wake time: %d : %d : %d", current_IgEvent[NUM_RTC_WakeT_hour], current_IgEvent[NUM_RTC_WakeT_min], current_IgEvent[NUM_RTC_WakeT_sec]);
 							break;
@@ -1223,21 +1268,26 @@ void usart1_entry(void const * argument)
 				xFer[xFer_len + 1] = 0x00; 			// Check sum.
 				xFer[xFer_len + 2] = CMD_EOT_CODE;	// EOT code.
 				xFer_len += CMD_TAIL_SIZE;
+
 				// Start to transmit to host.
 				HAL_UART_Transmit_DMA(&huart1, xFer, xFer_len);
 				osDelay(UART1_TX_DELAY);
 				send2host = FALSE;
 				xFer_len = 0;
 			}
+
+			flag_rx_finished = 0;
+			memset(recv1, 0, CMD_MAX_LEN);
+
 		}
 		//taskEXIT_CRITICAL();
-		memset(recv1, 0, CMD_MAX_LEN);
+		//memset(recv1, 0, CMD_MAX_LEN);
 		osDelay(UART1_TASK_ENTRY_TIME);
 	}
 
-
   /* USER CODE END usart1_entry */
 }
+
 
 /* usart2_entry function */
 void usart2_entry(void const * argument)
@@ -1246,8 +1296,10 @@ void usart2_entry(void const * argument)
 	uint8_t recv2[UART2_RX_LENGTH] = {0};
 	char split_count;
 	uint32_t latitude = 0, longitude = 0;
-	uint8_t latitude_index=0, longitude_index=0, reg_index, ip_index, strength_index;
+	uint8_t latitude_index = 0, longitude_index = 0;
+	uint8_t reg_index, ip_index, strength_index;
 	uint8_t ip_counter;
+
 	uint8_t string_OK[2] = {'O','K'};
 	uint8_t string_Not[3] = {'N', 'o', 't'};
 	uint8_t string_UUPING[7] = {'+', 'U', 'U', 'P', 'I', 'N', 'G'};
@@ -1255,24 +1307,27 @@ void usart2_entry(void const * argument)
 
 	uint8_t uart2_test;
 
-
 	int i;
 
+
 	osDelay(UART2_WAIT_READY);
+	//----------------------------------------
+
 
 	// Check register status AT+cind?
 	HAL_UART_Transmit(&huart2, uart_Tx[ATCMD_Check_Status], sizeof(uart_Tx[ATCMD_Check_Status])-1, 30);
 	HAL_UART_Transmit(&huart2, "\r", 1, 30);
 
 	if(HAL_UART_Receive_DMA(&huart2, recv2, UART2_RX_LENGTH) != HAL_OK)
-	  {
-	    //Error_Handler();
-	  }
+	{
+		//Error_Handler();
+	}
 	osDelay(UART2_ATCMD_DELAY);
 	HAL_UART_Abort_IT(&huart2);
 
 	print_atCommand(recv2, uart2_msg_print_switch);
 	memset(recv2, 0, UART2_RX_LENGTH);
+	//----------------------------------------
 
 
 	// Get IP AT+CGACT=1,1
@@ -1288,79 +1343,91 @@ void usart2_entry(void const * argument)
 
 	print_atCommand(recv2, uart2_msg_print_switch);
 	memset(recv2, 0, UART2_RX_LENGTH);
+	//----------------------------------------
+
 
 	// Check IP at+cgdcont?
 	HAL_UART_Transmit(&huart2, uart_Tx[ATCMD_Check_APNIP], sizeof(uart_Tx[ATCMD_Check_APNIP])-1, 30);
 	HAL_UART_Transmit(&huart2, "\r", 1, 30);
 
 	if(HAL_UART_Receive_DMA(&huart2, recv2, UART2_RX_LENGTH) != HAL_OK)
-	  {
+    {
 		//Error_Handler();
-	  }
+	}
 	osDelay(UART2_ATCMD_DELAY);
 	HAL_UART_Abort_IT(&huart2);
 
 	print_atCommand(recv2, uart2_msg_print_switch);
 	memset(recv2, 0, UART2_RX_LENGTH);
+	//----------------------------------------
+
 
 	// Check signal AT+CSQ
 	HAL_UART_Transmit(&huart2, uart_Tx[ATCMD_Check_Signal], sizeof(uart_Tx[ATCMD_Check_Signal])-1, 30);
 	HAL_UART_Transmit(&huart2, "\r", 1, 30);
 
 	if(HAL_UART_Receive_DMA(&huart2, recv2, UART2_RX_LENGTH) != HAL_OK)
-	  {
+	{
 		//Error_Handler();
-	  }
+	}
 	osDelay(UART2_ATCMD_DELAY);
 	HAL_UART_Abort_IT(&huart2);
 
 	print_atCommand(recv2, uart2_msg_print_switch);
 	memset(recv2, 0, UART2_RX_LENGTH);
+	//----------------------------------------
+
 
 	// set APN provider
 	HAL_UART_Transmit(&huart2, uart_Tx[ATCMD_Set_APN], sizeof(uart_Tx[ATCMD_Set_APN])-1, 30);
 	HAL_UART_Transmit(&huart2, "\r", 1, 30);
 
 	if(HAL_UART_Receive_DMA(&huart2, recv2, UART2_RX_LENGTH) != HAL_OK)
-	  {
+	{
 		//Error_Handler();
-	  }
+	}
 	osDelay(UART2_ATCMD_DELAY);
 	HAL_UART_Abort_IT(&huart2);
 
 	print_atCommand(recv2, uart2_msg_print_switch);
 	memset(recv2, 0, UART2_RX_LENGTH);
+	//----------------------------------------
+
 
 	// reset PSD
 	HAL_UART_Transmit(&huart2, uart_Tx[ATCMD_Reset_PSD], sizeof(uart_Tx[ATCMD_Reset_PSD])-1, 30);
 	HAL_UART_Transmit(&huart2, "\r", 1, 30);
 
 	if(HAL_UART_Receive_DMA(&huart2, recv2, UART2_RX_LENGTH) != HAL_OK)
-	  {
+	{
 		//Error_Handler();
-	  }
+	}
 	osDelay(UART2_ATCMD_DELAY*2);
 	HAL_UART_Abort_IT(&huart2);
 
 	print_atCommand(recv2, uart2_msg_print_switch);
 	memset(recv2, 0, UART2_RX_LENGTH);
+	//----------------------------------------
+
 
 	// activate PSD
 	HAL_UART_Transmit(&huart2, uart_Tx[ATCMD_Enable_PSD], sizeof(uart_Tx[ATCMD_Enable_PSD])-1, 30);
 	HAL_UART_Transmit(&huart2, "\r", 1, 30);
 
 	if(HAL_UART_Receive_DMA(&huart2, recv2, UART2_RX_LENGTH) != HAL_OK)
-	  {
+	{
 		//Error_Handler();
-	  }
+	}
 	osDelay(UART2_ATCMD_DELAY*2);
 	HAL_UART_Abort_IT(&huart2);
 
 	print_atCommand(recv2, uart2_msg_print_switch);
 	memset(recv2, 0, UART2_RX_LENGTH);
+	//----------------------------------------
 
 
 	// GPS
+	//----------------------------------------
 	// Configures the data flow to and from a u-blox GPS receiver connected to the Wireless Module AT+UGPRF=1
 	HAL_UART_Transmit(&huart2, uart_Tx[ATCMD_Config_GPS], sizeof(uart_Tx[ATCMD_Config_GPS])-1, 30);
 	HAL_UART_Transmit(&huart2, "\r", 1, 30);
@@ -1372,10 +1439,9 @@ void usart2_entry(void const * argument)
 	osDelay(UART2_ATCMD_DELAY);
 	HAL_UART_Abort_IT(&huart2);
 
-
 	print_atCommand(recv2, uart2_msg_print_switch);
 	memset(recv2, 0, UART2_RX_LENGTH);
-
+	//----------------------------------------
 
 
 	// Enable the NMEA $RMC messages AT+UGRMC=1
@@ -1391,6 +1457,7 @@ void usart2_entry(void const * argument)
 
 	print_atCommand(recv2, uart2_msg_print_switch);
 	memset(recv2, 0, UART2_RX_LENGTH);
+	//----------------------------------------
 
 
 	// Enable GPS AT+UGPS=1
@@ -1406,6 +1473,8 @@ void usart2_entry(void const * argument)
 
 	print_atCommand(recv2, uart2_msg_print_switch);
 	memset(recv2, 0, UART2_RX_LENGTH);
+	//----------------------------------------
+
 
 	//uint8_t recv2 = 0;
 	//HAL_StatusTypeDef u2_states = HAL_OK;
@@ -1456,9 +1525,9 @@ void usart2_entry(void const * argument)
 			HAL_UART_Transmit(&huart2, "\r", 1, 30);
 
 			if(HAL_UART_Receive_DMA(&huart2, recv2, UART2_RX_LENGTH) != HAL_OK)
-			  {
+			{
 				//Error_Handler();
-			  }
+			}
 			osDelay(UART2_ATCMD_DELAY);
 			HAL_UART_Abort_IT(&huart2);
 
@@ -1475,28 +1544,29 @@ void usart2_entry(void const * argument)
 			HAL_UART_Transmit(&huart2, "\r", 1, 30);
 
 			if(HAL_UART_Receive_DMA(&huart2, recv2, UART2_RX_LENGTH) != HAL_OK)
-			  {
+			{
 				//Error_Handler();
-			  }
+			}
 			osDelay(UART2_ATCMD_DELAY);
 			HAL_UART_Abort_IT(&huart2);
 
 			print_atCommand(recv2, uart2_msg_print_switch);
 			memset(recv2, 0, UART2_RX_LENGTH);
     	}
+    	//----------------------------------------
+
 
     	// Get the NMEA $RMC messages
 		HAL_UART_Transmit(&huart2, uart_Tx[ATCMD_Get_GPS_DATA], sizeof(uart_Tx[ATCMD_Get_GPS_DATA])-1, 30);
 		HAL_UART_Transmit(&huart2, "\r", 1, 30);
 
 		if(HAL_UART_Receive_DMA(&huart2, recv2, UART2_RX_LENGTH) != HAL_OK)
-		  {
+		{
 			//Error_Handler();
-		  }
+		}
 		else
 		{
 			print_atCommand(recv2, uart2_msg_print_switch);
-
 
 			if(uart2_isFindString(recv2, string_Not, 3) == 1)
 			{
@@ -1505,9 +1575,9 @@ void usart2_entry(void const * argument)
 				HAL_UART_Transmit(&huart2, "\r", 1, 30);
 
 				if(HAL_UART_Receive_DMA(&huart2, recv2, UART2_RX_LENGTH) != HAL_OK)
-				  {
+				{
 					//Error_Handler();
-				  }
+				}
 				osDelay(UART2_ATCMD_DELAY);
 				HAL_UART_Abort_IT(&huart2);
 
@@ -1594,6 +1664,7 @@ void usart2_entry(void const * argument)
 		osDelay(UART2_ATCMD_DELAY);
 		HAL_UART_Abort_IT(&huart2);
 		memset(recv2, 0, UART2_RX_LENGTH);
+		//----------------------------------------
 
 
 		// Airplane mode or normal mode AT+CFUN?
@@ -1601,9 +1672,9 @@ void usart2_entry(void const * argument)
 		HAL_UART_Transmit(&huart2, "\r", 1, 30);
 
 		if(HAL_UART_Receive_DMA(&huart2, recv2, UART2_RX_LENGTH) != HAL_OK)
-		  {
+		{
 			//Error_Handler();
-		  }
+		}
 		osDelay(UART2_ATCMD_DELAY);
 		HAL_UART_Abort_IT(&huart2);
 
@@ -1616,9 +1687,10 @@ void usart2_entry(void const * argument)
 			r280_module_state.normal_flight_states = 10;
 		}
 
-		print_atCommand(recv2, uart2_msg_print_switch);
 		//aewin_dbg("SIM mode is %d (airplane mode is '4')\r\n",  (recv2[uart_findDataIndex(recv2,1)]-'0'));
+		print_atCommand(recv2, uart2_msg_print_switch);
 		memset(recv2, 0, UART2_RX_LENGTH);
+		//----------------------------------------
 
 
 		// Get 3G,4G status AT+COPS?
@@ -1649,6 +1721,7 @@ void usart2_entry(void const * argument)
 
 		print_atCommand(recv2, uart2_msg_print_switch);
 		memset(recv2, 0, UART2_RX_LENGTH);
+		//----------------------------------------
 
 
 		// 4G signal strength AT+CSQ
@@ -1656,9 +1729,9 @@ void usart2_entry(void const * argument)
 		HAL_UART_Transmit(&huart2, "\r", 1, 30);
 
 		if(HAL_UART_Receive_DMA(&huart2, recv2, UART2_RX_LENGTH) != HAL_OK)
-		  {
+		{
 			//Error_Handler();
-		  }
+		}
 		osDelay(UART2_ATCMD_DELAY);
 		HAL_UART_Abort_IT(&huart2);
 
@@ -1674,17 +1747,20 @@ void usart2_entry(void const * argument)
 			}
 		}
 
-		print_atCommand(recv2, uart2_msg_print_switch);
 		//aewin_dbg("signal_sterngth is %d\r\n", r280_module_state.signal_strength);
+		print_atCommand(recv2, uart2_msg_print_switch);
+		memset(recv2, 0, UART2_RX_LENGTH);
+		//----------------------------------------
+
 
 		// 4G IP Addresss at+cgdcont?
 		HAL_UART_Transmit(&huart2, uart_Tx[ATCMD_Check_APNIP], sizeof(uart_Tx[ATCMD_Check_APNIP])-1, 30);
 		HAL_UART_Transmit(&huart2, "\r", 1, 30);
 
 		if(HAL_UART_Receive_DMA(&huart2, recv2, UART2_RX_LENGTH) != HAL_OK)
-		  {
+		{
 			//Error_Handler();
-		  }
+		}
 		osDelay(UART2_ATCMD_DELAY);
 		HAL_UART_Abort_IT(&huart2);
 
@@ -1729,9 +1805,10 @@ void usart2_entry(void const * argument)
 			}
 		}
 
-		print_atCommand(recv2, uart2_msg_print_switch);
 		//aewin_dbg("IP is %x.%x.%x.%x\r\n",  r280_module_state.ip_add_0, r280_module_state.ip_add_1, r280_module_state.ip_add_2, r280_module_state.ip_add_3);
+		print_atCommand(recv2, uart2_msg_print_switch);
 		memset(recv2, 0, UART2_RX_LENGTH);
+		//----------------------------------------
 
 
 		// ping status AT+UPING="www.google.com"
@@ -1745,13 +1822,19 @@ void usart2_entry(void const * argument)
 		osDelay(UART2_ATCMD_DELAY*5);
 		HAL_UART_Abort_IT(&huart2);
 
+		print_atCommand(recv2, uart2_msg_print_switch);
+
+
+		// check ping status
 		if((uart2_isFindString(recv2, string_UUPING, sizeof(string_UUPING)) == 1) && (uart2_isFindString(recv2, string_UUPINGER, sizeof(string_UUPINGER)) == 0))
 		{
 			r280_module_state.ping_status = 0; //OK
+			memset(recv2, 0, UART2_RX_LENGTH);
 		}
 		else
 		{
 			r280_module_state.ping_status = 1; //ERROR
+			memset(recv2, 0, UART2_RX_LENGTH);
 
 			//reset APN and PSD
 
@@ -1760,9 +1843,9 @@ void usart2_entry(void const * argument)
 			HAL_UART_Transmit(&huart2, "\r", 1, 30);
 
 			if(HAL_UART_Receive_DMA(&huart2, recv2, UART2_RX_LENGTH) != HAL_OK)
-			  {
+			{
 				//Error_Handler();
-			  }
+			}
 			osDelay(UART2_ATCMD_DELAY);
 			HAL_UART_Abort_IT(&huart2);
 
@@ -1774,9 +1857,9 @@ void usart2_entry(void const * argument)
 			HAL_UART_Transmit(&huart2, "\r", 1, 30);
 
 			if(HAL_UART_Receive_DMA(&huart2, recv2, UART2_RX_LENGTH) != HAL_OK)
-			  {
+			{
 				//Error_Handler();
-			  }
+			}
 			osDelay(UART2_ATCMD_DELAY*2);
 			HAL_UART_Abort_IT(&huart2);
 
@@ -1788,17 +1871,18 @@ void usart2_entry(void const * argument)
 			HAL_UART_Transmit(&huart2, "\r", 1, 30);
 
 			if(HAL_UART_Receive_DMA(&huart2, recv2, UART2_RX_LENGTH) != HAL_OK)
-			  {
+			{
 				//Error_Handler();
-			  }
+			}
 			osDelay(UART2_ATCMD_DELAY*2);
 			HAL_UART_Abort_IT(&huart2);
 
 			print_atCommand(recv2, uart2_msg_print_switch);
 			memset(recv2, 0, UART2_RX_LENGTH);
 		}
+		//----------------------------------------
 
-		print_atCommand(recv2, uart2_msg_print_switch);
+		//print_atCommand(recv2, uart2_msg_print_switch);
 
 
 #if 0
@@ -2667,9 +2751,9 @@ void cmd_proc_entry(void const * argument)
 
 	  HAL_RTC_GetAlarm(&hrtc, &sAlarm, RTC_ALARM_A, RTC_FORMAT_BIN);
 
-	  aewin_dbg("\n\rGet RTC alarm time: %d : %d : %d", sAlarm.AlarmTime.Hours,sAlarm.AlarmTime.Minutes, sAlarm.AlarmTime.Seconds);
-	  aewin_dbg("\n\rGet Time: %2d:%2d:%2d",sTime.Hours ,sTime.Minutes, sTime.Seconds);
-	  aewin_dbg("\n\r=============================",sTime.Hours ,sTime.Minutes, sTime.Seconds);
+	  //aewin_dbg("\n\rGet RTC alarm time: %d : %d : %d", sAlarm.AlarmTime.Hours,sAlarm.AlarmTime.Minutes, sAlarm.AlarmTime.Seconds);
+	  //aewin_dbg("\n\rGet Time: %2d:%2d:%2d",sTime.Hours ,sTime.Minutes, sTime.Seconds);
+	  //aewin_dbg("\n\r=============================",sTime.Hours ,sTime.Minutes, sTime.Seconds);
 	  osDelay(1000);
 
 
