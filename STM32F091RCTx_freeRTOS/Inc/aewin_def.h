@@ -38,7 +38,9 @@
 #define PRINT_BUFF			(128)
 
 
-
+ /** @defgroup STM32F0XX_UART STM32F0XX UART Configuration
+   * @{
+   */
 #define UART1_TIMEOUT		1
 #define UART2_TIMEOUT		500  //osWaitForever
 #define UART3_TIMEOUT		1
@@ -49,8 +51,6 @@
 #define UART2_ATCMD_DELAY   30
 #define UART2_WAIT_READY    900
 
-#define UART2_MSG_PRINT_ON  1
-#define UART2_MSG_PRINT_OFF 0
 
 
  /** @defgroup STM32F0XX_I2C STM32F0XX I2C Configuration
@@ -64,7 +64,6 @@
 #define I2C_ADXL345_CMD_PWR_CTL      0x2D
 #define I2C_ADXL345_DATA_MEASURE     0x08
 
-#define I2C_ADXL345_DELAY            500
 
 
  /** @defgroup STM32F0XX_SPI STM32F0XX SPI Configuration
@@ -81,7 +80,7 @@
 #define SPI_FLASH_ADD_Byte2      0x00
 
 #define SPI_FLASH_DATA_DEV_ID    0x18
-#define SPI_FLASH_CMD_DEV_ID     {0x90, 0x00, 0x00, 0x01}
+//#define SPI_FLASH_CMD_DEV_ID     {0x90, 0x00, 0x00, 0x01}
 
 #define SPI_FLASH_DATA_TAG       0xAA
 #define SPI_FLASH_LEN_CMDADD     4
@@ -128,7 +127,6 @@
 #define CMD_STX_CODE				(0x02U)
 #define CMD_ETX_CODE				(0x03U)
 #define CMD_EOT_CODE				(0x04U)
-
 
 #define CMD_SYN_POS0				(0U)
 #define CMD_SYN_POS1				(1U)
@@ -180,7 +178,6 @@
 #define MCU_SCMD80_LEN				(6U)
 #define MCU_SCMD90_LEN				(6U)
 #define MCU_SCMDA0_LEN				(2U)
-
 
 /** Ignition sub-commands length (Unit: byte). */
 #define IGN_SCMD10_LEN				(1U)
@@ -306,6 +303,13 @@ typedef enum{
 }eIG_Setting_SubCMDs;
 
 
+
+/******  SVA-1000  Event/Log information sub-commands ******************************************************************/
+typedef enum{
+	Subcmd_TeleComm_Event	= 0x10
+}eEvent_Log_SubCMDs;
+
+
 /******  SVA-1000 4G module AT command ******************************************************************/
 typedef enum{
 	ATCMD_AT 	       = 0,  //AT
@@ -326,13 +330,7 @@ typedef enum{
 	ATCMD_Set_APN      =15,  //AT+UPSD=0,1,"apn.name"
 	ATCMD_Reset_PSD    =16,  //AT+UPSDA=0,0
 	ATCMD_Enable_PSD   =17,  //AT+UPSDA=0,3
-
 }eATCMD;
-
-/******  SVA-1000  Event/Log information sub-commands ******************************************************************/
-typedef enum{
-	Subcmd_TeleComm_Event	= 0x10
-}eEvent_Log_SubCMDs;
 
 
 /******  SVA-1000 specific Ignition States ******************************************************************/
@@ -390,7 +388,7 @@ typedef enum{
 	NUM_eeprom_tag_init       = SPI_FLASH_LEN_CMDADD,
 	NUM_major_ver             = SPI_FLASH_LEN_CMDADD + 1,
 	NUM_minor_ver,
-	NUM_ig_states,//-
+	//NUM_ig_states,//-
 	NUM_pwron_delay,//
 	NUM_wait_startup_time,//
 	NUM_startup_timeout,//
@@ -400,7 +398,7 @@ typedef enum{
 	NUM_lowpwr_dealy,//
 	NUM_wtdog_default,
 	NUM_pwroff_btn_cnt,//
-	NUM_pwrbtn_pressed,//-
+	//NUM_pwrbtn_pressed,//-
 	NUM_pwrgood_chk_time,//
 	NUM_in_sys_volt,
 	NUM_in_volt_min,
@@ -410,8 +408,8 @@ typedef enum{
 	NUM_in_temp_max,
 	NUM_startup_temp,
 	NUM_dc_lowpwr,
-	NUM_fail_retry, // same as fail count
-	NUM_fail_count, //
+	//NUM_fail_retry, // same as fail count
+	//NUM_fail_count, //
 
 	NUM_syspowr_input_type,
 	NUM_reboot_source,
@@ -425,8 +423,8 @@ typedef enum{
 	NUM_LAN_wakeup,
 	NUM_delay_off_setting,
 	NUM_delay_on_setting,
-	NUM_power_off_time,//remove
-	NUM_power_on_time,//remove
+	//NUM_power_off_time,//remove
+	//NUM_power_on_time,//remove
 
 	NUM_alarm_status,
 	NUM_InVol_limit_min,
