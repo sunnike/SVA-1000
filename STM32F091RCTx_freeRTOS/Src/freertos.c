@@ -458,7 +458,7 @@ void usart1_entry(void const * argument)
 			recv1[rx_byte_counter] = uart1_rx_buffer[u16Delidx];
 
 			// end of data frame packet, received completely
-			if((rx_byte_counter > 6)&&(recv1[rx_byte_counter-2] == 0x03)&&(recv1[rx_byte_counter-1] == 0x00)&&(recv1[rx_byte_counter] == 0x04))
+			if((rx_byte_counter > 6) && (recv1[rx_byte_counter - 2] == 0x03) && (recv1[rx_byte_counter - 1] == 0x00) && (recv1[rx_byte_counter] == 0x04))
 			{
 				rx_byte_counter = 0;
 				flag_rx_finished = 1;
@@ -1367,7 +1367,6 @@ void usart1_entry(void const * argument)
 
   /* USER CODE END usart1_entry */
 }
-
 
 /* usart2_entry function */
 void usart2_entry(void const * argument)
