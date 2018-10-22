@@ -1958,7 +1958,82 @@ void usart2_entry(void const * argument)
 
 			print_atCommand(recv2, uart2_msg_print_switch);
 			memset(recv2, 0, UART2_RX_LENGTH);
+
+			// ublox FAE ======================================================
+			HAL_UART_Transmit(&huart2, "AT+COPS=2", sizeof("AT+COPS=2")-1, 30);
+			HAL_UART_Transmit(&huart2, "\r", 1, 30);
+
+			if(HAL_UART_Receive_DMA(&huart2, recv2, UART2_RX_LENGTH) != HAL_OK)
+			{
+				//Error_Handler();
+			}
+			osDelay(UART2_ATCMD_DELAY);
+			HAL_UART_Abort_IT(&huart2);
+
+			HAL_UART_Transmit(&huart2, "at+cgdcont=4,\"ip\",\"internet\"", sizeof("at+cgdcont=4,\"ip\",\"internet\"")-1, 30);
+			HAL_UART_Transmit(&huart2, "\r", 1, 30);
+
+			if(HAL_UART_Receive_DMA(&huart2, recv2, UART2_RX_LENGTH) != HAL_OK)
+			{
+				//Error_Handler();
+			}
+			osDelay(UART2_ATCMD_DELAY);
+			HAL_UART_Abort_IT(&huart2);
+
+
+			HAL_UART_Transmit(&huart2, "AT+COPS=0", sizeof("AT+COPS=0")-1, 30);
+			HAL_UART_Transmit(&huart2, "\r", 1, 30);
+
+			if(HAL_UART_Receive_DMA(&huart2, recv2, UART2_RX_LENGTH) != HAL_OK)
+			{
+				//Error_Handler();
+			}
+			osDelay(UART2_ATCMD_DELAY);
+			HAL_UART_Abort_IT(&huart2);
+
+
+			HAL_UART_Transmit(&huart2, "AT+CGACT=1,4", sizeof("AT+CGACT=1,4")-1, 30);
+			HAL_UART_Transmit(&huart2, "\r", 1, 30);
+
+			if(HAL_UART_Receive_DMA(&huart2, recv2, UART2_RX_LENGTH) != HAL_OK)
+			{
+				//Error_Handler();
+			}
+			osDelay(UART2_ATCMD_DELAY);
+			HAL_UART_Abort_IT(&huart2);
+
+			print_atCommand(recv2, uart2_msg_print_switch);
+			memset(recv2, 0, UART2_RX_LENGTH);
+
+			HAL_UART_Transmit(&huart2, "at+upsd=0,100,4", sizeof("at+upsd=0,100,4")-1, 30);
+			HAL_UART_Transmit(&huart2, "\r", 1, 30);
+
+			if(HAL_UART_Receive_DMA(&huart2, recv2, UART2_RX_LENGTH) != HAL_OK)
+			{
+				//Error_Handler();
+			}
+			osDelay(UART2_ATCMD_DELAY);
+			HAL_UART_Abort_IT(&huart2);
+
+			print_atCommand(recv2, uart2_msg_print_switch);
+			memset(recv2, 0, UART2_RX_LENGTH);
+
+			HAL_UART_Transmit(&huart2, "at+upsda=0,3", sizeof("at+upsda=0,3")-1, 30);
+			HAL_UART_Transmit(&huart2, "\r", 1, 30);
+
+			if(HAL_UART_Receive_DMA(&huart2, recv2, UART2_RX_LENGTH) != HAL_OK)
+			{
+				//Error_Handler();
+			}
+			osDelay(UART2_ATCMD_DELAY);
+			HAL_UART_Abort_IT(&huart2);
+
+			print_atCommand(recv2, uart2_msg_print_switch);
+			memset(recv2, 0, UART2_RX_LENGTH);
 		}
+
+
+
 		//----------------------------------------
 
 		//print_atCommand(recv2, uart2_msg_print_switch);
@@ -3364,7 +3439,7 @@ uint8_t adc_tempConversion_float(uint32_t adc_value)
 
 uint8_t uart2_findCommaIndexNext(uint8_t uart_msg[], uint8_t target_comma)
 {
-	uint8_t index, split_count;
+	uint16_t index, split_count;
 	// find index
 	split_count = 0;
 	for(index = 0; index<UART2_RX_LENGTH; index++)
@@ -3388,7 +3463,7 @@ uint8_t uart_findDataIndex(uint8_t uart_msg[], uint8_t target_data)
 	// target data is the target_comma
 	// first data is regard as 0th comma
 
-	uint8_t index, split_count;
+	uint16_t index, split_count;
 	// find index
 	split_count = 0;
 	for(index = 0; index<UART2_RX_LENGTH; index++)
@@ -3418,7 +3493,7 @@ uint8_t uart_findDataIndex(uint8_t uart_msg[], uint8_t target_data)
 
 uint8_t uart2_isFindString(uint8_t uart_msg[], uint8_t target_string[], uint8_t length)
 {
-	uint8_t index, string_index, flag_find = 0;
+	uint16_t index, string_index, flag_find = 0;
 	for(index = 0; index<UART2_RX_LENGTH; index++)
 	{
 		if(uart_msg[index] == target_string[0])
