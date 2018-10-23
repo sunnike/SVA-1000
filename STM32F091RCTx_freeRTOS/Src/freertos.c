@@ -236,7 +236,6 @@ uint8_t adc_voltageConversion_int(uint32_t adc_value);
 uint8_t adc_voltageConversion_float(uint32_t adc_value);
 uint8_t adc_tempConversion_int(uint32_t adc_value);
 uint8_t adc_tempConversion_float(uint32_t adc_value);
-uint8_t uart2_findCommaIndexNext(uint8_t uart_msg[], uint8_t target_comma);
 uint8_t uart2_isFindString(uint8_t uart_msg[], uint8_t target_string[], uint8_t length);
 void enable_4GModule(void);
 uint8_t uart_findDataIndex(uint8_t uart_msg[], uint8_t target_data);
@@ -432,13 +431,13 @@ void usart1_entry(void const * argument)
 	uint8_t rx_byte_counter = 0;
 	uint8_t flag_rx_finished = 0;
 
-	osEvent  	evt_vol;
-	osEvent     evt_temp;
-	osEvent     evt_xaxis;
-	osEvent     evt_yaxis;
-	osEvent     evt_zaxis;
-	osEvent     evt_lat;
-	osEvent     evt_long;
+	osEvent evt_vol;
+	osEvent evt_temp;
+	osEvent evt_xaxis;
+	osEvent evt_yaxis;
+	osEvent evt_zaxis;
+	osEvent evt_lat;
+	osEvent evt_long;
 
 	HAL_UART_Receive_DMA(&huart1, &uart1_rx_buffer[CMD_SYN_POS0] ,CMD_MAX_LEN);
 	u16InsIdx = 0;
@@ -557,7 +556,7 @@ void usart1_entry(void const * argument)
 						case Subcmd_MCU_Set_Date:
 							if((CMD_ETX_CODE != recv1[CMD_ETX_POS(CMD_HEAD_MS_SIZE + MCU_SCMD21_LEN)]) || \
 							   (CMD_EOT_CODE != recv1[CMD_EOT_POS(CMD_HEAD_MS_SIZE + MCU_SCMD21_LEN)])) break;
-							// recv1[6] = 20, no need to change
+							// recv1[6] = 20, don't need to change
 							sDate.Year  = recv1[5]; 		// Year low byte.
 							sDate.Month	= recv1[7];			// Month.
 							sDate.Date  = recv1[8];			// Date.
@@ -919,7 +918,6 @@ void usart1_entry(void const * argument)
 							evt_vol = osMessageGet(ADC_VOLT_QHandle,osWaitForever);
 							evt_temp = osMessageGet(ADC_TEMP_QHandle, osWaitForever);
 							xFer[2] = Subcmd_Get_ADC;
-							//xFer[3] = evt_vol.value.v;         //Input voltage
 							xFer[3] = adc_voltageConversion_float(evt_vol.value.v);
 							xFer[4] = adc_voltageConversion_int(evt_vol.value.v);
 							xFer[5] = adc_tempConversion_float(evt_temp.value.v);      //MCU temperature
@@ -1171,7 +1169,6 @@ void usart1_entry(void const * argument)
 							//xFer[5] = current_IgEvent[NUM_RTC_AlarmT_sec];
 							if(HAL_RTC_GetAlarm(&hrtc, &sAlarm, RTC_ALARM_A, RTC_FORMAT_BIN) != HAL_OK)
 							{
-								/* Initialization Error */
 								//Error_Handler();
 							}
 
@@ -1200,7 +1197,6 @@ void usart1_entry(void const * argument)
 
 							if(HAL_RTC_SetAlarm_IT(&hrtc,&sAlarm,RTC_FORMAT_BIN) != HAL_OK)
 							  {
-								/* Initialization Error */
 								Error_Handler();
 							  }
 
@@ -1337,7 +1333,6 @@ void usart1_entry(void const * argument)
 					case M_CMD_IG_SETTING:
 						xFer[1] = M_CMD_IG_SETTING;
 						break;
-
 					//-----------------------------------------------------
 					case M_CMD_4G_SETTING:
 						xFer[1] = M_CMD_4G_SETTING;
@@ -1373,7 +1368,7 @@ void usart2_entry(void const * argument)
 {
   /* USER CODE BEGIN usart2_entry */
 	uint8_t recv2[UART2_RX_LENGTH] = {0};
-	char split_count;
+
 	uint32_t latitude = 0, longitude = 0;
 	uint8_t latitude_index = 0, longitude_index = 0;
 	uint8_t reg_index, ip_index, strength_index;
@@ -1384,10 +1379,7 @@ void usart2_entry(void const * argument)
 	uint8_t string_UUPING[7] = {'+', 'U', 'U', 'P', 'I', 'N', 'G'};
 	uint8_t string_UUPINGER[9] = {'+', 'U', 'U', 'P', 'I', 'N', 'G', 'E', 'R'};
 
-	uint8_t uart2_test;
-
 	int i;
-
 
 	osDelay(UART2_WAIT_READY);
 	//----------------------------------------
@@ -1690,8 +1682,9 @@ void usart2_entry(void const * argument)
 					}
 				}
 				*/
-				latitude_index = uart2_findCommaIndexNext(recv2,4);
-				longitude_index = uart2_findCommaIndexNext(recv2,6);
+
+				latitude_index = uart_findDataIndex(recv2,5);
+				longitude_index = uart_findDataIndex(recv2,7);
 
 				// Get latitude and longitude data
 				latitude = 0;   //24
@@ -1783,7 +1776,7 @@ void usart2_entry(void const * argument)
 		osDelay(UART2_ATCMD_DELAY*3);
 		HAL_UART_Abort_IT(&huart2);
 
-		reg_index = uart2_findCommaIndexNext(recv2,3);
+		reg_index = uart_findDataIndex(recv2,4);
 
 		if(recv2[reg_index] == '7')                  //4G
 		{
@@ -1843,7 +1836,7 @@ void usart2_entry(void const * argument)
 		osDelay(UART2_ATCMD_DELAY);
 		HAL_UART_Abort_IT(&huart2);
 
-		ip_index = uart2_findCommaIndexNext(recv2,3)+1;
+		ip_index = uart_findDataIndex(recv2,4)+1;
 
 		ip_counter = 0;
 		r280_module_state.ip_add_0 = 0;
@@ -1851,7 +1844,7 @@ void usart2_entry(void const * argument)
 		r280_module_state.ip_add_2 = 0;
 		r280_module_state.ip_add_3 = 0;
 
-		for( i = ip_index ; i < uart2_findCommaIndexNext(recv2,4)-2 ; i++ )
+		for( i = ip_index ; i < uart_findDataIndex(recv2,5)-2 ; i++ )
 		{
 			if(recv2[i]!='.')
 			{
@@ -1917,7 +1910,7 @@ void usart2_entry(void const * argument)
 
 			//reset APN and PSD
 
-			// set APN provider
+			// set APN provider AT+UPSD=0,1,"apn.name"
 			HAL_UART_Transmit(&huart2, uart_Tx[ATCMD_Set_APN], sizeof(uart_Tx[ATCMD_Set_APN])-1, 30);
 			HAL_UART_Transmit(&huart2, "\r", 1, 30);
 
@@ -1931,7 +1924,7 @@ void usart2_entry(void const * argument)
 			print_atCommand(recv2, uart2_msg_print_switch);
 			memset(recv2, 0, UART2_RX_LENGTH);
 
-			// reset PSD
+			// reset PSD AT+UPSDA=0,0
 			HAL_UART_Transmit(&huart2, uart_Tx[ATCMD_Reset_PSD], sizeof(uart_Tx[ATCMD_Reset_PSD])-1, 30);
 			HAL_UART_Transmit(&huart2, "\r", 1, 30);
 
@@ -1945,7 +1938,7 @@ void usart2_entry(void const * argument)
 			print_atCommand(recv2, uart2_msg_print_switch);
 			memset(recv2, 0, UART2_RX_LENGTH);
 
-			// activate PSD
+			// activate PSD AT+UPSDA=0,3
 			HAL_UART_Transmit(&huart2, uart_Tx[ATCMD_Enable_PSD], sizeof(uart_Tx[ATCMD_Enable_PSD])-1, 30);
 			HAL_UART_Transmit(&huart2, "\r", 1, 30);
 
@@ -2882,9 +2875,10 @@ void IWDG_entry(void const * argument)
   {
 	  /* Refresh IWDG */
 
-	  HAL_GPIO_WritePin(DEBUG_GPO_GPIO_Port, DEBUG_GPO_Pin, GPIO_PIN_SET);
-	  HAL_Delay(1);
-	  HAL_GPIO_WritePin(DEBUG_GPO_GPIO_Port, DEBUG_GPO_Pin, GPIO_PIN_RESET);
+	  // function test
+	  //HAL_GPIO_WritePin(DEBUG_GPO_GPIO_Port, DEBUG_GPO_Pin, GPIO_PIN_SET);
+	  //HAL_Delay(1);
+	  //HAL_GPIO_WritePin(DEBUG_GPO_GPIO_Port, DEBUG_GPO_Pin, GPIO_PIN_RESET);
 
 	  HAL_IWDG_Refresh(&hiwdg);
 	  osDelay(IWDG_TASK_ENTRY_TIME);
@@ -3437,25 +3431,8 @@ uint8_t adc_tempConversion_float(uint32_t adc_value)
 	return ((158883840-26379*(adc_value & 0xfffU))/40960)%100;
 }
 
-uint8_t uart2_findCommaIndexNext(uint8_t uart_msg[], uint8_t target_comma)
-{
-	uint16_t index, split_count;
-	// find index
-	split_count = 0;
-	for(index = 0; index<UART2_RX_LENGTH; index++)
-	{
-		if(uart_msg[index] == ',')
-		{
-			split_count++;
-		}
 
-		if(split_count == target_comma)
-		{
-			return (index+1);
-		}
-	}
-	return 0;
-}
+
 
 
 uint8_t uart_findDataIndex(uint8_t uart_msg[], uint8_t target_data)
@@ -3482,7 +3459,7 @@ uint8_t uart_findDataIndex(uint8_t uart_msg[], uint8_t target_data)
 				split_count++;
 			}
 
-			if(split_count == target_data)
+			if(split_count == (target_data-1))
 			{
 				return (index+1);
 			}
