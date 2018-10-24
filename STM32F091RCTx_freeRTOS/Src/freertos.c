@@ -1963,6 +1963,10 @@ void usart2_entry(void const * argument)
 			osDelay(UART2_ATCMD_DELAY);
 			HAL_UART_Abort_IT(&huart2);
 
+			print_atCommand(recv2, uart2_msg_print_switch);
+			memset(recv2, 0, UART2_RX_LENGTH);
+			//----------------------------------------
+
 			HAL_UART_Transmit(&huart2, "at+cgdcont=4,\"ip\",\"internet\"", sizeof("at+cgdcont=4,\"ip\",\"internet\"")-1, 30);
 			HAL_UART_Transmit(&huart2, "\r", 1, 30);
 
@@ -1972,6 +1976,10 @@ void usart2_entry(void const * argument)
 			}
 			osDelay(UART2_ATCMD_DELAY);
 			HAL_UART_Abort_IT(&huart2);
+
+			print_atCommand(recv2, uart2_msg_print_switch);
+			memset(recv2, 0, UART2_RX_LENGTH);
+			//----------------------------------------
 
 
 			HAL_UART_Transmit(&huart2, "AT+COPS=0", sizeof("AT+COPS=0")-1, 30);
@@ -1983,6 +1991,10 @@ void usart2_entry(void const * argument)
 			}
 			osDelay(UART2_ATCMD_DELAY);
 			HAL_UART_Abort_IT(&huart2);
+
+			print_atCommand(recv2, uart2_msg_print_switch);
+			memset(recv2, 0, UART2_RX_LENGTH);
+			//----------------------------------------
 
 
 			HAL_UART_Transmit(&huart2, "AT+CGACT=1,4", sizeof("AT+CGACT=1,4")-1, 30);
@@ -1997,6 +2009,7 @@ void usart2_entry(void const * argument)
 
 			print_atCommand(recv2, uart2_msg_print_switch);
 			memset(recv2, 0, UART2_RX_LENGTH);
+			//----------------------------------------
 
 			HAL_UART_Transmit(&huart2, "at+upsd=0,100,4", sizeof("at+upsd=0,100,4")-1, 30);
 			HAL_UART_Transmit(&huart2, "\r", 1, 30);
@@ -2010,6 +2023,7 @@ void usart2_entry(void const * argument)
 
 			print_atCommand(recv2, uart2_msg_print_switch);
 			memset(recv2, 0, UART2_RX_LENGTH);
+			//----------------------------------------
 
 			HAL_UART_Transmit(&huart2, "at+upsda=0,3", sizeof("at+upsda=0,3")-1, 30);
 			HAL_UART_Transmit(&huart2, "\r", 1, 30);
