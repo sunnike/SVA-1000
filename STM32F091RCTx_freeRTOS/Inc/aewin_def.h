@@ -217,11 +217,14 @@
 /** EEPROM accessing */
 #define ADDR_FLASH_PAGE_126      ((uint32_t)0x0803F000) /* Base @ of Page 126, 2 Kbytes */
 #define ADDR_FLASH_PAGE_127      ((uint32_t)0x0803F800) /* Base @ of Page 127, 2 Kbytes */
+#define ADDR_FLASJ_PAGE_END      ((uint32_t)0x08040000) /* Base @ of Page 128, nonexistent */
 
 #define FLASH_USER_START_ADDR    ADDR_FLASH_PAGE_127   /* Start @ of user Flash area */
-#define FLASH_USER_END_ADDR      ADDR_FLASH_PAGE_127   /* End @ of user Flash area */
+#define FLASH_USER_END_ADDR      ADDR_FLASJ_PAGE_END   /* End @ of user Flash area */
 
-#define EEPROM_TAG               ((uint32_t)0x12345678)
+//#define EEPROM_TAG               ((uint32_t)0x12345678)
+#define EEPROM_TAG               ((uint32_t)0x5aa5a55a)
+#define EEPROM_DATA_LEN          6
 
  /* USER CODE END Definition */
 

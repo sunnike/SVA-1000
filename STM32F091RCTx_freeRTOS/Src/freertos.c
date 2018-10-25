@@ -211,6 +211,14 @@ RTC_AlarmTypeDef sAlarm = {0};
 DMA_HandleTypeDef hdma_usart1_rx;
 DMA_HandleTypeDef hdma_usart1_tx;
 
+//eeprom(flash)
+/*Variable used for Erase procedure*/
+static FLASH_EraseInitTypeDef EraseInitStruct;
+
+uint32_t PageError = 0;
+uint32_t eeprom_test[EEPROM_DATA_LEN] = {EEPROM_TAG, 0x01020304, 0x02040608, 0x10203040, 0x20406080, 0x12345678};
+//uint32_t eeprom_test[EEPROM_DATA_LEN] = {EEPROM_TAG, 0x11111111, 0x22222222, 0x33333333, 0x44444444, 0x55555555};
+
 /* USER CODE END Variables */
 
 /* Function prototypes -------------------------------------------------------*/
@@ -254,7 +262,8 @@ void config_recovery(void);
 
 void MX_FREERTOS_Init(void) {
   /* USER CODE BEGIN Init */
-	uint16_t data_index;
+	uint32_t Address = 0;
+	uint8_t data_counter = 0;
 
 	//HAL_UART_Transmit(&huart3, SVA_1000_NL, sizeof(SVA_1000_NL) - 1, sizeof(SVA_1000_NL));
 	HAL_RTC_GetTime(&hrtc, &sTime, RTC_FORMAT_BIN);
@@ -277,6 +286,49 @@ void MX_FREERTOS_Init(void) {
 
 
 	enable_4GModule();
+
+	//--------------------
+	//read EEPROM
+	/* Check the correctness of written data */
+	Address = FLASH_USER_START_ADDR;
+
+	if((*(__IO uint32_t*) Address) != EEPROM_TAG)
+	{
+		/* Flash page erase */
+		EraseInitStruct.TypeErase   = FLASH_TYPEERASE_PAGES;
+		EraseInitStruct.PageAddress = FLASH_USER_START_ADDR;
+		EraseInitStruct.NbPages     = (FLASH_USER_END_ADDR - FLASH_USER_START_ADDR)/FLASH_PAGE_SIZE;
+
+		if (HAL_FLASHEx_Erase(&EraseInitStruct, &PageError) != HAL_OK)
+		{
+		  /*
+			Error occurred while page erase.
+			User can add here some code to deal with this error.
+			PageError will contain the faulty page and then to know the code error on this page,
+			user can call function 'HAL_FLASH_GetError()'
+		  */
+		}
+
+		/*Flash write initial data */
+		for(data_counter = 0; data_counter < EEPROM_DATA_LEN ; data_counter++)
+		{
+			if (HAL_FLASH_Program(FLASH_TYPEPROGRAM_WORD, Address + data_counter*4, eeprom_test[data_counter]) != HAL_OK)
+			{
+			/* Error occurred while writing data in Flash memory.
+			   User can add here some code to deal with this error */
+			}
+		}
+	}
+	else
+	{
+		/* Flash read data */
+		for(data_counter = 0; data_counter < EEPROM_DATA_LEN ; data_counter++)
+		{
+			eeprom_test[data_counter] = (*(__IO uint32_t*) (Address + data_counter*4));
+		}
+	}
+
+
 
   /* USER CODE END Init */
 
