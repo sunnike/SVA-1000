@@ -559,7 +559,8 @@ typedef struct{
 	uint8_t  sys_pwron		: 1;
 	uint8_t  dc2dc_pwrok	: 1;
 	uint8_t  ebtn_in        : 1;
-	uint8_t  reserved		: 3;
+	uint8_t  sw_shutdown    : 1;
+	uint8_t  reserved		: 2;
 }sSVA_GPI_STATE;
 
 

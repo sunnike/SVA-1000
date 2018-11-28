@@ -2677,6 +2677,15 @@ void ignition_entry(void const * argument)
 					aewin_dbg("\n\rPower off delay failed! IG_Shutdown_Delay --> IG_LowPower_Delay");
 				}
 
+				if(sva_gpi.sw_shutdown == GPIO_PIN_RESET)
+				{
+					HAL_GPIO_WritePin(GPIOC, D2D_EN_Pin, GPIO_PIN_RESET);
+					enable_4GModule();
+
+					ig_var.ig_states = IG_shutting_Down;
+					aewin_dbg("\n\rPower off delay pass! IG_Shutdown_Delay --> IG_shutting_Down");
+				}
+
 				break;
 
 			//-------------------------------------------------------------------------------------
@@ -2726,7 +2735,15 @@ void ignition_entry(void const * argument)
 
 			//-------------------------------------------------------------------------------------
 			case IG_shutting_Down:
-				if(sva_gpi.ig_sw == GPIO_PIN_RESET){
+				if(sva_gpi.sw_shutdown == GPIO_PIN_RESET)
+				{
+					if(sva_gpi.ig_sw == GPIO_PIN_RESET)
+					{
+						ig_var.ig_states = IG_CloseUp;
+						aewin_dbg("\n\rIgnition signal low! IG_shutting_Down --> IG_CloseUp");
+					}
+				}
+				else if(sva_gpi.ig_sw == GPIO_PIN_RESET){
 					//if (0 == (ig_event.shutdown_delay--)){
 					//if (0 == (current_IgEvent[NUM_shutdown_delay]--)){
 					if (0 == (countdown_timer.shutdown_delay--)){
@@ -2750,6 +2767,15 @@ void ignition_entry(void const * argument)
 					countdown_timer.shutdown_delay = current_IgEvent[NUM_shutdown_delay];
 					aewin_dbg("\n\rShutdown delay failed! IG_shutting_Down --> IG_Shutdown_Delay");
 				}
+
+				if(sva_gpi.sw_shutdown == GPIO_PIN_RESET)
+				{
+					if(sva_gpi.ig_sw == GPIO_PIN_RESET)
+					{
+						ig_var.ig_states = IG_CloseUp;
+					}
+				}
+
 				break;
 
 			//-------------------------------------------------------------------------------------
@@ -2994,6 +3020,8 @@ void gpio_state_entry(void const * argument)
 
 		/* Get ebtn_in states. */
 		sva_gpi.ebtn_in 	= HAL_GPIO_ReadPin(GPIOC, EBTN_IN_Pin);
+
+		sva_gpi.sw_shutdown = HAL_GPIO_ReadPin(SYS_SHUTDOWN_GPIO_Port, SYS_SHUTDOWN_Pin);
 
 		osDelay(GPIO_GET_TASK_TIME);
     }
