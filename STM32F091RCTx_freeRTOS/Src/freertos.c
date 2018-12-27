@@ -150,7 +150,7 @@ volatile uint8_t current_IgEvent[NUM_total];
 
 // ignition (test, boot faster) less
 uint8_t flash_IgEvent[NUM_total] = {SPI_FLASH_PROGRAM_PAGE, SPI_FLASH_ADD_Byte0, SPI_FLASH_ADD_Byte1, SPI_FLASH_ADD_Byte2,
-		SPI_FLASH_DATA_TAG, 0, 1, 4, 1,	1,
+		SPI_FLASH_DATA_TAG, VERSION_MAJOR, VERSION_MINOR, 4, 1,	1,
 		10, 2, 10, 2, 30, 5, 5, 12,	20, 145,
 		0, 50, 100, 50, 0, 0, 0, 0, 0, 0,
 		0, 0, 0, 0, 0, 0, 0, 0, 9, 36,
@@ -198,6 +198,7 @@ uint8_t flash_IgEvent[NUM_total] = {SPI_FLASH_PROGRAM_PAGE, SPI_FLASH_ADD_Byte0,
 */
 
 uint8_t flag_flashWrite = 0;
+uint8_t flag_jumpToBootloader = 0;
 
 volatile sIG_EVENT ig_event;
 
@@ -1375,12 +1376,12 @@ void usart1_entry(void const * argument)
 					break;
 
 				//-----------------------------------------------------
-				case 0x40U:
+				case M_CMD_BL_SETTING:
 					switch(recv1[CMD_SCMD_POS]){
-						case 0x10:
-							aewin_dbg("\n\rBefore jump to bootloader.");
-							JumpToBootloader();
-							aewin_dbg("\n\rAfter jump to bootloader.");
+						case Subcmd_Jump_BootLoader:
+							aewin_dbg("\n\rJump to bootloader.");
+							flag_jumpToBootloader = 1;
+							//JumpToBootloader();
 							break;
 
 						default:
@@ -2993,9 +2994,27 @@ void IWDG_entry(void const * argument)
 	  //HAL_Delay(1);
 	  //HAL_GPIO_WritePin(DEBUG_GPO_GPIO_Port, DEBUG_GPO_Pin, GPIO_PIN_RESET);
 
+	  if(flag_jumpToBootloader == 1)
+	  {
+		  osThreadTerminate(USART1_TaskHandle);
+		  osThreadTerminate(USART2_TaskHandle);
+		  osThreadTerminate(USART3_TaskHandle);
+		  osThreadTerminate(IGNITION_TaskHandle);
+		  osThreadTerminate(I2C1_TaskHandle);
+		  osThreadTerminate(ADC_TaskHandle);
+		  osThreadTerminate(CMD_PROC_TaskHandle);
+		  osThreadTerminate(GPIO_STATE_TaskHandle);
+		  osThreadTerminate(SPI1_TaskHandle);
+		  osThreadTerminate(CAN_TaskHandle);
+
+		  osDelay(JUMP_BOOTLOADER_DELAY_TIME);
+
+		  JumpToBootloader();
+	  }
+
 	  HAL_IWDG_Refresh(&hiwdg);
 	  osDelay(IWDG_TASK_ENTRY_TIME);
-	  //osDelay(current_IgEvent[NUM_wtdog_default]*1000);
+
   }
   /* USER CODE END IWDG_entry */
 }

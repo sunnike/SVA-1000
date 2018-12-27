@@ -37,6 +37,19 @@
 #define AEWIN_DBUG			(1)
 #define PRINT_BUFF			(128)
 
+ /** @defgroup AEWIN_DEBUG Aewin Debug Configuration
+   * @{
+   */
+#define VERSION_MAJOR			(0)
+#define VERSION_MINOR			(2)
+
+
+ /** @defgroup bootloader Configuration
+   * @{
+   */
+#define JUMP_BOOTLOADER_DELAY_TIME	(30U)
+
+
 
  /** @defgroup STM32F0XX_UART STM32F0XX UART Configuration
    * @{
@@ -206,6 +219,7 @@
 #define M_CMD_MCU_SETTING 			(0x10U)
 #define M_CMD_IG_SETTING			(0x20U)
 #define M_CMD_4G_SETTING			(0x30U)
+#define M_CMD_BL_SETTING			(0x40U)
 
 #define CMD_HEAD_CHK				((CMD_SYN_CODE << 24) | (CMD_SYN_CODE << 16) | (CMD_STX_CODE << 8))
 #define CMD_MAIN_CHK(mcmd)			(CMD_HEAD_CHK | mcmd)
@@ -311,6 +325,12 @@ typedef enum{
 typedef enum{
 	Subcmd_TeleComm_Event	= 0x10
 }eEvent_Log_SubCMDs;
+
+
+/******  SVA-1000  Event/Log information sub-commands ******************************************************************/
+typedef enum{
+	Subcmd_Jump_BootLoader	= 0x10
+}eEvent_BL_SubCMDs;
 
 
 /******  SVA-1000 4G module AT command ******************************************************************/
