@@ -108,7 +108,7 @@ char dbg_buff[PRINT_BUFF];
 TickType_t xTimeNow;
 
 uint8_t uart2_msg_print_switch = 1;
-uint8_t wwan_command = 0;
+uint8_t wwan_command = 1;
 // 0 : no command
 // 1 : enable
 // 2 : disable
@@ -152,7 +152,7 @@ volatile uint8_t current_IgEvent[NUM_total];
 uint8_t flash_IgEvent[NUM_total] = {SPI_FLASH_PROGRAM_PAGE, SPI_FLASH_ADD_Byte0, SPI_FLASH_ADD_Byte1, SPI_FLASH_ADD_Byte2,
 		SPI_FLASH_DATA_TAG, VERSION_MAJOR, VERSION_MINOR, 4, 1,	1,
 		10, 2, 10, 2, 30, 5, 5, 12,	20, 145,
-		0, 50, 100, 50, 0, 0, 0, 0, 0, 0,
+		0, 50, 100, 50, 0, 0, 0, 0, 0, 1,
 		0, 0, 0, 0, 0, 0, 0, 0, 9, 36,
 		0, 0, 0, 0, 0, 0, 0x03, 0x03, 0x03, 0x03};    // RTC_WakeT_min
 
@@ -723,7 +723,7 @@ void usart1_entry(void const * argument)
 
 							flag_flashWrite = 1;
 
-							aewin_dbg("\n\rGet WWAN wake up status: %d", current_IgEvent[NUM_WWAN_wakeup]);
+							aewin_dbg("\n\rSet WWAN wake up status: %d", current_IgEvent[NUM_WWAN_wakeup]);
 							break;
 
 						//-----------------------------------------------------
@@ -755,7 +755,7 @@ void usart1_entry(void const * argument)
 							}
 							flag_flashWrite = 1;
 
-							aewin_dbg("\n\rGet WWAN status: %d", current_IgEvent[NUM_WWAN_status]);
+							aewin_dbg("\n\rSet WWAN status: %d", current_IgEvent[NUM_WWAN_status]);
 							break;
 
 						//-----------------------------------------------------
@@ -1453,123 +1453,12 @@ void usart2_entry(void const * argument)
 	uint8_t string_UUPING[7] = {'+', 'U', 'U', 'P', 'I', 'N', 'G'};
 	uint8_t string_UUPINGER[9] = {'+', 'U', 'U', 'P', 'I', 'N', 'G', 'E', 'R'};
 
+	uint8_t flag_reset_internet = 1;
+
 	int i;
 
 	osDelay(UART2_WAIT_READY);
 	//----------------------------------------
-
-
-	// Check register status AT+cind?
-	HAL_UART_Transmit(&huart2, uart_Tx[ATCMD_Check_Status], sizeof(uart_Tx[ATCMD_Check_Status])-1, 30);
-	HAL_UART_Transmit(&huart2, "\r", 1, 30);
-
-	if(HAL_UART_Receive_DMA(&huart2, recv2, UART2_RX_LENGTH) != HAL_OK)
-	{
-		//Error_Handler();
-	}
-	osDelay(UART2_ATCMD_DELAY);
-	HAL_UART_Abort_IT(&huart2);
-
-	print_atCommand(recv2, uart2_msg_print_switch);
-	memset(recv2, 0, UART2_RX_LENGTH);
-	//----------------------------------------
-
-
-	// Get IP AT+CGACT=1,1
-	HAL_UART_Transmit(&huart2, uart_Tx[ATCMD_Get_IP], sizeof(uart_Tx[ATCMD_Get_IP])-1, 30);
-	HAL_UART_Transmit(&huart2, "\r", 1, 30);
-
-	if(HAL_UART_Receive_DMA(&huart2, recv2, UART2_RX_LENGTH) != HAL_OK)
-	  {
-		//Error_Handler();
-	  }
-	osDelay(UART2_ATCMD_DELAY);
-	HAL_UART_Abort_IT(&huart2);
-
-	print_atCommand(recv2, uart2_msg_print_switch);
-	memset(recv2, 0, UART2_RX_LENGTH);
-	//----------------------------------------
-
-
-	// Check IP at+cgdcont?
-	HAL_UART_Transmit(&huart2, uart_Tx[ATCMD_Check_APNIP], sizeof(uart_Tx[ATCMD_Check_APNIP])-1, 30);
-	HAL_UART_Transmit(&huart2, "\r", 1, 30);
-
-	if(HAL_UART_Receive_DMA(&huart2, recv2, UART2_RX_LENGTH) != HAL_OK)
-    {
-		//Error_Handler();
-	}
-	osDelay(UART2_ATCMD_DELAY);
-	HAL_UART_Abort_IT(&huart2);
-
-	print_atCommand(recv2, uart2_msg_print_switch);
-	memset(recv2, 0, UART2_RX_LENGTH);
-	//----------------------------------------
-
-
-	// Check signal AT+CSQ
-	HAL_UART_Transmit(&huart2, uart_Tx[ATCMD_Check_Signal], sizeof(uart_Tx[ATCMD_Check_Signal])-1, 30);
-	HAL_UART_Transmit(&huart2, "\r", 1, 30);
-
-	if(HAL_UART_Receive_DMA(&huart2, recv2, UART2_RX_LENGTH) != HAL_OK)
-	{
-		//Error_Handler();
-	}
-	osDelay(UART2_ATCMD_DELAY);
-	HAL_UART_Abort_IT(&huart2);
-
-	print_atCommand(recv2, uart2_msg_print_switch);
-	memset(recv2, 0, UART2_RX_LENGTH);
-	//----------------------------------------
-
-
-	// set APN provider
-	HAL_UART_Transmit(&huart2, uart_Tx[ATCMD_Set_APN], sizeof(uart_Tx[ATCMD_Set_APN])-1, 30);
-	HAL_UART_Transmit(&huart2, "\r", 1, 30);
-
-	if(HAL_UART_Receive_DMA(&huart2, recv2, UART2_RX_LENGTH) != HAL_OK)
-	{
-		//Error_Handler();
-	}
-	osDelay(UART2_ATCMD_DELAY);
-	HAL_UART_Abort_IT(&huart2);
-
-	print_atCommand(recv2, uart2_msg_print_switch);
-	memset(recv2, 0, UART2_RX_LENGTH);
-	//----------------------------------------
-
-
-	// reset PSD
-	HAL_UART_Transmit(&huart2, uart_Tx[ATCMD_Reset_PSD], sizeof(uart_Tx[ATCMD_Reset_PSD])-1, 30);
-	HAL_UART_Transmit(&huart2, "\r", 1, 30);
-
-	if(HAL_UART_Receive_DMA(&huart2, recv2, UART2_RX_LENGTH) != HAL_OK)
-	{
-		//Error_Handler();
-	}
-	osDelay(UART2_ATCMD_DELAY*2);
-	HAL_UART_Abort_IT(&huart2);
-
-	print_atCommand(recv2, uart2_msg_print_switch);
-	memset(recv2, 0, UART2_RX_LENGTH);
-	//----------------------------------------
-
-
-	// activate PSD
-	HAL_UART_Transmit(&huart2, uart_Tx[ATCMD_Enable_PSD], sizeof(uart_Tx[ATCMD_Enable_PSD])-1, 30);
-	HAL_UART_Transmit(&huart2, "\r", 1, 30);
-
-	if(HAL_UART_Receive_DMA(&huart2, recv2, UART2_RX_LENGTH) != HAL_OK)
-	{
-		//Error_Handler();
-	}
-	osDelay(UART2_ATCMD_DELAY*2);
-	HAL_UART_Abort_IT(&huart2);
-
-	print_atCommand(recv2, uart2_msg_print_switch);
-	memset(recv2, 0, UART2_RX_LENGTH);
-	//----------------------------------------
-
 
 	// GPS
 	//----------------------------------------
@@ -1605,7 +1494,7 @@ void usart2_entry(void const * argument)
 	//----------------------------------------
 
 
-	// Enable GPS AT+UGPS=1
+	// Enable GPS AT+UGPS=1,0
 	HAL_UART_Transmit(&huart2, uart_Tx[ATCMD_Enable_GPS], sizeof(uart_Tx[ATCMD_Enable_GPS])-1, 30);
 	HAL_UART_Transmit(&huart2, "\r", 1, 30);
 
@@ -1664,8 +1553,9 @@ void usart2_entry(void const * argument)
     	{
     		// enable WWAN, normal mode
     		wwan_command = 0;
+    		flag_reset_internet = 1;
 
-    		// Normal mode
+    		// Normal mode AT+CFUN=1
 			HAL_UART_Transmit(&huart2, uart_Tx[ATCMD_Dis_airplane], sizeof(uart_Tx[ATCMD_Dis_airplane])-1, 30);
 			HAL_UART_Transmit(&huart2, "\r", 1, 30);
 
@@ -1681,7 +1571,7 @@ void usart2_entry(void const * argument)
     	}
     	else if(wwan_command == 2)
     	{
-    		// disable WWAN, airplane mode
+    		// disable WWAN, airplane mode AT+CFUN=4
     		wwan_command = 0;
 
     		// Airplane mode
@@ -1700,8 +1590,233 @@ void usart2_entry(void const * argument)
     	}
     	//----------------------------------------
 
+    	// reset internal Internet
+		//----------------------------------------
+		if(flag_reset_internet == 1)
+		{
+			flag_reset_internet = 0;
 
-    	// Get the NMEA $RMC messages
+			// Get 3G,4G status AT+COPS?
+			HAL_UART_Transmit(&huart2, uart_Tx[ATCMD_Check_Reg], sizeof(uart_Tx[ATCMD_Check_Reg])-1, 30);
+			HAL_UART_Transmit(&huart2, "\r", 1, 30);
+
+			if(HAL_UART_Receive_DMA(&huart2, recv2, UART2_RX_LENGTH) != HAL_OK)
+			  {
+				//Error_Handler();
+			  }
+			osDelay(UART2_ATCMD_DELAY);
+			HAL_UART_Abort_IT(&huart2);
+
+			reg_index = uart_findDataIndex(recv2,4);
+
+			if(recv2[reg_index] == '7')                  //4G
+			{
+				r280_module_state.register_3G_4G = 7;
+			}
+			else if(recv2[reg_index] == '2')             //3G
+			{
+				r280_module_state.register_3G_4G = 2;
+			}
+			else if(recv2[reg_index] == '0')             //2G
+			{
+				r280_module_state.register_3G_4G = 0;
+			}
+
+			print_atCommand(recv2, uart2_msg_print_switch);
+			memset(recv2, 0, UART2_RX_LENGTH);
+			//----------------------------------------
+
+			// Check signal AT+CSQ
+			HAL_UART_Transmit(&huart2, uart_Tx[ATCMD_Check_Signal], sizeof(uart_Tx[ATCMD_Check_Signal])-1, 30);
+			HAL_UART_Transmit(&huart2, "\r", 1, 30);
+
+			if(HAL_UART_Receive_DMA(&huart2, recv2, UART2_RX_LENGTH) != HAL_OK)
+			{
+				//Error_Handler();
+			}
+			osDelay(UART2_ATCMD_DELAY);
+			HAL_UART_Abort_IT(&huart2);
+
+			print_atCommand(recv2, uart2_msg_print_switch);
+			memset(recv2, 0, UART2_RX_LENGTH);
+			//----------------------------------------
+
+
+			// Check IP at+cgdcont?
+			HAL_UART_Transmit(&huart2, uart_Tx[ATCMD_Check_APNIP], sizeof(uart_Tx[ATCMD_Check_APNIP])-1, 30);
+			HAL_UART_Transmit(&huart2, "\r", 1, 30);
+
+			if(HAL_UART_Receive_DMA(&huart2, recv2, UART2_RX_LENGTH) != HAL_OK)
+			{
+				//Error_Handler();
+			}
+			osDelay(UART2_ATCMD_DELAY);
+			HAL_UART_Abort_IT(&huart2);
+
+			print_atCommand(recv2, uart2_msg_print_switch);
+			memset(recv2, 0, UART2_RX_LENGTH);
+			//----------------------------------------
+
+
+			// Check signal AT+CGATT?
+			HAL_UART_Transmit(&huart2, "AT+CGATT?", sizeof("AT+CGATT?")-1, 30);
+			HAL_UART_Transmit(&huart2, "\r", 1, 30);
+
+			if(HAL_UART_Receive_DMA(&huart2, recv2, UART2_RX_LENGTH) != HAL_OK)
+			{
+				//Error_Handler();
+			}
+			osDelay(UART2_ATCMD_DELAY);
+			HAL_UART_Abort_IT(&huart2);
+
+			print_atCommand(recv2, uart2_msg_print_switch);
+			memset(recv2, 0, UART2_RX_LENGTH);
+			//----------------------------------------
+
+
+			// Check signal AT+UPSD=0,100,1
+			HAL_UART_Transmit(&huart2, "AT+UPSD=0,100,1", sizeof("AT+UPSD=0,100,1")-1, 30);
+			HAL_UART_Transmit(&huart2, "\r", 1, 30);
+
+			if(HAL_UART_Receive_DMA(&huart2, recv2, UART2_RX_LENGTH) != HAL_OK)
+			{
+				//Error_Handler();
+			}
+			osDelay(UART2_ATCMD_DELAY);
+			HAL_UART_Abort_IT(&huart2);
+
+			print_atCommand(recv2, uart2_msg_print_switch);
+			memset(recv2, 0, UART2_RX_LENGTH);
+			//----------------------------------------
+
+
+			// Check signal AT+UPSDA=0,3
+			HAL_UART_Transmit(&huart2, "AT+UPSDA=0,3", sizeof("AT+UPSDA=0,3")-1, 30);
+			HAL_UART_Transmit(&huart2, "\r", 1, 30);
+
+			if(HAL_UART_Receive_DMA(&huart2, recv2, UART2_RX_LENGTH) != HAL_OK)
+			{
+				//Error_Handler();
+			}
+			osDelay(UART2_ATCMD_DELAY);
+			HAL_UART_Abort_IT(&huart2);
+
+			print_atCommand(recv2, uart2_msg_print_switch);
+			memset(recv2, 0, UART2_RX_LENGTH);
+			//----------------------------------------
+
+			// Cread UDP socket, AT+USOCR=17
+			HAL_UART_Transmit(&huart2, "AT+USOCR=17", sizeof("AT+USOCR=17")-1, 30);
+			HAL_UART_Transmit(&huart2, "\r", 1, 30);
+
+			if(HAL_UART_Receive_DMA(&huart2, recv2, UART2_RX_LENGTH) != HAL_OK)
+			{
+				//Error_Handler();
+			}
+			osDelay(UART2_ATCMD_DELAY);
+			HAL_UART_Abort_IT(&huart2);
+
+			print_atCommand(recv2, uart2_msg_print_switch);
+			memset(recv2, 0, UART2_RX_LENGTH);
+			//----------------------------------------
+
+			// Creat TCP socket, AT+USOCR=6
+			HAL_UART_Transmit(&huart2, "AT+USOCR=6", sizeof("AT+USOCR=6")-1, 30);
+			HAL_UART_Transmit(&huart2, "\r", 1, 30);
+
+			if(HAL_UART_Receive_DMA(&huart2, recv2, UART2_RX_LENGTH) != HAL_OK)
+			{
+				//Error_Handler();
+			}
+			osDelay(UART2_ATCMD_DELAY);
+			HAL_UART_Abort_IT(&huart2);
+
+			print_atCommand(recv2, uart2_msg_print_switch);
+			memset(recv2, 0, UART2_RX_LENGTH);
+			//----------------------------------------
+
+			// DNS resolution of the URL, AT+UDNSRN=0,"echo.u-blox.com"
+			HAL_UART_Transmit(&huart2, "AT+UDNSRN=0,\"echo.u-blox.com\"", sizeof("AT+UDNSRN=0,\"echo.u-blox.com\"")-1, 30);
+			HAL_UART_Transmit(&huart2, "\r", 1, 30);
+
+			if(HAL_UART_Receive_DMA(&huart2, recv2, UART2_RX_LENGTH) != HAL_OK)
+			{
+				//Error_Handler();
+			}
+			osDelay(UART2_ATCMD_DELAY);
+			HAL_UART_Abort_IT(&huart2);
+
+			print_atCommand(recv2, uart2_msg_print_switch);
+			memset(recv2, 0, UART2_RX_LENGTH);
+			//----------------------------------------
+
+			// Connect to server, AT+USOCO=0,"195.34.89.241",7
+			HAL_UART_Transmit(&huart2, "AT+USOCO=0,\"195.34.89.241\",7", sizeof("AT+USOCO=0,\"195.34.89.241\",7")-1, 30);
+			HAL_UART_Transmit(&huart2, "\r", 1, 30);
+
+			if(HAL_UART_Receive_DMA(&huart2, recv2, UART2_RX_LENGTH) != HAL_OK)
+			{
+				//Error_Handler();
+			}
+			osDelay(UART2_ATCMD_DELAY);
+			HAL_UART_Abort_IT(&huart2);
+
+			print_atCommand(recv2, uart2_msg_print_switch);
+			memset(recv2, 0, UART2_RX_LENGTH);
+			//----------------------------------------
+
+			// Greeting message is received, AT+USORD=0,32
+			HAL_UART_Transmit(&huart2, "AT+USORD=0,32", sizeof("AT+USORD=0,32")-1, 30);
+			HAL_UART_Transmit(&huart2, "\r", 1, 30);
+
+			if(HAL_UART_Receive_DMA(&huart2, recv2, UART2_RX_LENGTH) != HAL_OK)
+			{
+				//Error_Handler();
+			}
+			osDelay(UART2_ATCMD_DELAY);
+			HAL_UART_Abort_IT(&huart2);
+
+			print_atCommand(recv2, uart2_msg_print_switch);
+			memset(recv2, 0, UART2_RX_LENGTH);
+			//----------------------------------------
+
+			// Write 4 characters, AT+USOWR=0,4,"Test"
+			HAL_UART_Transmit(&huart2, "AT+USOWR=0,4,\"Test\"", sizeof("AT+USOWR=0,4,\"Test\"")-1, 30);
+			HAL_UART_Transmit(&huart2, "\r", 1, 30);
+
+			if(HAL_UART_Receive_DMA(&huart2, recv2, UART2_RX_LENGTH) != HAL_OK)
+			{
+				//Error_Handler();
+			}
+			osDelay(UART2_ATCMD_DELAY);
+			HAL_UART_Abort_IT(&huart2);
+
+			print_atCommand(recv2, uart2_msg_print_switch);
+			memset(recv2, 0, UART2_RX_LENGTH);
+			//----------------------------------------
+
+
+			// Read 4 echoed characters, AT+USORD=0,4
+			HAL_UART_Transmit(&huart2, "AT+USORD=0,4", sizeof("AT+USORD=0,4")-1, 30);
+			HAL_UART_Transmit(&huart2, "\r", 1, 30);
+
+			if(HAL_UART_Receive_DMA(&huart2, recv2, UART2_RX_LENGTH) != HAL_OK)
+			{
+				//Error_Handler();
+			}
+			osDelay(UART2_ATCMD_DELAY);
+			HAL_UART_Abort_IT(&huart2);
+
+			print_atCommand(recv2, uart2_msg_print_switch);
+			memset(recv2, 0, UART2_RX_LENGTH);
+			//----------------------------------------
+
+		}
+
+
+
+
+    	// Get GPS data, Get the NMEA $RMC messages AT+UGRMC?
 		HAL_UART_Transmit(&huart2, uart_Tx[ATCMD_Get_GPS_DATA], sizeof(uart_Tx[ATCMD_Get_GPS_DATA])-1, 30);
 		HAL_UART_Transmit(&huart2, "\r", 1, 30);
 
@@ -1899,7 +2014,7 @@ void usart2_entry(void const * argument)
 		//----------------------------------------
 
 
-		// 4G IP Addresss at+cgdcont?
+		// 4G IP address at+cgdcont?
 		HAL_UART_Transmit(&huart2, uart_Tx[ATCMD_Check_APNIP], sizeof(uart_Tx[ATCMD_Check_APNIP])-1, 30);
 		HAL_UART_Transmit(&huart2, "\r", 1, 30);
 
@@ -1965,7 +2080,7 @@ void usart2_entry(void const * argument)
 		  {
 			//Error_Handler();
 		  }
-		osDelay(UART2_ATCMD_DELAY*5);
+		osDelay(UART2_ATCMD_DELAY*10);
 		HAL_UART_Abort_IT(&huart2);
 
 		print_atCommand(recv2, uart2_msg_print_switch);
@@ -1982,140 +2097,58 @@ void usart2_entry(void const * argument)
 			r280_module_state.ping_status = 1; //ERROR
 			memset(recv2, 0, UART2_RX_LENGTH);
 
-			//reset APN and PSD
-
-			// set APN provider AT+UPSD=0,1,"apn.name"
-			HAL_UART_Transmit(&huart2, uart_Tx[ATCMD_Set_APN], sizeof(uart_Tx[ATCMD_Set_APN])-1, 30);
-			HAL_UART_Transmit(&huart2, "\r", 1, 30);
-
-			if(HAL_UART_Receive_DMA(&huart2, recv2, UART2_RX_LENGTH) != HAL_OK)
-			{
-				//Error_Handler();
-			}
-			osDelay(UART2_ATCMD_DELAY);
-			HAL_UART_Abort_IT(&huart2);
-
-			print_atCommand(recv2, uart2_msg_print_switch);
-			memset(recv2, 0, UART2_RX_LENGTH);
-
-			// reset PSD AT+UPSDA=0,0
-			HAL_UART_Transmit(&huart2, uart_Tx[ATCMD_Reset_PSD], sizeof(uart_Tx[ATCMD_Reset_PSD])-1, 30);
-			HAL_UART_Transmit(&huart2, "\r", 1, 30);
-
-			if(HAL_UART_Receive_DMA(&huart2, recv2, UART2_RX_LENGTH) != HAL_OK)
-			{
-				//Error_Handler();
-			}
-			osDelay(UART2_ATCMD_DELAY*2);
-			HAL_UART_Abort_IT(&huart2);
-
-			print_atCommand(recv2, uart2_msg_print_switch);
-			memset(recv2, 0, UART2_RX_LENGTH);
-
-			// activate PSD AT+UPSDA=0,3
-			HAL_UART_Transmit(&huart2, uart_Tx[ATCMD_Enable_PSD], sizeof(uart_Tx[ATCMD_Enable_PSD])-1, 30);
-			HAL_UART_Transmit(&huart2, "\r", 1, 30);
-
-			if(HAL_UART_Receive_DMA(&huart2, recv2, UART2_RX_LENGTH) != HAL_OK)
-			{
-				//Error_Handler();
-			}
-			osDelay(UART2_ATCMD_DELAY*2);
-			HAL_UART_Abort_IT(&huart2);
-
-			print_atCommand(recv2, uart2_msg_print_switch);
-			memset(recv2, 0, UART2_RX_LENGTH);
-
-			// ublox FAE ======================================================
-			HAL_UART_Transmit(&huart2, "AT+COPS=2", sizeof("AT+COPS=2")-1, 30);
-			HAL_UART_Transmit(&huart2, "\r", 1, 30);
-
-			if(HAL_UART_Receive_DMA(&huart2, recv2, UART2_RX_LENGTH) != HAL_OK)
-			{
-				//Error_Handler();
-			}
-			osDelay(UART2_ATCMD_DELAY);
-			HAL_UART_Abort_IT(&huart2);
-
-			print_atCommand(recv2, uart2_msg_print_switch);
-			memset(recv2, 0, UART2_RX_LENGTH);
-			//----------------------------------------
-
-			HAL_UART_Transmit(&huart2, "at+cgdcont=4,\"ip\",\"internet\"", sizeof("at+cgdcont=4,\"ip\",\"internet\"")-1, 30);
-			HAL_UART_Transmit(&huart2, "\r", 1, 30);
-
-			if(HAL_UART_Receive_DMA(&huart2, recv2, UART2_RX_LENGTH) != HAL_OK)
-			{
-				//Error_Handler();
-			}
-			osDelay(UART2_ATCMD_DELAY);
-			HAL_UART_Abort_IT(&huart2);
-
-			print_atCommand(recv2, uart2_msg_print_switch);
-			memset(recv2, 0, UART2_RX_LENGTH);
-			//----------------------------------------
+			// ping failed, reset internal Internet
+			flag_reset_internet = 1;
+		}
+		//----------------------------------------
 
 
-			HAL_UART_Transmit(&huart2, "AT+COPS=0", sizeof("AT+COPS=0")-1, 30);
-			HAL_UART_Transmit(&huart2, "\r", 1, 30);
+		// Write 4 characters, AT+USOWR=0,4,"Test"
+		HAL_UART_Transmit(&huart2, "AT+USOWR=0,4,\"Test\"", sizeof("AT+USOWR=0,4,\"Test\"")-1, 30);
+		HAL_UART_Transmit(&huart2, "\r", 1, 30);
 
-			if(HAL_UART_Receive_DMA(&huart2, recv2, UART2_RX_LENGTH) != HAL_OK)
-			{
-				//Error_Handler();
-			}
-			osDelay(UART2_ATCMD_DELAY);
-			HAL_UART_Abort_IT(&huart2);
+		if(HAL_UART_Receive_DMA(&huart2, recv2, UART2_RX_LENGTH) != HAL_OK)
+		{
+			//Error_Handler();
+		}
+		osDelay(UART2_ATCMD_DELAY);
+		HAL_UART_Abort_IT(&huart2);
 
-			print_atCommand(recv2, uart2_msg_print_switch);
-			memset(recv2, 0, UART2_RX_LENGTH);
-			//----------------------------------------
+		print_atCommand(recv2, uart2_msg_print_switch);
+		memset(recv2, 0, UART2_RX_LENGTH);
+		//----------------------------------------
 
 
-			HAL_UART_Transmit(&huart2, "AT+CGACT=1,4", sizeof("AT+CGACT=1,4")-1, 30);
-			HAL_UART_Transmit(&huart2, "\r", 1, 30);
+		// Read 4 echoed characters, AT+USORD=0,4
+		HAL_UART_Transmit(&huart2, "AT+USORD=0,4", sizeof("AT+USORD=0,4")-1, 30);
+		HAL_UART_Transmit(&huart2, "\r", 1, 30);
 
-			if(HAL_UART_Receive_DMA(&huart2, recv2, UART2_RX_LENGTH) != HAL_OK)
-			{
-				//Error_Handler();
-			}
-			osDelay(UART2_ATCMD_DELAY);
-			HAL_UART_Abort_IT(&huart2);
+		if(HAL_UART_Receive_DMA(&huart2, recv2, UART2_RX_LENGTH) != HAL_OK)
+		{
+			//Error_Handler();
+		}
+		osDelay(UART2_ATCMD_DELAY);
+		HAL_UART_Abort_IT(&huart2);
 
-			print_atCommand(recv2, uart2_msg_print_switch);
-			memset(recv2, 0, UART2_RX_LENGTH);
-			//----------------------------------------
+		print_atCommand(recv2, uart2_msg_print_switch);
 
-			HAL_UART_Transmit(&huart2, "at+upsd=0,100,4", sizeof("at+upsd=0,100,4")-1, 30);
-			HAL_UART_Transmit(&huart2, "\r", 1, 30);
 
-			if(HAL_UART_Receive_DMA(&huart2, recv2, UART2_RX_LENGTH) != HAL_OK)
-			{
-				//Error_Handler();
-			}
-			osDelay(UART2_ATCMD_DELAY);
-			HAL_UART_Abort_IT(&huart2);
+		// check read status
+		if(uart2_isFindString(recv2, string_OK, sizeof(string_OK)) == 1)
+		{
+			r280_module_state.ping_status = 0; //OK
+		}
+		else
+		{
+			r280_module_state.ping_status = 1; //ERROR
 
-			print_atCommand(recv2, uart2_msg_print_switch);
-			memset(recv2, 0, UART2_RX_LENGTH);
-			//----------------------------------------
-
-			HAL_UART_Transmit(&huart2, "at+upsda=0,3", sizeof("at+upsda=0,3")-1, 30);
-			HAL_UART_Transmit(&huart2, "\r", 1, 30);
-
-			if(HAL_UART_Receive_DMA(&huart2, recv2, UART2_RX_LENGTH) != HAL_OK)
-			{
-				//Error_Handler();
-			}
-			osDelay(UART2_ATCMD_DELAY);
-			HAL_UART_Abort_IT(&huart2);
-
-			print_atCommand(recv2, uart2_msg_print_switch);
-			memset(recv2, 0, UART2_RX_LENGTH);
+			// ping failed, reset internal Internet
+			flag_reset_internet = 1;
 		}
 
-
-
+		memset(recv2, 0, UART2_RX_LENGTH);
 		//----------------------------------------
+
 
 		//print_atCommand(recv2, uart2_msg_print_switch);
 
