@@ -1596,6 +1596,8 @@ void usart2_entry(void const * argument)
 		{
 			flag_reset_internet = 0;
 
+			// ignore check status steps
+			/*
 			// Get 3G,4G status AT+COPS?
 			HAL_UART_Transmit(&huart2, uart_Tx[ATCMD_Check_Reg], sizeof(uart_Tx[ATCMD_Check_Reg])-1, 30);
 			HAL_UART_Transmit(&huart2, "\r", 1, 30);
@@ -1656,6 +1658,8 @@ void usart2_entry(void const * argument)
 			print_atCommand(recv2, uart2_msg_print_switch);
 			memset(recv2, 0, UART2_RX_LENGTH);
 			//----------------------------------------
+			 *
+			 */
 
 
 			// Check signal AT+CGATT?
@@ -1962,7 +1966,7 @@ void usart2_entry(void const * argument)
 		  {
 			//Error_Handler();
 		  }
-		osDelay(UART2_ATCMD_DELAY*3);
+		osDelay(UART2_ATCMD_DELAY);
 		HAL_UART_Abort_IT(&huart2);
 
 		reg_index = uart_findDataIndex(recv2,4);
@@ -2073,33 +2077,37 @@ void usart2_entry(void const * argument)
 
 
 		// ping status AT+UPING="www.google.com"
-		HAL_UART_Transmit(&huart2, uart_Tx[ATCMD_Ping_web], sizeof(uart_Tx[ATCMD_Ping_web])-1, 30);
-		HAL_UART_Transmit(&huart2, "\r", 1, 30);
-
-		if(HAL_UART_Receive_DMA(&huart2, recv2, UART2_RX_LENGTH) != HAL_OK)
-		  {
-			//Error_Handler();
-		  }
-		osDelay(UART2_ATCMD_DELAY*10);
-		HAL_UART_Abort_IT(&huart2);
-
-		print_atCommand(recv2, uart2_msg_print_switch);
-
-
-		// check ping status
-		if((uart2_isFindString(recv2, string_UUPING, sizeof(string_UUPING)) == 1) && (uart2_isFindString(recv2, string_UUPINGER, sizeof(string_UUPINGER)) == 0))
+		if(wwan_command == 0)
 		{
-			r280_module_state.ping_status = 0; //OK
-			memset(recv2, 0, UART2_RX_LENGTH);
-		}
-		else
-		{
-			r280_module_state.ping_status = 1; //ERROR
-			memset(recv2, 0, UART2_RX_LENGTH);
+			HAL_UART_Transmit(&huart2, uart_Tx[ATCMD_Ping_web], sizeof(uart_Tx[ATCMD_Ping_web])-1, 30);
+			HAL_UART_Transmit(&huart2, "\r", 1, 30);
 
-			// ping failed, reset internal Internet
-			flag_reset_internet = 1;
+			if(HAL_UART_Receive_DMA(&huart2, recv2, UART2_RX_LENGTH) != HAL_OK)
+			  {
+				//Error_Handler();
+			  }
+			osDelay(UART2_ATCMD_DELAY*10);
+			HAL_UART_Abort_IT(&huart2);
+
+			print_atCommand(recv2, uart2_msg_print_switch);
+
+
+			// check ping status
+			if((uart2_isFindString(recv2, string_UUPING, sizeof(string_UUPING)) == 1) && (uart2_isFindString(recv2, string_UUPINGER, sizeof(string_UUPINGER)) == 0))
+			{
+				r280_module_state.ping_status = 0; //OK
+				memset(recv2, 0, UART2_RX_LENGTH);
+			}
+			else
+			{
+				r280_module_state.ping_status = 1; //ERROR
+				memset(recv2, 0, UART2_RX_LENGTH);
+
+				// ping failed, reset internal Internet
+				flag_reset_internet = 1;
+			}
 		}
+
 		//----------------------------------------
 
 

@@ -61,8 +61,8 @@
 #define UART1_TX_DELAY      10
 
 #define UART2_RX_LENGTH     260
-#define UART2_ATCMD_DELAY   1000
-#define UART2_WAIT_READY    900
+#define UART2_ATCMD_DELAY   500
+#define UART2_WAIT_READY    1000
 
 
 
