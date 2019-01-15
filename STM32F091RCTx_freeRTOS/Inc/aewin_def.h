@@ -347,8 +347,8 @@ typedef enum{
 	ATCMD_Get_GPS_DATA = 9,  //AT+UGRMC?
 	ATCMD_Config_GPS   =10,  //AT+UGPRF=1
 	ATCMD_Get_airplane =11,  //AT+CFUN?
-	ATCMD_En_airplane  =12,  //AT+CFUN=4
-	ATCMD_Dis_airplane =13,  //AT+CFUN=1
+	ATCMD_Dis_airplane =12,  //AT+CFUN=4
+	ATCMD_En_airplane  =13,  //AT+CFUN=1
 	ATCMD_Ping_web     =14,  //AT+UPING="www.google.com"
 	ATCMD_Set_APN      =15,  //AT+UPSD=0,1,"apn.name"
 	ATCMD_Reset_PSD    =16,  //AT+UPSDA=0,0

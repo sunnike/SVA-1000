@@ -1556,7 +1556,7 @@ void usart2_entry(void const * argument)
     		flag_reset_internet = 1;
 
     		// Normal mode AT+CFUN=1
-			HAL_UART_Transmit(&huart2, uart_Tx[ATCMD_Dis_airplane], sizeof(uart_Tx[ATCMD_Dis_airplane])-1, 30);
+			HAL_UART_Transmit(&huart2, uart_Tx[ATCMD_En_airplane], sizeof(uart_Tx[ATCMD_En_airplane])-1, 30);
 			HAL_UART_Transmit(&huart2, "\r", 1, 30);
 
 			if(HAL_UART_Receive_DMA(&huart2, recv2, UART2_RX_LENGTH) != HAL_OK)
@@ -1575,7 +1575,7 @@ void usart2_entry(void const * argument)
     		wwan_command = 0;
 
     		// Airplane mode
-			HAL_UART_Transmit(&huart2, uart_Tx[ATCMD_En_airplane], sizeof(uart_Tx[ATCMD_En_airplane])-1, 30);
+			HAL_UART_Transmit(&huart2, uart_Tx[ATCMD_Dis_airplane], sizeof(uart_Tx[ATCMD_Dis_airplane])-1, 30);
 			HAL_UART_Transmit(&huart2, "\r", 1, 30);
 
 			if(HAL_UART_Receive_DMA(&huart2, recv2, UART2_RX_LENGTH) != HAL_OK)
