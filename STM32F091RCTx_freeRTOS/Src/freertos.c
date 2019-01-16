@@ -217,8 +217,13 @@ DMA_HandleTypeDef hdma_usart1_tx;
 static FLASH_EraseInitTypeDef EraseInitStruct;
 
 uint32_t PageError = 0;
-uint32_t eeprom_test[EEPROM_DATA_LEN] = {EEPROM_TAG, 0x01020304, 0x02040608, 0x10203040, 0x20406080, 0x12345678};
+//uint16_t eeprom_test[EEPROM_DATA_LEN] = {EEPROM_TAG, 0x0102, 0x0204, 0x1020, 0x2040, 0x1234};
 //uint32_t eeprom_test[EEPROM_DATA_LEN] = {EEPROM_TAG, 0x11111111, 0x22222222, 0x33333333, 0x44444444, 0x55555555};
+uint16_t eeprom_test[EEPROM_DATA_LEN] = {EEPROM_TAG,VERSION_MAJOR, VERSION_MINOR, 4, 1,	1,
+		10, 2, 10, 2, 30, 5, 5, 12,	20, 145,
+		0, 50, 100, 50, 0, 0, 0, 0, 0, 1,
+		0, 0, 0, 0, 0, 0, 0, 0, 9, 36,
+		0, 0, 0, 0, 0, 0, 0x03, 0x03, 0x03, 0x03};
 
 
 typedef  void (*pFunction)(void);
@@ -240,7 +245,7 @@ void cmd_proc_entry(void const * argument);
 void gpio_state_entry(void const * argument);
 void spi1_entry(void const * argument);
 void can_entry(void const * argument);
-void JumpToBootloader(void);
+
 
 void MX_FREERTOS_Init(void); /* (MISRA C 2004 rule 8.1) */
 
@@ -258,6 +263,8 @@ void print_atCommand(uint8_t rx_msg[], uint8_t onOff);
 uint8_t check_lowPower(uint32_t adc_value);
 uint8_t check_highPower(uint32_t adc_value);
 void config_recovery(void);
+void JumpToBootloader(void);
+void write_setting_to_eeprom(void);
 #endif
 
 
@@ -272,34 +279,22 @@ void MX_FREERTOS_Init(void) {
 	uint32_t Address = 0;
 	uint8_t data_counter = 0;
 
+	// initialize 4G module
+	enable_4GModule();
+
 	//HAL_UART_Transmit(&huart3, SVA_1000_NL, sizeof(SVA_1000_NL) - 1, sizeof(SVA_1000_NL));
 	HAL_RTC_GetTime(&hrtc, &sTime, RTC_FORMAT_BIN);
 	HAL_RTC_GetDate(&hrtc, &sDate, RTC_FORMAT_BIN);
 
 	HAL_GPIO_WritePin(SPI1_CS_GPIO_Port, SPI1_CS_Pin, GPIO_PIN_SET);
 
-	//read flash
-
-	//current_IgEvent load data from flash_IgEvent
-	config_recovery();
-
-
-	//countdown_timer initialize
-	countdown_timer.poweron_delay    = current_IgEvent[NUM_pwron_delay];
-	countdown_timer.startup_timeout  = current_IgEvent[NUM_startup_timeout];
-	countdown_timer.shutdown_delay   = current_IgEvent[NUM_shutdown_delay];
-	countdown_timer.shutdown_timeout = current_IgEvent[NUM_shutdown_timeout];
-	countdown_timer.poweroff_delay   = current_IgEvent[NUM_pwroff_delay];
-
-
-	enable_4GModule();
 
 	//--------------------
 	//read EEPROM
 	/* Check the correctness of written data */
 	Address = FLASH_USER_START_ADDR;
 
-	if((*(__IO uint32_t*) Address) != EEPROM_TAG)
+	if((*(__IO uint16_t*) Address) != EEPROM_TAG)
 	{
 		/* Flash page erase */
 		EraseInitStruct.TypeErase   = FLASH_TYPEERASE_PAGES;
@@ -319,7 +314,7 @@ void MX_FREERTOS_Init(void) {
 		/*Flash write initial data */
 		for(data_counter = 0; data_counter < EEPROM_DATA_LEN ; data_counter++)
 		{
-			if (HAL_FLASH_Program(FLASH_TYPEPROGRAM_WORD, Address + data_counter*4, eeprom_test[data_counter]) != HAL_OK)
+			if (HAL_FLASH_Program(FLASH_TYPEPROGRAM_HALFWORD, Address + data_counter*EEPROM_DATA_SIZE, eeprom_test[data_counter]) != HAL_OK)
 			{
 			/* Error occurred while writing data in Flash memory.
 			   User can add here some code to deal with this error */
@@ -331,9 +326,22 @@ void MX_FREERTOS_Init(void) {
 		/* Flash read data */
 		for(data_counter = 0; data_counter < EEPROM_DATA_LEN ; data_counter++)
 		{
-			eeprom_test[data_counter] = (*(__IO uint32_t*) (Address + data_counter*4));
+			eeprom_test[data_counter] = (*(__IO uint16_t*) (Address + data_counter*EEPROM_DATA_SIZE));
 		}
 	}
+
+	//read flash
+
+	//current_IgEvent load data from flash_IgEvent
+	config_recovery();
+
+
+	//countdown_timer initialize
+	countdown_timer.poweron_delay    = current_IgEvent[NUM_pwron_delay];
+	countdown_timer.startup_timeout  = current_IgEvent[NUM_startup_timeout];
+	countdown_timer.shutdown_delay   = current_IgEvent[NUM_shutdown_delay];
+	countdown_timer.shutdown_timeout = current_IgEvent[NUM_shutdown_timeout];
+	countdown_timer.poweroff_delay   = current_IgEvent[NUM_pwroff_delay];
 
 
 
@@ -1662,7 +1670,7 @@ void usart2_entry(void const * argument)
 			 */
 
 
-			// Check signal AT+CGATT?
+			// Indicates the state of GPRS attachment AT+CGATT?
 			HAL_UART_Transmit(&huart2, "AT+CGATT?", sizeof("AT+CGATT?")-1, 30);
 			HAL_UART_Transmit(&huart2, "\r", 1, 30);
 
@@ -1678,7 +1686,7 @@ void usart2_entry(void const * argument)
 			//----------------------------------------
 
 
-			// Check signal AT+UPSD=0,100,1
+			// Map the +UPSD profile to the specified <cid> in the +CGDCONT table AT+UPSD=0,100,1
 			HAL_UART_Transmit(&huart2, "AT+UPSD=0,100,1", sizeof("AT+UPSD=0,100,1")-1, 30);
 			HAL_UART_Transmit(&huart2, "\r", 1, 30);
 
@@ -1694,7 +1702,7 @@ void usart2_entry(void const * argument)
 			//----------------------------------------
 
 
-			// Check signal AT+UPSDA=0,3
+			// Activates a PDP context with the specified profile AT+UPSDA=0,3
 			HAL_UART_Transmit(&huart2, "AT+UPSDA=0,3", sizeof("AT+UPSDA=0,3")-1, 30);
 			HAL_UART_Transmit(&huart2, "\r", 1, 30);
 
@@ -1709,7 +1717,7 @@ void usart2_entry(void const * argument)
 			memset(recv2, 0, UART2_RX_LENGTH);
 			//----------------------------------------
 
-			// Cread UDP socket, AT+USOCR=17
+			// Create UDP socket, AT+USOCR=17
 			HAL_UART_Transmit(&huart2, "AT+USOCR=17", sizeof("AT+USOCR=17")-1, 30);
 			HAL_UART_Transmit(&huart2, "\r", 1, 30);
 
@@ -1724,7 +1732,7 @@ void usart2_entry(void const * argument)
 			memset(recv2, 0, UART2_RX_LENGTH);
 			//----------------------------------------
 
-			// Creat TCP socket, AT+USOCR=6
+			// Create TCP socket, AT+USOCR=6
 			HAL_UART_Transmit(&huart2, "AT+USOCR=6", sizeof("AT+USOCR=6")-1, 30);
 			HAL_UART_Transmit(&huart2, "\r", 1, 30);
 
@@ -3317,6 +3325,9 @@ void spi1_entry(void const * argument)
   {
 	  if(flag_flashWrite == 1)
 	  {
+		  //write eeprom
+		  write_setting_to_eeprom();
+
 		  //write flash
 		  //WREN
 		  	HAL_GPIO_WritePin(SPI1_CS_GPIO_Port, SPI1_CS_Pin, GPIO_PIN_RESET);
@@ -3686,7 +3697,7 @@ void print_atCommand(uint8_t rx_msg[], uint8_t onOff)
 	int i;
 	if(onOff == 1)
 	{
-		aewin_dbg("=====AT command=====\r\n");
+		aewin_dbg("\r\n=====AT command=====\r\n");
 		for(i=0;i<UART2_RX_LENGTH;i++)
 		{
 			aewin_dbg("%c",rx_msg[i]);
@@ -3734,9 +3745,63 @@ void config_recovery(void)
 {
 	uint8_t data_index;
 
+	#if 1
 	for(data_index = 0; data_index<NUM_total;data_index++)
 	{
 		current_IgEvent[data_index] = flash_IgEvent[data_index];
+	}
+	#endif
+
+	# if 0
+	current_IgEvent[0] = SPI_FLASH_PROGRAM_PAGE;
+	current_IgEvent[1] = SPI_FLASH_ADD_Byte0;
+	current_IgEvent[2] = SPI_FLASH_ADD_Byte1;
+	current_IgEvent[3] = SPI_FLASH_ADD_Byte2;
+	current_IgEvent[4] = SPI_FLASH_DATA_TAG;
+	for(data_index = SPI_FLASH_LEN_CMDADD + 1; data_index<NUM_total;data_index++)
+	{
+		current_IgEvent[data_index] = eeprom_test[data_index - SPI_FLASH_LEN_CMDADD];
+	}
+	#endif
+}
+
+
+void write_setting_to_eeprom(void){
+	uint32_t Address = 0;
+	uint8_t data_counter = 0;
+
+	Address = FLASH_USER_START_ADDR;
+
+	/* Flash page erase */
+	EraseInitStruct.TypeErase   = FLASH_TYPEERASE_PAGES;
+	EraseInitStruct.PageAddress = FLASH_USER_START_ADDR;
+	EraseInitStruct.NbPages     = (FLASH_USER_END_ADDR - FLASH_USER_START_ADDR)/FLASH_PAGE_SIZE;
+
+	if (HAL_FLASHEx_Erase(&EraseInitStruct, &PageError) != HAL_OK)
+	{
+	  /*
+		Error occurred while page erase.
+		User can add here some code to deal with this error.
+		PageError will contain the faulty page and then to know the code error on this page,
+		user can call function 'HAL_FLASH_GetError()'
+	  */
+	}
+
+	/*Flash write current data */
+	// write EEPROM_TAG
+	if (HAL_FLASH_Program(FLASH_TYPEPROGRAM_HALFWORD, Address, EEPROM_TAG) != HAL_OK)
+	{
+	/* Error occurred while writing data in Flash memory.
+	   User can add here some code to deal with this error */
+	}
+
+	for(data_counter = 1; data_counter < EEPROM_DATA_LEN ; data_counter++)
+	{
+		if (HAL_FLASH_Program(FLASH_TYPEPROGRAM_HALFWORD, Address + data_counter*EEPROM_DATA_SIZE, current_IgEvent[data_counter + SPI_FLASH_LEN_CMDADD]) != HAL_OK)
+		{
+		/* Error occurred while writing data in Flash memory.
+		   User can add here some code to deal with this error */
+		}
 	}
 
 }

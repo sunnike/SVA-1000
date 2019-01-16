@@ -236,9 +236,12 @@
 #define FLASH_USER_START_ADDR    ADDR_FLASH_PAGE_127   /* Start @ of user Flash area */
 #define FLASH_USER_END_ADDR      ADDR_FLASJ_PAGE_END   /* End @ of user Flash area */
 
-//#define EEPROM_TAG               ((uint32_t)0x12345678)
-#define EEPROM_TAG               ((uint32_t)0x5aa5a55a)
-#define EEPROM_DATA_LEN          6
+#define EEPROM_TAG               ((uint16_t)0xa55a)
+//#define EEPROM_TAG               ((uint32_t)0x5aa5a55a)
+#define EEPROM_DATA_LEN          46
+#define EEPROM_DATA_SIZE         EEPROM_TYPEPROGRAM_HALFWORD
+#define EEPROM_TYPEPROGRAM_HALFWORD      2
+#define EEPROM_TYPEPROGRAM_WORD          4
 
  /* USER CODE END Definition */
 
