@@ -154,7 +154,7 @@ uint8_t flash_IgEvent[NUM_total] = {SPI_FLASH_PROGRAM_PAGE, SPI_FLASH_ADD_Byte0,
 		10, 2, 10, 2, 30, 5, 5, 12,	20, 145,
 		0, 50, 100, 50, 0, 0, 0, 0, 0, 1,
 		0, 0, 0, 0, 0, 0, 0, 0, 9, 36,
-		0, 0, 0, 0, 0, 0, 0x03, 0x03, 0x03, 0x03};    // RTC_WakeT_min
+		0, 0, 0, 0, 0, 0, 0x01, 0x01, 0x01, 0x01};    // RTC_WakeT_min
 
 
 
@@ -223,7 +223,7 @@ uint16_t eeprom_test[EEPROM_DATA_LEN] = {EEPROM_TAG,VERSION_MAJOR, VERSION_MINOR
 		10, 2, 10, 2, 30, 5, 5, 12,	20, 145,
 		0, 50, 100, 50, 0, 0, 0, 0, 0, 1,
 		0, 0, 0, 0, 0, 0, 0, 0, 9, 36,
-		0, 0, 0, 0, 0, 0, 0x03, 0x03, 0x03, 0x03};
+		0, 0, 0, 0, 0, 0, 0x01, 0x01, 0x01, 0x01};
 
 
 typedef  void (*pFunction)(void);
@@ -1557,7 +1557,9 @@ void usart2_entry(void const * argument)
 #endif
 
 
-    	if(wwan_command == 1)
+    	//if(wwan_command == 1)
+    	// enable but in flight mode
+    	if((current_IgEvent[NUM_WWAN_status] == 1) && (r280_module_state.normal_flight_states == 40))
     	{
     		// enable WWAN, normal mode
     		wwan_command = 0;
@@ -1577,7 +1579,9 @@ void usart2_entry(void const * argument)
 			print_atCommand(recv2, uart2_msg_print_switch);
 			memset(recv2, 0, UART2_RX_LENGTH);
     	}
-    	else if(wwan_command == 2)
+    	//else if(wwan_command == 2)
+    	// disable but in enable mode
+    	else if((current_IgEvent[NUM_WWAN_status] == 0) && (r280_module_state.normal_flight_states == 10))
     	{
     		// disable WWAN, airplane mode AT+CFUN=4
     		wwan_command = 0;
@@ -2686,8 +2690,11 @@ void ignition_entry(void const * argument)
 				//check startup battery
 				if(check_highPower(adc_24v) == 0)
 				{
-					//ig_var.fail_count++;
-					//ig_var.ig_states = IG_Recovery;
+					HAL_GPIO_WritePin(GPIOC, D2D_EN_Pin, GPIO_PIN_RESET);
+					ig_var.fail_count++;
+					ig_var.ig_states = IG_Wait_Retry;
+					aewin_dbg("\n\rInput voltage is lower than %3.1f", 10 + current_IgEvent[NUM_12V_startup]*0.5);
+					aewin_dbg("\n\rIG_Wait_StartUp failed! IG_Wait_StartUp --> IG_Wait_Retry");
 				}
 				break;
 
@@ -2860,6 +2867,18 @@ void ignition_entry(void const * argument)
 					HAL_GPIO_WritePin(GPIOC, D2D_EN_Pin, GPIO_PIN_RESET);
 					enable_4GModule();
 					aewin_dbg("\n\rLowPower delay pass! IG_LowPower_Delay --> IG_CloseUp");
+				}
+				else
+				{
+					//Unknown
+				}
+				break;
+
+			//-------------------------------------------------------------------------------------
+			case IG_Wait_Retry:
+				if(sva_gpi.ig_sw == GPIO_PIN_RESET){
+					ig_var.ig_states = IG_Recovery;
+					aewin_dbg("\n\rRetry ignition! IG_Wait_Retry --> IG_Recovery");
 				}
 				else
 				{
