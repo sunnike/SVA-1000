@@ -108,7 +108,7 @@ char dbg_buff[PRINT_BUFF];
 TickType_t xTimeNow;
 
 uint8_t uart2_msg_print_switch = 1;
-uint8_t wwan_command = 1;
+uint8_t wwan_command = 0;
 // 0 : no command
 // 1 : enable
 // 2 : disable
@@ -3580,12 +3580,17 @@ void aewin_dbg(char *fmt,...){
 
 void HAL_RTC_AlarmAEventCallback(RTC_HandleTypeDef *handleRTC)
 {
-    // RTC wakeup
+	uint8_t xFer[CMD_HEAD_SIZE + CMD_TAIL_SIZE + 1] = {0x91, 0xA0, 0x10, 0x01, 0x03, 0x00, 0x04};
+	// RTC wakeup
 	if(current_IgEvent[NUM_alarm_status] == 1)
 	{
 		HAL_GPIO_WritePin(GPIOC, TEST_4G_Pin, GPIO_PIN_RESET);
 		HAL_Delay(1);
 		HAL_GPIO_WritePin(GPIOC, TEST_4G_Pin, GPIO_PIN_SET);
+
+		// Start to transmit to host.
+		HAL_UART_Transmit_DMA(&huart1, xFer, CMD_HEAD_SIZE + CMD_TAIL_SIZE + 1);
+		HAL_Delay(5);
 	}
 }
 
