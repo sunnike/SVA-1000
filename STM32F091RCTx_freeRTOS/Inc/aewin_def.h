@@ -48,6 +48,7 @@
    * @{
    */
 #define JUMP_BOOTLOADER_DELAY_TIME	(30U)
+#define APPLICATION_ADDRESS         0x1FFFD800
 
 
 
