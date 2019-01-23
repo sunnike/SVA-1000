@@ -1289,7 +1289,7 @@ void usart1_entry(void const * argument)
 								xFer[12] = 0x01;
 							}
 
-							xFer[13] = 0x00;                                       // Restart Failed &  Retry Times
+							xFer[13] = ig_var.fail_count;                          // Restart Failed &  Retry Times
 							xFer[14] = r280_module_state.normal_flight_states;     // 4G status
 							xFer[15] = r280_module_state.register_3G_4G;           // 3G/4G register
 							xFer[16] = r280_module_state.signal_strength;          // Signal strength indicator
@@ -2672,8 +2672,8 @@ void ignition_entry(void const * argument)
 
 				if(sva_gpi.sw_shutdown == GPIO_PIN_RESET)
 				{
-					// OS system shutdown, go to IG_shutting_Down
-					ig_var.ig_states = IG_shutting_Down;
+					// startup voltage is not high enough, go to IG_Wait_Retry
+					ig_var.ig_states = IG_Wait_Retry;
 
 					// system off
 					HAL_GPIO_WritePin(GPIOC, D2D_EN_Pin, GPIO_PIN_RESET);
@@ -2681,13 +2681,15 @@ void ignition_entry(void const * argument)
 					// reset 4G module
 					enable_4GModule();
 
-					aewin_dbg("\n\rPower off delay pass! IG_Start_Up --> IG_shutting_Down");
+					aewin_dbg("\n\rSystem shutdown! IG_Wait_StartUp --> IG_Wait_Retry");
+
 				}
 
 				break;
 
 			//-------------------------------------------------------------------------------------
 			case IG_Shutdown_Delay:
+
 				if(sva_gpi.ig_sw == GPIO_PIN_RESET){
 
 					if(current_IgEvent[NUM_delay_off_setting] == 0)
@@ -2716,7 +2718,7 @@ void ignition_entry(void const * argument)
 					ig_var.ig_states = IG_Start_Up;
 
 					// Reset "power off delay timer"
-					current_IgEvent[NUM_pwroff_delay] = flash_IgEvent[NUM_pwroff_delay];
+					countdown_timer.poweroff_delay = current_IgEvent[NUM_pwroff_delay];
 					aewin_dbg("\n\rPower off delay failed! IG_Shutdown_Delay --> IG_Start_Up");
 				}
 
@@ -2734,18 +2736,8 @@ void ignition_entry(void const * argument)
 
 			//-------------------------------------------------------------------------------------
 			case IG_shutting_Down:
-				if(sva_gpi.sw_shutdown == GPIO_PIN_RESET)
-				{
-					// After system shutdown, stay at IG_shutting_Down state..
-					// Until switch off, go to IG_CloseUp state.
-					if(sva_gpi.ig_sw == GPIO_PIN_RESET)
-					{
-						// system shutdown and switch off, go to IG_CloseUp state.
-						ig_var.ig_states = IG_CloseUp;
-						aewin_dbg("\n\rIgnition signal low! IG_shutting_Down --> IG_CloseUp");
-					}
-				}
-				else if(sva_gpi.ig_sw == GPIO_PIN_RESET){
+
+				if(sva_gpi.ig_sw == GPIO_PIN_RESET){
 
 					if (0 == (countdown_timer.shutdown_delay--)){
 
@@ -2773,13 +2765,7 @@ void ignition_entry(void const * argument)
 					aewin_dbg("\n\rShutdown delay failed! IG_shutting_Down --> IG_Shutdown_Delay");
 				}
 
-				if(sva_gpi.sw_shutdown == GPIO_PIN_RESET)
-				{
-					if(sva_gpi.ig_sw == GPIO_PIN_RESET)
-					{
-						ig_var.ig_states = IG_CloseUp;
-					}
-				}
+
 
 				break;
 
