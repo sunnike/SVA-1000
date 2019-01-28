@@ -58,6 +58,7 @@
 #define UART1_TIMEOUT		1
 #define UART2_TIMEOUT		500  //osWaitForever
 #define UART3_TIMEOUT		1
+#define GPS_GETQ_TIMEOUT    100
 
 #define UART1_TX_DELAY      10
 
@@ -260,7 +261,7 @@ typedef enum{
 	IG_shutting_Down  = 7,
 	IG_LowPower_Delay = 10,
 	IG_CloseUp        = 20,
-	IG_Wait_Retry     = 30,
+	IG_Wait_Recover   = 30,
 	IG_End = 100
 }eIgnition_States;
 

@@ -113,6 +113,9 @@ uint8_t wwan_command = 0;
 // 1 : enable
 // 2 : disable
 
+uint8_t flag_flashWrite = 0;
+uint8_t flag_jumpToBootloader = 0;
+
 sSVA_GPI_STATE 	sva_gpi={0};
 sSVA_GPO_STATE 	sva_gpo={0};
 
@@ -121,19 +124,12 @@ s4G_MODULE r280_module_state = {0};
 sCOUNTDOWN_TIMER countdown_timer = {0};
 sIG_VAR ig_var = {IG_Recovery, FALSE, 0};
 
-
 uint8_t cml_array[MAX_CML_CHAR] = {0};
 uint8_t cml_proc[MAX_CML_CHAR] = {0};
 
 uint8_t uart_Tx[][26] = {"AT", "AT+cind?", "at+cgdcont?", "AT+CGACT=1,1", "AT+COPS?", "AT+CSQ", "at+ugps=1,0", "at+ugps=0", "AT+UGRMC=1",
 		"AT+UGRMC?", "AT+UGPRF=1", "AT+CFUN?", "AT+CFUN=4", "AT+CFUN=1",  "AT+UPING=\"www.google.com\"", "AT+UPSD=0,1,\"apn.name\"",
 		"AT+UPSDA=0,0", "AT+UPSDA=0,3"};
-
-
-//sIG_EVENT gIG_Event ={ 0x12345678, 0, 1, IG_Recovery, 1, 1, 1, 2, 2, 10, 2, 100, 5, FALSE, 5, 12, 20, 145, 0, 50, 100, 50, 0, 0, 0};
-//sIG_EVENT gIG_Event ={ 0x12345678, 0, 1, IG_Recovery, 4, 1, 60, 10, 4, 60, 30, 300, 5, FALSE, 5, 12, 9, 54, 0, 50, 100, 50, 0, 0, 0}; //ignition mode
-//sIG_EVENT gIG_Event ={ 0x12345678, 0, 1, IG_Recovery, 4, 1, 60, 10, 4, 90, 30, 300, 5, FALSE, 5, 12, 20, 145, 0, 50, 100, 50, 0, 0, 0}; //power adapter mode
-//uint8_t flash_IgEvent[29] = {SPI_FLASH_PROGRAM_PAGE, SPI_FLASH_ADD_Byte0, SPI_FLASH_ADD_Byte1, SPI_FLASH_ADD_Byte2, SPI_FLASH_DATA_TAG, 0, 1, IG_Recovery, 1, 1, 1, 2, 2, 10, 2, 100, 5, FALSE, 5, 12, 20, 145, 0, 50, 100, 50, 0, 0, 0};
 
 volatile uint8_t current_IgEvent[NUM_total];
 
@@ -165,10 +161,7 @@ uint8_t flash_IgEvent[NUM_total] = {SPI_FLASH_PROGRAM_PAGE, SPI_FLASH_ADD_Byte0,
 		0, 0, 0, 0, 0, 0, 0x03, 0x03, 0x03, 0x03};    // RTC_Wake
 */
 
-uint8_t flag_flashWrite = 0;
-uint8_t flag_jumpToBootloader = 0;
 
-volatile sIG_EVENT ig_event;
 
 /** @defgroup STM32F0XX_RTC STM32F0XX RTC time, date and alarm.
   * @{
@@ -177,14 +170,31 @@ RTC_TimeTypeDef  sTime = {0};
 RTC_DateTypeDef  sDate = {0};
 RTC_AlarmTypeDef sAlarm = {0};
 
+
+/** @defgroup STM32F0XX_UART STM32F0XX UART handle type define, Rx and Tx.
+  * @{
+  */
 DMA_HandleTypeDef hdma_usart1_rx;
 DMA_HandleTypeDef hdma_usart1_tx;
 
-//eeprom(flash)
+
+/** @defgroup STM32F0XX_BL STM32F0XX bootloader, address and function.
+  * @{
+  */
+typedef  void (*pFunction)(void);
+pFunction JumpToApplication;
+uint32_t JumpAddress;
+
+
+/** @defgroup STM32F0XX_FLASH STM32F0XX FLASH, address and function.
+  * @{
+  */
 /*Variable used for Erase procedure*/
 static FLASH_EraseInitTypeDef EraseInitStruct;
 
+/* configuration information on faulty page */
 uint32_t PageError = 0;
+
 //uint16_t eeprom_test[EEPROM_DATA_LEN] = {EEPROM_TAG, 0x0102, 0x0204, 0x1020, 0x2040, 0x1234};
 //uint32_t eeprom_test[EEPROM_DATA_LEN] = {EEPROM_TAG, 0x11111111, 0x22222222, 0x33333333, 0x44444444, 0x55555555};
 uint16_t eeprom_test[EEPROM_DATA_LEN] = {EEPROM_TAG,VERSION_MAJOR, VERSION_MINOR, 4, 1,	1,
@@ -194,9 +204,6 @@ uint16_t eeprom_test[EEPROM_DATA_LEN] = {EEPROM_TAG,VERSION_MAJOR, VERSION_MINOR
 		0, 0, 0, 0, 0, 0, 0x01, 0x01, 0x01, 0x01};
 
 
-typedef  void (*pFunction)(void);
-pFunction JumpToApplication;
-uint32_t JumpAddress;
 
 /* USER CODE END Variables */
 
@@ -465,6 +472,9 @@ void usart1_entry(void const * argument)
 	uint8_t u16InsIdx,u16Delidx;
 	uint8_t rx_byte_counter = 0;
 	uint8_t flag_rx_finished = 0;
+
+	uint8_t gps_data_record[6]={0};
+	uint8_t loop_index = 0;
 
 	osEvent evt_vol;
 	osEvent evt_temp;
@@ -933,15 +943,36 @@ void usart1_entry(void const * argument)
 						case Subcmd_Get_GPS:
 							if((CMD_ETX_CODE != recv1[CMD_ETX_POS(CMD_HEAD_MS_SIZE)]) || \
 							   (CMD_EOT_CODE != recv1[CMD_EOT_POS(CMD_HEAD_MS_SIZE)])) break;
-							evt_lat = osMessageGet(UART2_LAT_QHandle,osWaitForever);
-							evt_long = osMessageGet(UART2_LONG_QHandle,osWaitForever);
+							evt_lat = osMessageGet(UART2_LAT_QHandle,GPS_GETQ_TIMEOUT);
+							evt_long = osMessageGet(UART2_LONG_QHandle,GPS_GETQ_TIMEOUT);
+
 							xFer[2] = Subcmd_Get_GPS;
-							xFer[3] = (evt_lat.value.v)/10000000;
-							xFer[4] = ((evt_lat.value.v)%10000000)/100000;
-							xFer[5] = (((evt_lat.value.v)%10000000)%100000)*60/100000;
-							xFer[6] = (evt_long.value.v)/10000000;
-							xFer[7] = ((evt_long.value.v)%10000000)/100000;
-							xFer[8] = (((evt_long.value.v)%10000000)%100000)*60/100000;
+
+							if((evt_lat.status == osErrorParameter) || (evt_long.status == osErrorParameter))
+							{
+								// print the same data as previous, because UART hasn't get the next GPS data
+								for(loop_index = 0; loop_index < 6; loop_index++)
+								{
+									xFer[3 + loop_index] = gps_data_record[loop_index];
+								}
+							}
+							else
+							{
+								// print the new data, DMM to DMS
+								xFer[3] = (evt_lat.value.v)/10000000;
+								xFer[4] = ((evt_lat.value.v)%10000000)/100000;
+								xFer[5] = (((evt_lat.value.v)%10000000)%100000)*60/100000;
+								xFer[6] = (evt_long.value.v)/10000000;
+								xFer[7] = ((evt_long.value.v)%10000000)/100000;
+								xFer[8] = (((evt_long.value.v)%10000000)%100000)*60/100000;
+
+								// update GPS data record
+								for(loop_index = 0; loop_index < 6; loop_index++)
+								{
+									gps_data_record[loop_index] = xFer[3 + loop_index];
+								}
+							}
+
 
 							send2host = TRUE;
 							xFer_len = MCU_REPO_HEAD_CMD_SIZE + MCU_SCMD80_LEN;
@@ -1791,29 +1822,6 @@ void usart2_entry(void const * argument)
 			else
 			{
 				// find data index
-				// find index of latitude and longitude
-				/*
-				split_count = 0;
-				for(i = 0; i<UART2_RX_LENGTH; i++)
-				{
-					if(recv2[i] == ',')
-					{
-						split_count++;
-					}
-
-					if(split_count == 4)
-					{
-						latitude_index = i+1;
-					}
-
-					if(split_count == 6)
-					{
-						longitude_index = i+1;
-						break;
-					}
-				}
-				*/
-
 				latitude_index = uart_findDataIndex(recv2,5);
 				longitude_index = uart_findDataIndex(recv2,7);
 
@@ -2032,15 +2040,17 @@ void usart2_entry(void const * argument)
 			// check ping status
 			if((uart2_isFindString(recv2, string_UUPING, sizeof(string_UUPING)) == 1) && (uart2_isFindString(recv2, string_UUPINGER, sizeof(string_UUPINGER)) == 0))
 			{
-				r280_module_state.ping_status = 0; //OK
+				// ping OK
+				r280_module_state.ping_status = 0;
 				memset(recv2, 0, UART2_RX_LENGTH);
 			}
 			else
 			{
-				r280_module_state.ping_status = 1; //ERROR
+				// ping failed
+				r280_module_state.ping_status = 1;
 				memset(recv2, 0, UART2_RX_LENGTH);
 
-				// ping failed, reset internal Internet
+				// reset internal Internet
 				flag_reset_internet = 1;
 			}
 		}
@@ -2081,13 +2091,15 @@ void usart2_entry(void const * argument)
 		// check read status
 		if(uart2_isFindString(recv2, string_OK, sizeof(string_OK)) == 1)
 		{
-			r280_module_state.ping_status = 0; //OK
+			// read OK
+			r280_module_state.ping_status = 0;
 		}
 		else
 		{
-			r280_module_state.ping_status = 1; //ERROR
+			// read failed
+			r280_module_state.ping_status = 1;
 
-			// ping failed, reset internal Internet
+			// reset internal Internet
 			flag_reset_internet = 1;
 		}
 
@@ -2109,6 +2121,7 @@ void usart3_entry(void const * argument)
 	HAL_StatusTypeDef u3_states = HAL_OK;
 	cml_head = cml_limit = cml_ptr;
 	uint8_t cnt = 0;
+
 	/* Infinite loop */
 	for(;;)
 	{
@@ -2400,16 +2413,14 @@ void ignition_entry(void const * argument)
 	uint32_t 	adc_24v = 0;
 	uint32_t    adc_temp = 0;
 
-	//ig_event = gIG_Event;
-
 	aewin_dbg("\n\rInitialize finished.\n\r");
 	aewin_dbg("\n\rReset status : 0x%x.\n\r", RCC->CSR);
 	RCC->CSR |= 0x01000000;
 	aewin_dbg("\n\rClear reset status : 0x%x.\n\r", RCC->CSR);
+
     /* Infinite loop */
     for(;;)
     {
-
 		//HAL_RTC_GetTime(&hrtc, &sTime, RTC_FORMAT_BIN);
 		//HAL_RTC_GetDate(&hrtc, &sDate, RTC_FORMAT_BIN);
 		//aewin_dbg("\n\rMUC Time: %2d:%2d:%2d",sTime.Hours ,sTime.Minutes, sTime.Seconds);
@@ -2435,8 +2446,6 @@ void ignition_entry(void const * argument)
 		}
 
 
-		//switch(ig_event.IG_States){
-		//switch(current_IgEvent[NUM_ig_states]){
 		switch(ig_var.ig_states){
 			case IG_Recovery:
 				// Recovery all of IG states and parameters.
@@ -2604,15 +2613,15 @@ void ignition_entry(void const * argument)
 				//check startup voltage
 				if(check_highPower(adc_24v) == 0)
 				{
-					// startup voltage is not high enough, go to IG_Wait_Retry
-					ig_var.ig_states = IG_Wait_Retry;
+					// startup voltage is not high enough, go to IG_Wait_Recover
+					ig_var.ig_states = IG_Wait_Recover;
 					ig_var.fail_count++;
 
 					// system off
 					HAL_GPIO_WritePin(GPIOC, D2D_EN_Pin, GPIO_PIN_RESET);
 
 					aewin_dbg("\n\rInput voltage is lower than %3.1f", 10 + current_IgEvent[NUM_12V_startup]*0.5);
-					aewin_dbg("\n\rIG_Wait_StartUp failed! IG_Wait_StartUp --> IG_Wait_Retry");
+					aewin_dbg("\n\rIG_Wait_StartUp failed! IG_Wait_StartUp --> IG_Wait_Recover");
 				}
 				break;
 
@@ -2672,8 +2681,8 @@ void ignition_entry(void const * argument)
 
 				if(sva_gpi.sw_shutdown == GPIO_PIN_RESET)
 				{
-					// startup voltage is not high enough, go to IG_Wait_Retry
-					ig_var.ig_states = IG_Wait_Retry;
+					// startup voltage is not high enough, go to IG_Wait_Recover
+					ig_var.ig_states = IG_Wait_Recover;
 
 					// system off
 					HAL_GPIO_WritePin(GPIOC, D2D_EN_Pin, GPIO_PIN_RESET);
@@ -2681,8 +2690,7 @@ void ignition_entry(void const * argument)
 					// reset 4G module
 					enable_4GModule();
 
-					aewin_dbg("\n\rSystem shutdown! IG_Wait_StartUp --> IG_Wait_Retry");
-
+					aewin_dbg("\n\rSystem shutdown! IG_Wait_StartUp --> IG_Wait_Recover");
 				}
 
 				break;
@@ -2794,10 +2802,10 @@ void ignition_entry(void const * argument)
 				break;
 
 			//-------------------------------------------------------------------------------------
-			case IG_Wait_Retry:
+			case IG_Wait_Recover:
 				if(sva_gpi.ig_sw == GPIO_PIN_RESET){
 					ig_var.ig_states = IG_Recovery;
-					aewin_dbg("\n\rRetry ignition! IG_Wait_Retry --> IG_Recovery");
+					aewin_dbg("\n\rig_sw power off, ignition state recover! IG_Wait_Recover --> IG_Recovery");
 				}
 				else
 				{
@@ -3019,12 +3027,10 @@ void cmd_proc_entry(void const * argument)
 	  HAL_RTC_GetAlarm(&hrtc, &sAlarm, RTC_ALARM_A, RTC_FORMAT_BIN);
 
 	  //aewin_dbg("\n\rGet RTC alarm time: %d : %d : %d", sAlarm.AlarmTime.Hours,sAlarm.AlarmTime.Minutes, sAlarm.AlarmTime.Seconds);
-	  //aewin_dbg("\n\rGet Time: %2d:%2d:%2d",sTime.Hours ,sTime.Minutes, sTime.Seconds);
-	  //aewin_dbg("\n\r=============================",sTime.Hours ,sTime.Minutes, sTime.Seconds);
+	  //aewin_dbg("\n\rGet Time: %2d:%2d:%2d", sTime.Hours, sTime.Minutes, sTime.Seconds);
+	  //aewin_dbg("\n\r=============================", sTime.Hours, sTime.Minutes, sTime.Seconds);
 	  osDelay(1000);
 
-
-	  //osDelay(1000);
   }
   /* USER CODE END cmd_proc_entry */
 }
@@ -3410,9 +3416,10 @@ void spi1_entry(void const * argument)
 void can_entry(void const * argument)
 {
   /* USER CODE BEGIN can_entry */
-	//uint8_t canTx[8] = {0x01, 0x02, 0x03, 0x04, 0x05, 0x06, 0x07};
+
 	uint8_t ubKeyNumber = 0x0;
 	CAN_FilterConfTypeDef  sFilterConfig;
+
 	CanTxMsgTypeDef  TxMessage;
  	CanRxMsgTypeDef  RxMessage;
 
@@ -3448,7 +3455,6 @@ void can_entry(void const * argument)
 	  //hcan.pTxMsg->Data[0] = 0xA5;
 	  //hcan.pTxMsg->Data[1] = 0x63;
 
-
   /* Infinite loop */
   for(;;)
   {
@@ -3460,11 +3466,11 @@ void can_entry(void const * argument)
 		}
 
 	  /* Set the data to be transmitted */
-			ubKeyNumber++;
-			hcan.pTxMsg->Data[0] = ubKeyNumber;
-			hcan.pTxMsg->Data[1] = 0x55;
-			hcan.pTxMsg->Data[2] = 0xaa;
-			hcan.pTxMsg->Data[3] = 0xaa;
+		ubKeyNumber++;
+		hcan.pTxMsg->Data[0] = ubKeyNumber;
+		hcan.pTxMsg->Data[1] = 0x55;
+		hcan.pTxMsg->Data[2] = 0xaa;
+		hcan.pTxMsg->Data[3] = 0xaa;
 
 	  /*##-3- Start the Transmission process ###############################*/
 	  if (HAL_CAN_Transmit(&hcan, 10) != HAL_OK)
@@ -3562,9 +3568,6 @@ uint8_t adc_tempConversion_float(uint32_t adc_value)
 }
 
 
-
-
-
 uint8_t uart_findDataIndex(uint8_t uart_msg[], uint8_t target_data)
 {
 	// target data is the target_comma
@@ -3620,7 +3623,6 @@ uint8_t uart2_isFindString(uint8_t uart_msg[], uint8_t target_string[], uint8_t 
 					flag_find = 1;
 				}
 			}
-			//break;
 		}
 	}
 	return flag_find;
