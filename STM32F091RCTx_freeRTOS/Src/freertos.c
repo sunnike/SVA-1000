@@ -1561,6 +1561,12 @@ void usart2_entry(void const * argument)
     	}
     	//----------------------------------------
 
+
+    	if(sva_gpi.dc2dc_pwrok == GPIO_PIN_SET)
+    	{
+    		flag_reset_internet = 0;
+    	}
+
     	// reset internal Internet
 		//----------------------------------------
 		if(flag_reset_internet == 1)
