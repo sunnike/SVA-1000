@@ -34,7 +34,7 @@
  /** @defgroup AEWIN_DEBUG Aewin Debug Configuration
    * @{
    */
-#define AEWIN_DBUG			(1)
+#define AEWIN_DBUG			(0)
 #define PRINT_BUFF			(128)
 
  /** @defgroup AEWIN_DEBUG Aewin Debug Configuration
@@ -55,16 +55,17 @@
  /** @defgroup STM32F0XX_UART STM32F0XX UART Configuration
    * @{
    */
-#define UART1_TIMEOUT		1
-#define UART2_TIMEOUT		500  //osWaitForever
-#define UART3_TIMEOUT		1
-#define GPS_GETQ_TIMEOUT    100
+#define UART1_TIMEOUT		 1
+#define UART2_TIMEOUT		 500
+#define UART3_TIMEOUT		 1
+#define GPS_GETQ_TIMEOUT     100
+#define GSENSOR_GETQ_TIMEOUT 500
 
-#define UART1_TX_DELAY      10
+#define UART1_TX_DELAY       10
 
-#define UART2_RX_LENGTH     260
-#define UART2_ATCMD_DELAY   500
-#define UART2_WAIT_READY    1000
+#define UART2_RX_LENGTH      260
+#define UART2_ATCMD_DELAY    500
+#define UART2_WAIT_READY     1000
 
 
 
@@ -361,15 +362,32 @@ typedef enum{
 	ATCMD_Enable_PSD   =17,  //AT+UPSDA=0,3
 }eATCMD;
 
+/******  SVA-1000 4G module AT command ******************************************************************/
+typedef enum{
+	WWAN_CMD_NONE      = 0,  //no WWAN command
+	WWAN_CMD_ENABLE    = 1,  //enable WWAN command
+	WWAN_CMD_DISABLE   = 2,  //disable WWAN command
+}eWWANCMD;
+
 
 /******  SVA-1000 specific Ignition States ******************************************************************/
-#if 0
 typedef enum{
 
 	NUM_eeprom_tag_init       = SPI_FLASH_LEN_CMDADD,
 	NUM_major_ver             = SPI_FLASH_LEN_CMDADD + 1,
 	NUM_minor_ver,
+
+	NUM_pwron_delay,          // countdown_timer reset value
+	NUM_wait_startup_time,    // fixed time
+	NUM_startup_timeout,      // countdown_timer reset value
+	NUM_pwroff_delay,         // countdown_timer reset value
+	NUM_shutdown_delay,       // countdown_timer reset value
+	NUM_shutdown_timeout,     // countdown_timer reset value
+	NUM_lowpwr_dealy,         // fixed time
 	NUM_wtdog_default,
+	NUM_pwroff_btn_cnt,       // fixed count
+	NUM_pwrgood_chk_time,     // fixed time
+
 	NUM_in_sys_volt,
 	NUM_in_volt_min,
 	NUM_in_volt_max,
@@ -409,71 +427,6 @@ typedef enum{
 
 	NUM_total,
 }eData_Num;
-#endif
-
-#if 1
-typedef enum{
-
-	NUM_eeprom_tag_init       = SPI_FLASH_LEN_CMDADD,
-	NUM_major_ver             = SPI_FLASH_LEN_CMDADD + 1,
-	NUM_minor_ver,
-	//NUM_ig_states,//-
-	NUM_pwron_delay,//
-	NUM_wait_startup_time,//
-	NUM_startup_timeout,//
-	NUM_pwroff_delay,//
-	NUM_shutdown_delay,//
-	NUM_shutdown_timeout,//
-	NUM_lowpwr_dealy,//
-	NUM_wtdog_default,
-	NUM_pwroff_btn_cnt,//
-	//NUM_pwrbtn_pressed,//-
-	NUM_pwrgood_chk_time,//
-	NUM_in_sys_volt,
-	NUM_in_volt_min,
-	NUM_in_volt_max,
-	NUM_startup_volt,
-	NUM_in_temp_min,
-	NUM_in_temp_max,
-	NUM_startup_temp,
-	NUM_dc_lowpwr,
-	//NUM_fail_retry, // same as fail count
-	//NUM_fail_count, //
-
-	NUM_syspowr_input_type,
-	NUM_reboot_source,
-	NUM_boot_mode,
-	NUM_WWAN_wakeup,
-	NUM_WWAN_status,
-	NUM_digital_input,
-	NUM_digital_output,
-	NUM_sim_card_mode,
-	NUM_wifi_status,
-	NUM_LAN_wakeup,
-	NUM_delay_off_setting,
-	NUM_delay_on_setting,
-	//NUM_power_off_time,//remove
-	//NUM_power_on_time,//remove
-
-	NUM_alarm_status,
-	NUM_InVol_limit_min,
-	NUM_InVol_limit_max,
-	NUM_RTC_AlarmT_hour,
-	NUM_RTC_AlarmT_min,
-	NUM_RTC_AlarmT_sec,
-	NUM_RTC_WakeT_hour,
-	NUM_RTC_WakeT_min,
-	NUM_RTC_WakeT_sec,
-	//NUM_Host_WTGT,
-
-	NUM_12V_startup,
-	NUM_12V_shutdown,
-	NUM_24V_startup,
-	NUM_24V_shutdown,
-
-	NUM_total,
-}eData_Num;
-#endif
 
 /* USER CODE END ENUM definitions  */
 

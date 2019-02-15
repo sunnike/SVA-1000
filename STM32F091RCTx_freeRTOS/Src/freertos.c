@@ -108,10 +108,7 @@ char dbg_buff[PRINT_BUFF];
 TickType_t xTimeNow;
 
 uint8_t uart2_msg_print_switch = 1;
-uint8_t wwan_command = 0;
-// 0 : no command
-// 1 : enable
-// 2 : disable
+uint8_t wwan_command = WWAN_CMD_NONE;
 
 uint8_t flag_flashWrite = 0;
 uint8_t flag_jumpToBootloader = 0;
@@ -142,7 +139,6 @@ uint8_t flash_IgEvent[NUM_total] = {SPI_FLASH_PROGRAM_PAGE, SPI_FLASH_ADD_Byte0,
 		0, 0, 0, 0, 0, 0, 0x01, 0x01, 0x01, 0x01};    // RTC_WakeT_min
 
 /* ignition (default)
-//less
 uint8_t flash_IgEvent[NUM_total] = {SPI_FLASH_PROGRAM_PAGE, SPI_FLASH_ADD_Byte0, SPI_FLASH_ADD_Byte1, SPI_FLASH_ADD_Byte2,
 		SPI_FLASH_DATA_TAG, 0, 1, 4, 1, 60,
 		10, 4, 60, 2, 30, 5, 5, 12,	9, 54,
@@ -152,7 +148,6 @@ uint8_t flash_IgEvent[NUM_total] = {SPI_FLASH_PROGRAM_PAGE, SPI_FLASH_ADD_Byte0,
 */
 
 /* power adapter (option)
-//less
 uint8_t flash_IgEvent[NUM_total] = {SPI_FLASH_PROGRAM_PAGE, SPI_FLASH_ADD_Byte0, SPI_FLASH_ADD_Byte1, SPI_FLASH_ADD_Byte2,
 		SPI_FLASH_DATA_TAG, 0, 1, 4, 1, 60,
 		10, 4, 90, 2, 30, 5, 5, 12,	20, 145,
@@ -192,6 +187,7 @@ uint32_t JumpAddress;
 /*Variable used for Erase procedure*/
 static FLASH_EraseInitTypeDef EraseInitStruct;
 
+
 /* configuration information on faulty page */
 uint32_t PageError = 0;
 
@@ -202,8 +198,6 @@ uint16_t eeprom_test[EEPROM_DATA_LEN] = {EEPROM_TAG,VERSION_MAJOR, VERSION_MINOR
 		0, 50, 100, 50, 0, 0, 0, 0, 0, 1,
 		0, 0, 0, 0, 0, 0, 0, 0, 9, 36,
 		0, 0, 0, 0, 0, 0, 0x01, 0x01, 0x01, 0x01};
-
-
 
 /* USER CODE END Variables */
 
@@ -227,21 +221,21 @@ void MX_FREERTOS_Init(void); /* (MISRA C 2004 rule 8.1) */
 /* USER CODE BEGIN FunctionPrototypes */
 #if (AEWIN_DBUG)
 void aewin_dbg(char *fmt,...);
+#endif
+
 uint8_t adc_voltageConversion_int(uint32_t adc_value);
 uint8_t adc_voltageConversion_float(uint32_t adc_value);
 uint8_t adc_tempConversion_int(uint32_t adc_value);
 uint8_t adc_tempConversion_float(uint32_t adc_value);
 uint8_t uart2_isFindString(uint8_t uart_msg[], uint8_t target_string[], uint8_t length);
-void enable_4GModule(void);
 uint8_t uart_findDataIndex(uint8_t uart_msg[], uint8_t target_data);
-void print_atCommand(uint8_t rx_msg[], uint8_t onOff);
 uint8_t check_lowPower(uint32_t adc_value);
 uint8_t check_highPower(uint32_t adc_value);
+void print_atCommand(uint8_t rx_msg[], uint8_t onOff);
+void enable_4GModule(void);
 void config_recovery(void);
 void JumpToBootloader(void);
 void write_setting_to_eeprom(void);
-#endif
-
 
 /* USER CODE END FunctionPrototypes */
 
@@ -317,7 +311,6 @@ void MX_FREERTOS_Init(void) {
 	countdown_timer.shutdown_delay   = current_IgEvent[NUM_shutdown_delay];
 	countdown_timer.shutdown_timeout = current_IgEvent[NUM_shutdown_timeout];
 	countdown_timer.poweroff_delay   = current_IgEvent[NUM_pwroff_delay];
-
 
 
   /* USER CODE END Init */
@@ -474,6 +467,7 @@ void usart1_entry(void const * argument)
 	uint8_t flag_rx_finished = 0;
 
 	uint8_t gps_data_record[6]={0};
+	uint8_t gsensor_data_record[6]={0};
 	uint8_t loop_index = 0;
 
 	osEvent evt_vol;
@@ -697,11 +691,11 @@ void usart1_entry(void const * argument)
 
 							if(current_IgEvent[NUM_WWAN_status] == 1)
 							{
-								wwan_command = 1;
+								wwan_command = WWAN_CMD_ENABLE;
 							}
 							else if(current_IgEvent[NUM_WWAN_status] == 0)
 							{
-								wwan_command = 2;
+								wwan_command = WWAN_CMD_DISABLE;
 							}
 							flag_flashWrite = 1;
 
@@ -987,11 +981,20 @@ void usart1_entry(void const * argument)
 						case Subcmd_Get_Gsensor:
 							if((CMD_ETX_CODE != recv1[CMD_ETX_POS(CMD_HEAD_MS_SIZE)]) || \
 							   (CMD_EOT_CODE != recv1[CMD_EOT_POS(CMD_HEAD_MS_SIZE)])) break;
-							evt_xaxis = osMessageGet(I2C1_XAXIS_QHandle,osWaitForever);
-							evt_yaxis = osMessageGet(I2C1_YAXIS_QHandle,osWaitForever);
-							evt_zaxis = osMessageGet(I2C1_ZAXIS_QHandle,osWaitForever);
+							evt_xaxis = osMessageGet(I2C1_XAXIS_QHandle,GSENSOR_GETQ_TIMEOUT);
+							evt_yaxis = osMessageGet(I2C1_YAXIS_QHandle,GSENSOR_GETQ_TIMEOUT);
+							evt_zaxis = osMessageGet(I2C1_ZAXIS_QHandle,GSENSOR_GETQ_TIMEOUT);
 							xFer[2] = Subcmd_Get_Gsensor;
-							//if (evt_xaxis.status == osEventMessage)
+
+							if((evt_xaxis.status == osErrorParameter) || (evt_yaxis.status == osErrorParameter) || (evt_zaxis.status == osErrorParameter))
+							{
+								// print the same data as previous, because UART hasn't get the next G-sensor data
+								for(loop_index = 0; loop_index < 6; loop_index++)
+								{
+									xFer[3 + loop_index] = gsensor_data_record[loop_index];
+								}
+							}
+							else
 							{
 								xFer[3] = ((evt_xaxis.value.v)>>8);
 								xFer[4] = ((evt_xaxis.value.v) & 0x00FF);
@@ -1001,6 +1004,12 @@ void usart1_entry(void const * argument)
 
 								xFer[7] = ((evt_zaxis.value.v)>>8);
 								xFer[8] = ((evt_zaxis.value.v) & 0x00FF);
+
+								// update G-sensor data record
+								for(loop_index = 0; loop_index < 6; loop_index++)
+								{
+									gsensor_data_record[loop_index] = xFer[3 + loop_index];
+								}
 							}
 							send2host = TRUE;
 							xFer_len = MCU_REPO_HEAD_CMD_SIZE + MCU_SCMD90_LEN;
@@ -1025,7 +1034,6 @@ void usart1_entry(void const * argument)
 							if((CMD_ETX_CODE != recv1[CMD_ETX_POS(CMD_HEAD_MS_SIZE)]) || \
 							   (CMD_EOT_CODE != recv1[CMD_EOT_POS(CMD_HEAD_MS_SIZE)])) break;
 							xFer[2] = Subcmd_IG_Get_OnOff;
-							//if(current_IgEvent[NUM_ig_states] == IG_Start_Up)
 							if(ig_var.ig_states == IG_Start_Up)
 							{
 								xFer[3] = 0x01;
@@ -1101,8 +1109,6 @@ void usart1_entry(void const * argument)
 							if((CMD_ETX_CODE != recv1[CMD_ETX_POS(CMD_HEAD_MS_SIZE)]) || \
 							   (CMD_EOT_CODE != recv1[CMD_EOT_POS(CMD_HEAD_MS_SIZE)])) break;
 							xFer[2] = Subcmd_Get_PwrOn_DelayT;
-							//xFer[3] = current_IgEvent[NUM_power_on_time];
-							//xFer[4] = current_IgEvent[NUM_power_off_time];
 							xFer[3] = current_IgEvent[NUM_pwron_delay];
 							xFer[4] = current_IgEvent[NUM_pwroff_delay];
 
@@ -1116,8 +1122,6 @@ void usart1_entry(void const * argument)
 						case Subcmd_Set_PwrOn_DelayT:
 							if((CMD_ETX_CODE != recv1[CMD_ETX_POS(CMD_HEAD_MS_SIZE + IGN_SCMD19_LEN)]) || \
 							   (CMD_EOT_CODE != recv1[CMD_EOT_POS(CMD_HEAD_MS_SIZE + IGN_SCMD19_LEN)])) break;
-							//current_IgEvent[NUM_power_on_time] = recv1[5];
-							//current_IgEvent[NUM_power_off_time] = recv1[6];
 							current_IgEvent[NUM_pwron_delay] = recv1[5];
 							current_IgEvent[NUM_pwroff_delay] = recv1[6];
 
@@ -1251,9 +1255,9 @@ void usart1_entry(void const * argument)
 						case Subcmd_Set_RTC_WakeT:
 							if((CMD_ETX_CODE != recv1[CMD_ETX_POS(CMD_HEAD_MS_SIZE + IGN_SCMD27_LEN)]) || \
 							   (CMD_EOT_CODE != recv1[CMD_EOT_POS(CMD_HEAD_MS_SIZE + IGN_SCMD27_LEN)])) break;
-							current_IgEvent[NUM_RTC_WakeT_hour] = recv1[5];	 // Hours.
-							current_IgEvent[NUM_RTC_WakeT_min] = recv1[6];	 // Minutes.
-							current_IgEvent[NUM_RTC_WakeT_sec] = recv1[7];	 // Seconds.
+							current_IgEvent[NUM_RTC_WakeT_hour] = recv1[5];
+							current_IgEvent[NUM_RTC_WakeT_min] = recv1[6];
+							current_IgEvent[NUM_RTC_WakeT_sec] = recv1[7];
 
 							flag_flashWrite = 1;
 
@@ -1306,11 +1310,9 @@ void usart1_entry(void const * argument)
 							xFer[7] = sTime.Hours;		// Hours.
 							xFer[8] = sTime.Minutes;	// Minutes.
 							xFer[9] = sTime.Seconds;	// Seconds.
-							//xFer[10] = current_IgEvent[NUM_ig_states];	    // Ignition status.
 							xFer[10] = ig_var.ig_states;
 							xFer[11] = current_IgEvent[NUM_shutdown_delay];	// Ignition Shutdown Count.
 
-							//if(current_IgEvent[NUM_ig_states] == IG_Start_Up)           //Ignition On/Off Status
 							if(ig_var.ig_states == IG_Start_Up)
 							{
 								xFer[12] = 0x00;
@@ -1482,46 +1484,12 @@ void usart2_entry(void const * argument)
     /* Infinite loop */
     for(;;)
     {
-		/*if(HAL_UART_Receive_DMA(&huart2, (uint8_t*)&recv2, 1) == HAL_OK){
-			HAL_UART_Transmit_DMA(&huart2, (uint8_t*)&recv2, 1);
-		}*/
-
-
-    	/*##-2- Start the transmission process #####################################*/
-    	  /* While the UART in reception process, user can transmit data through
-    	     "aTxBuffer" buffer */
-    	#if 0
-    	if(HAL_UART_Transmit(&huart2, "+CSQ: 2,5", 10, 5000)!= HAL_OK)
-    	  {
-    	    Error_Handler();
-    	  }
-
-
-    	  /*##-3- Put UART peripheral in reception process ###########################*/
-    	  if(HAL_UART_Receive(&huart2, (uint8_t *)recv2, 10, 5000) != HAL_OK)
-    	  {
-    	    Error_Handler();
-    	  }
-
-
-
-    	  if(HAL_UART_Receive_IT(&huart2, (uint8_t*)&recv2, 10)!= HAL_OK)
-    	{
-    		Error_Handler();
-    	}
-
-    	while (UartReady != SET)
-		  {
-		  }
-#endif
-
-
     	//if(wwan_command == 1)
     	// enable but in flight mode
     	if((current_IgEvent[NUM_WWAN_status] == 1) && (r280_module_state.normal_flight_states == 40))
     	{
     		// enable WWAN, normal mode
-    		wwan_command = 0;
+    		wwan_command = WWAN_CMD_NONE;
     		flag_reset_internet = 1;
 
     		// Normal mode AT+CFUN=1
@@ -1543,7 +1511,7 @@ void usart2_entry(void const * argument)
     	else if((current_IgEvent[NUM_WWAN_status] == 0) && (r280_module_state.normal_flight_states == 10))
     	{
     		// disable WWAN, airplane mode AT+CFUN=4
-    		wwan_command = 0;
+    		wwan_command = WWAN_CMD_NONE;
 
     		// Airplane mode
 			HAL_UART_Transmit(&huart2, uart_Tx[ATCMD_Dis_airplane], sizeof(uart_Tx[ATCMD_Dis_airplane])-1, 30);
@@ -2028,7 +1996,7 @@ void usart2_entry(void const * argument)
 
 
 		// ping status AT+UPING="www.google.com"
-		if(wwan_command == 0)
+		if(wwan_command == WWAN_CMD_NONE)
 		{
 			HAL_UART_Transmit(&huart2, uart_Tx[ATCMD_Ping_web], sizeof(uart_Tx[ATCMD_Ping_web])-1, 30);
 			HAL_UART_Transmit(&huart2, "\r", 1, 30);
@@ -2698,7 +2666,6 @@ void ignition_entry(void const * argument)
 
 					aewin_dbg("\n\rSystem shutdown! IG_Wait_StartUp --> IG_Wait_Recover");
 				}
-
 				break;
 
 			//-------------------------------------------------------------------------------------
@@ -2710,7 +2677,6 @@ void ignition_entry(void const * argument)
 					{
 						countdown_timer.poweroff_delay = 0;
 					}
-
 
 					if (0 == (countdown_timer.poweroff_delay--)){
 
@@ -2745,7 +2711,6 @@ void ignition_entry(void const * argument)
 					countdown_timer.poweroff_delay = current_IgEvent[NUM_pwroff_delay];
 					aewin_dbg("\n\rPower off delay failed! IG_Shutdown_Delay --> IG_LowPower_Delay");
 				}
-
 				break;
 
 			//-------------------------------------------------------------------------------------
@@ -2778,9 +2743,6 @@ void ignition_entry(void const * argument)
 					countdown_timer.shutdown_delay = current_IgEvent[NUM_shutdown_delay];
 					aewin_dbg("\n\rShutdown delay failed! IG_shutting_Down --> IG_Shutdown_Delay");
 				}
-
-
-
 				break;
 
 			//-------------------------------------------------------------------------------------
@@ -2851,18 +2813,7 @@ void i2c1_entry(void const * argument)
     /* Infinite loop */
 	for(;;)
 	{
-		//HAL_SMBUS_Master_Transmit_IT(&hsmbus1, I2C_DEV_ADDRESS_ADXL345, &regptr, 1, SMBUS_AUTOEND_MODE);
-		//HAL_Delay(10);
-		//HAL_SMBUS_Master_Receive_IT(&hsmbus1, I2C_DEV_ADDRESS_ADXL345,  ADXL345_RxBuffer, 6, SMBUS_AUTOEND_MODE);
-
-		//HAL_GPIO_WritePin(GPIOC, D2D_EN_Pin, GPIO_PIN_SET);
 		if((sva_gpi.dc2dc_pwrok == GPIO_PIN_SET) && (sva_gpi.sys_pwron == GPIO_PIN_SET)){
-			//HAL_I2C_Master_Transmit(&hi2c1, I2C_ADXL345_DEV_ADDRESS, (uint8_t*)regptr, sizeof(regptr), 1000);
-			//HAL_I2C_Master_Receive(&hi2c1, I2C_ADXL345_DEV_ADDRESS, (uint8_t *)ADXL345_DEVID, 1, 10000);
-
-			//read ADXL345 device ID (0xE5)
-			HAL_I2C_Master_Transmit(&hi2c1, I2C_ADXL345_DEV_ADDRESS, &regptr[0], 1, 1000);
-			HAL_I2C_Master_Receive(&hi2c1, I2C_ADXL345_DEV_ADDRESS, (uint8_t *)ADXL345_DEVID, 1, 10000);
 
 			//enable ADXL345 measure
 			HAL_I2C_Master_Transmit(&hi2c1, I2C_ADXL345_DEV_ADDRESS, &regptr[1], 2, 1000);
@@ -2890,50 +2841,6 @@ void i2c1_entry(void const * argument)
 			}
 		}
 
-
-
-#if 0
-		/* While the I2C in reception process, user can transmit data through
-			 "aTxBuffer" buffer */
-		  /* Timeout is set to 10S */
-		  while(HAL_I2C_Master_Transmit(&hi2c1, (uint16_t)0xE5, &regptr, 1, 10)!= HAL_OK)
-		  {
-			/* Error_Handler() function is called when Timeout error occurs.
-			   When Acknowledge failure occurs (Slave don't acknowledge its address)
-			   Master restarts communication */
-			if (HAL_I2C_GetError(&hi2c1) != HAL_I2C_ERROR_AF)
-			{
-			  Error_Handler();
-			}
-		  }
-
-		  while(HAL_I2C_Master_Receive(&hi2c1, (uint16_t)0xE5, (uint8_t *)ADXL345_RxBuffer, 6, 10000) != HAL_OK)
-		  {
-			  /* Error_Handler() function is called when Timeout error occurs.
-				 When Acknowledge failure occurs (Slave don't acknowledge it's address)
-				 Master restarts communication */
-			  if (HAL_I2C_GetError(&hi2c1) != HAL_I2C_ERROR_AF)
-			  {
-				Error_Handler();
-			  }
-		   }
-
-
-		  //if(HAL_I2C_Master_Receive_DMA(&I2cHandle, (uint16_t)I2C_DEV_ADDRESS_ADXL345, (uint8_t *)ADXL345_RxBuffer, BUFFER_SIZE_ADXL345) != HAL_OK)
-		if(HAL_I2C_Mem_Read_DMA( &I2cHandle,  0xE5,  0x32, I2C_MEMADD_SIZE_8BIT,  (uint8_t *)ADXL345_RxBuffer,  6) != HAL_OK)
-		{
-		  /* Error_Handler() function is called when error occurs. */
-		  Error_Handler();
-		}
-
-		/* Wait for the end of the transfer */
-		while (HAL_I2C_GetState(&I2cHandle) != HAL_I2C_STATE_READY)
-		{
-		}
-
-	#endif
-
-
 		//aewin_dbg("\n\rI2C Task");
         osDelay(I2C1_TASK_ENTRY_TIME);
 	}
@@ -2950,7 +2857,6 @@ void adc_entry(void const * argument)
 	/* Infinite loop */
 	for(;;)
     {
-
         /* Start ADC conversion on regular group with transfer by DMA */
 		if (HAL_ADC_Start_DMA(&hadc, (uint32_t *)&adc_data, ADC_DEVICE_NUM) != HAL_OK)
 		{
@@ -3035,8 +2941,8 @@ void cmd_proc_entry(void const * argument)
 	  //aewin_dbg("\n\rGet RTC alarm time: %d : %d : %d", sAlarm.AlarmTime.Hours,sAlarm.AlarmTime.Minutes, sAlarm.AlarmTime.Seconds);
 	  //aewin_dbg("\n\rGet Time: %2d:%2d:%2d", sTime.Hours, sTime.Minutes, sTime.Seconds);
 	  //aewin_dbg("\n\r=============================", sTime.Hours, sTime.Minutes, sTime.Seconds);
-	  osDelay(1000);
 
+	  osDelay(1000);
   }
   /* USER CODE END cmd_proc_entry */
 }
@@ -3531,7 +3437,6 @@ void HAL_RTC_AlarmAEventCallback(RTC_HandleTypeDef *handleRTC)
 uint8_t adc_voltageConversion_int(uint32_t adc_value)
 {
 	// (((adc_24v & 0xfffU) * 330) / 409600) * 117 / 10
-	//return ((((adc_value & 0xfffU) * 330) ) * 11700) / 1000 / 409600;
 	return ((((adc_value & 0xfffU) * 330) ) * 117) / 1000 / 4096;
 }
 
@@ -3543,33 +3448,29 @@ uint8_t adc_voltageConversion_float(uint32_t adc_value)
 
 uint8_t adc_tempConversion_int(uint32_t adc_value)
 {
-	uint16_t mcu_adc, r_adc;
-	double temp;
+	uint16_t mcu_adc;
 	mcu_adc = (((adc_value & 0xfffU) * 330) / 409600);
 
-	// R = (10*MCU_ADC) / (3.3-MCU_ADC)
-	r_adc = (100 * mcu_adc)/(33 - 10*mcu_adc);
-
-	//r_adc = 10*(adc_value & 0xfffU)/(4096-(adc_value & 0xfffU))
-
+	// r_adc = R = (10*MCU_ADC) / (3.3-MCU_ADC)
+	//           = (100 * mcu_adc)/(33 - 10*mcu_adc);
 
 	// 1/( log(r_adc/THERMISTOR_R25)/THERMISTOR_B_CONSTANT+1/(298.13) ) -273.13??;
-	//return (100/( log(r_adc/THERMISTOR_R25)/THERMISTOR_B_CONSTANT + 100/(29813) ) -27313)/100;
-	//return ((-1379)*(1*r_adc-10)+25000)/1000;
+	//(100/( log(r_adc/THERMISTOR_R25)/THERMISTOR_B_CONSTANT + 100/(29813) ) -27313)/100;
+	//((-1379)*(1*r_adc-10)+25000)/1000;
 	return (158883840-26379*(adc_value & 0xfffU))/4096000;
 }
 
 uint8_t adc_tempConversion_float(uint32_t adc_value)
 {
-	uint16_t mcu_adc, r_adc, temp;
+	uint16_t mcu_adc;
 	mcu_adc = (((adc_value & 0xfffU) * 330) / 409600);
 
-	// R = (10*MCU_ADC) / (3.3-MCU_ADC)
-	r_adc = (100 * mcu_adc)/(33 - 10*mcu_adc);
+	// r_adc = R = (10*MCU_ADC) / (3.3-MCU_ADC)
+	//           = (100 * mcu_adc)/(33 - 10*mcu_adc);
 
 	// 1/( log(r_adc/THERMISTOR_R25)/THERMISTOR_B_CONSTANT+1/(298.13) ) -273.13??;
-	//return (100/( log(r_adc/THERMISTOR_R25)/THERMISTOR_B_CONSTANT+100/(29813) ) -27313) %100;
-	//return (((-1379)*(1*r_adc-10)+25000)/10) % 100;
+	//(100/( log(r_adc/THERMISTOR_R25)/THERMISTOR_B_CONSTANT+100/(29813) ) -27313) %100;
+	//(((-1379)*(1*r_adc-10)+25000)/10) % 100;
 	return ((158883840-26379*(adc_value & 0xfffU))/40960)%100;
 }
 
@@ -3581,7 +3482,6 @@ uint8_t uart_findDataIndex(uint8_t uart_msg[], uint8_t target_data)
 
 	uint16_t index, split_count;
 
-	// find index
 	split_count = 0;
 	for(index = 0; index<UART2_RX_LENGTH; index++)
 	{
@@ -3640,11 +3540,6 @@ void enable_4GModule(void)
 	HAL_GPIO_WritePin(ENABLE_4G_GPIO_Port, ENABLE_4G_Pin, GPIO_PIN_RESET);
 	HAL_Delay(1);
 	HAL_GPIO_WritePin(ENABLE_4G_GPIO_Port, ENABLE_4G_Pin, GPIO_PIN_SET);
-
-	//A0
-	HAL_GPIO_WritePin(GPIOC, TEST_4G_Pin, GPIO_PIN_RESET);
-	HAL_Delay(1);
-	HAL_GPIO_WritePin(GPIOC, TEST_4G_Pin, GPIO_PIN_SET);
 }
 
 void print_atCommand(uint8_t rx_msg[], uint8_t onOff)
